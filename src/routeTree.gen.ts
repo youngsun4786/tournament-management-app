@@ -11,20 +11,62 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as StatsIndexImport } from './routes/stats/index'
+import { Route as StandingsIndexImport } from './routes/standings/index'
+import { Route as ScheduleIndexImport } from './routes/schedule/index'
+import { Route as PlayersIndexImport } from './routes/players/index'
+import { Route as GamesIndexImport } from './routes/games/index'
+import { Route as ContactUsIndexImport } from './routes/contact-us/index'
+import { Route as AboutIndexImport } from './routes/about/index'
 
 // Create/Update Routes
-
-const AboutRoute = AboutImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const StatsIndexRoute = StatsIndexImport.update({
+  id: '/stats/',
+  path: '/stats/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const StandingsIndexRoute = StandingsIndexImport.update({
+  id: '/standings/',
+  path: '/standings/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ScheduleIndexRoute = ScheduleIndexImport.update({
+  id: '/schedule/',
+  path: '/schedule/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PlayersIndexRoute = PlayersIndexImport.update({
+  id: '/players/',
+  path: '/players/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GamesIndexRoute = GamesIndexImport.update({
+  id: '/games/',
+  path: '/games/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ContactUsIndexRoute = ContactUsIndexImport.update({
+  id: '/contact-us/',
+  path: '/contact-us/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AboutIndexRoute = AboutIndexImport.update({
+  id: '/about/',
+  path: '/about/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +81,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
+    '/about/': {
+      id: '/about/'
       path: '/about'
       fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
+      preLoaderRoute: typeof AboutIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/contact-us/': {
+      id: '/contact-us/'
+      path: '/contact-us'
+      fullPath: '/contact-us'
+      preLoaderRoute: typeof ContactUsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/games/': {
+      id: '/games/'
+      path: '/games'
+      fullPath: '/games'
+      preLoaderRoute: typeof GamesIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/players/': {
+      id: '/players/'
+      path: '/players'
+      fullPath: '/players'
+      preLoaderRoute: typeof PlayersIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/schedule/': {
+      id: '/schedule/'
+      path: '/schedule'
+      fullPath: '/schedule'
+      preLoaderRoute: typeof ScheduleIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/standings/': {
+      id: '/standings/'
+      path: '/standings'
+      fullPath: '/standings'
+      preLoaderRoute: typeof StandingsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/stats/': {
+      id: '/stats/'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +137,92 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutIndexRoute
+  '/contact-us': typeof ContactUsIndexRoute
+  '/games': typeof GamesIndexRoute
+  '/players': typeof PlayersIndexRoute
+  '/schedule': typeof ScheduleIndexRoute
+  '/standings': typeof StandingsIndexRoute
+  '/stats': typeof StatsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutIndexRoute
+  '/contact-us': typeof ContactUsIndexRoute
+  '/games': typeof GamesIndexRoute
+  '/players': typeof PlayersIndexRoute
+  '/schedule': typeof ScheduleIndexRoute
+  '/standings': typeof StandingsIndexRoute
+  '/stats': typeof StatsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about/': typeof AboutIndexRoute
+  '/contact-us/': typeof ContactUsIndexRoute
+  '/games/': typeof GamesIndexRoute
+  '/players/': typeof PlayersIndexRoute
+  '/schedule/': typeof ScheduleIndexRoute
+  '/standings/': typeof StandingsIndexRoute
+  '/stats/': typeof StatsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/contact-us'
+    | '/games'
+    | '/players'
+    | '/schedule'
+    | '/standings'
+    | '/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to:
+    | '/'
+    | '/about'
+    | '/contact-us'
+    | '/games'
+    | '/players'
+    | '/schedule'
+    | '/standings'
+    | '/stats'
+  id:
+    | '__root__'
+    | '/'
+    | '/about/'
+    | '/contact-us/'
+    | '/games/'
+    | '/players/'
+    | '/schedule/'
+    | '/standings/'
+    | '/stats/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  AboutIndexRoute: typeof AboutIndexRoute
+  ContactUsIndexRoute: typeof ContactUsIndexRoute
+  GamesIndexRoute: typeof GamesIndexRoute
+  PlayersIndexRoute: typeof PlayersIndexRoute
+  ScheduleIndexRoute: typeof ScheduleIndexRoute
+  StandingsIndexRoute: typeof StandingsIndexRoute
+  StatsIndexRoute: typeof StatsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  AboutIndexRoute: AboutIndexRoute,
+  ContactUsIndexRoute: ContactUsIndexRoute,
+  GamesIndexRoute: GamesIndexRoute,
+  PlayersIndexRoute: PlayersIndexRoute,
+  ScheduleIndexRoute: ScheduleIndexRoute,
+  StandingsIndexRoute: StandingsIndexRoute,
+  StatsIndexRoute: StatsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +236,38 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about"
+        "/about/",
+        "/contact-us/",
+        "/games/",
+        "/players/",
+        "/schedule/",
+        "/standings/",
+        "/stats/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/about": {
-      "filePath": "about.tsx"
+    "/about/": {
+      "filePath": "about/index.tsx"
+    },
+    "/contact-us/": {
+      "filePath": "contact-us/index.tsx"
+    },
+    "/games/": {
+      "filePath": "games/index.tsx"
+    },
+    "/players/": {
+      "filePath": "players/index.tsx"
+    },
+    "/schedule/": {
+      "filePath": "schedule/index.tsx"
+    },
+    "/standings/": {
+      "filePath": "standings/index.tsx"
+    },
+    "/stats/": {
+      "filePath": "stats/index.tsx"
     }
   }
 }
