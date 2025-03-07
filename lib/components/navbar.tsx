@@ -5,7 +5,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+} from "lib/components/ui/navigation-menu";
 
 import { Link } from "@tanstack/react-router";
 import { History, Users } from "lucide-react";

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CarouselSpacing } from "../components/carousel-spacing";
+import { CarouselSpacing } from "../../lib/components/carousel-spacing";
 export const Route = createFileRoute("/")({
   component: Index,
 });
