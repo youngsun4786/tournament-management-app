@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-
+import { CarouselSpacing } from "../components/carousel-spacing";
 export const Route = createFileRoute("/")({
   component: Index,
 });
@@ -7,8 +7,12 @@ export const Route = createFileRoute("/")({
 function Index() {
   return (
     <div>
-      <h1 className=" font-bold">Upcoming</h1>
-      <h3>Welcome Home!</h3>
+      <div className="container m-auto p-4">
+        <h1 className="text-xl font-bold">Upcoming Games</h1>
+      </div>
+      <div className="flex justify-center items-center bg-slate-100 h-1/5">
+        <CarouselSpacing></CarouselSpacing>
+      </div>
     </div>
   );
 }

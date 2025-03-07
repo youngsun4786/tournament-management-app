@@ -70,7 +70,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-3 h-18 w-18">
             <img
               className="object-cover"
-              src="/public/ccbc_logo.png"
+              src="/ccbc_logo.png"
               alt="ccbc_logo"
             />
           </div>
