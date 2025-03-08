@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { parseCookies, setCookie } from "vinxi/http";
-
+import { Database } from "~/lib/database.types";
 /**
  * Creates and returns a Supabase server client instance.
  *
@@ -23,7 +23,7 @@ import { parseCookies, setCookie } from "vinxi/http";
  * ```
  */
 export function getSupabaseServerClient() {
-  return createServerClient(
+  return createServerClient<Database>(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
     {
