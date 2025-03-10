@@ -42,7 +42,6 @@ export function GameCard({
               <p>{formattedDate}</p>
               <p>{convert24to12(startTime)}</p>
             </div>
-
             <p>{venue}</p>
           </div>
           <button className="text-gray-300 hover:text-red-500 transition-colors">
