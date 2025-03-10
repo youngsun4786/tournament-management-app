@@ -1,10 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getSupabaseServerClient } from "~/lib/utils/supabase-server";
+import { supabaseServer } from "~/lib/utils/supabase-server";
 
 
 export const getTeams = createServerFn({ method: "GET"}).handler(async () => {
-    const supabase = getSupabaseServerClient();
-    const { data: teams, error } = await supabase.from("teams").select("*");
+    const { data: teams, error } = await supabaseServer.from("teams").select("*");
 
     if (error) {
         error.message = "Failed to fetch teams";
@@ -25,7 +24,7 @@ export const getTeams = createServerFn({ method: "GET"}).handler(async () => {
         
         // Get public URL for the logo
         // and that all logos are stored in the logos directory
-        const { data } = supabase.storage.from('media-images').getPublicUrl(`logos/${team.logo_url}`);
+        const { data } = supabaseServer.storage.from('media-images').getPublicUrl(`logos/${team.logo_url}`);
         
         // Return team with full public URL
         return {
@@ -36,4 +35,36 @@ export const getTeams = createServerFn({ method: "GET"}).handler(async () => {
 
     return teamsWithPublicUrls ?? [];
     
-})
+});
+
+export const getTeam = createServerFn({ method: "GET"}).handler(async ({ params }) => {
+
+
+    const { teamId } = params;
+    const { data: team, error } = await supabaseServer.from("teams").select("*").eq("id", teamId).single();
+
+    if (error) {
+        error.message = "Failed to fetch team";
+        throw error;
+    }
+
+    // If no team found, return null
+    if (!team) {
+        return null;
+    }
+
+    // Process team to get the full public URL for its logo
+    if (team.logo_url) {
+        const { data } = supabaseServer.storage.from('media-images').getPublicUrl(`logos/${team.logo_url}`);
+        
+        // Return team with full public URL
+        return {
+            ...team,
+            logo_url: data.publicUrl
+        };
+    }
+
+    return team;
+    
+}
+);

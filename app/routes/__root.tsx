@@ -1,4 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query";
+import { queryOptions, type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
@@ -9,8 +9,10 @@ import {
 import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
 
+import { createServerFn } from "@tanstack/react-start";
 import { Navbar } from "lib/components/navbar";
 import appCss from "~/lib/styles/app.css?url";
+import { getTeams } from "../services/teams.api";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -22,7 +24,22 @@ const TanStackRouterDevtools =
         }))
       );
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+const getTeamsInfo = createServerFn().handler(async () => {
+  const teams = await getTeams();
+  return {
+    teams,
+  };
+});
+
+const teamsQuery = queryOptions({
+  queryKey: ["teams"],
+  queryFn: ({ signal }) => getTeamsInfo({ signal }),
+});
+
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  teams: Awaited<ReturnType<typeof getTeamsInfo>>;
+}>()({
   head: () => ({
     meta: [
       {
@@ -33,15 +50,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Calgary Chinese Basketball Club",
       },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
+  beforeLoad: async ({ context }) => {
+    const teams = await context.queryClient.fetchQuery(teamsQuery);
+    return {
+      teams,
+    };
+  },
   component: RootComponent,
 });
 
 function RootComponent() {
+
   return (
     <RootDocument>
       <Navbar />
@@ -61,7 +85,6 @@ function RootDocument({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
-
         <ReactQueryDevtools buttonPosition="bottom-left" />
         <Suspense>
           <TanStackRouterDevtools position="bottom-right" />

@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { parseCookies, setCookie } from "vinxi/http";
-import { Database } from "~/lib/database.types";
+import { Database } from "../database.types";
 /**
  * Creates and returns a Supabase server client instance.
  *
@@ -73,3 +73,5 @@ export async function getSafeSession() {
 
   return { session, user, error: null };
 }
+
+export const supabaseServer = getSupabaseServerClient();

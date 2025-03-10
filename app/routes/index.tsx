@@ -1,11 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CarouselSpacing } from "../../lib/components/carousel-spacing";
+import { getGames } from "../services/games.api";
 import { getTeams } from "../services/teams.api";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     const teams = await getTeams();
-    return teams;
+    const games = await getGames();
+    return {
+      teams,
+      games,
+    };
   },
   component: Index,
 });

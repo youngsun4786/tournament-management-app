@@ -1,3 +1,4 @@
+import { Link, useRouteContext } from "@tanstack/react-router";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -6,29 +7,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "lib/components/ui/navigation-menu";
-
-import { Link } from "@tanstack/react-router";
-import { History, Users } from "lucide-react";
+import { Users } from "lucide-react";
+import React from "react";
+import { cn } from "../utils";
 import { Button } from "./ui/button";
-
-const teams = [
-  {
-    title: "Team Dragons",
-    href: "/teams/dragons",
-    description:
-      "Elite division champions known for their aggressive play style.",
-  },
-  {
-    title: "Team Phoenix",
-    href: "/teams/phoenix",
-    description: "Rising stars with impressive defensive strategies.",
-  },
-  {
-    title: "Team Tigers",
-    href: "/teams/tigers",
-    description: "Veterans of the league with multiple championships.",
-  },
-];
 
 const menuItems = [
   {
@@ -43,7 +25,7 @@ const menuItems = [
   {
     title: "Players",
     href: "/players",
-    description: "Stay up-to-date with the latest league announcements.",
+    description: "Check out league's performers.",
   },
   {
     title: "Standings",
@@ -62,6 +44,9 @@ const menuItems = [
 ];
 
 export const Navbar = () => {
+  // const { teams } = useLoaderData({ from: "__root__" }) as ;
+  const { teams: teams } = useRouteContext({ from: "__root__" });
+
   return (
     <nav className=" dark:bg-black/95 dark:text-white shadow-sm shadow-slate-200">
       <div className="max-w-7xl mx-auto px-4">
@@ -79,26 +64,33 @@ export const Navbar = () => {
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList className="gap-2">
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:bg-white/10">
-                  <Users className="mr-2 h-4 w-4" />
-                  Teams
+                <NavigationMenuTrigger className="bg-transparent hover:bg-white/10 hover:text-red-500">
+                  <div className="flex items-center gap-1 hover:text-red-500">
+                    <Users className="mr-2 h-4 w-4 hover:text-red-500" />
+                    <span className="hover:text-red-500">Teams</span>
+                  </div>
                 </NavigationMenuTrigger>
                 {/* Teams Information */}
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                    {teams.map((team) => (
-                      <li key={team.href}>
+                  {/* <div className="w-[300px] rounded-md shadow-lg bg-white dark:bg-slate-800"> */}
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 rounded-md shadow-lg bg-white dark:bg-slate-800">
+                    {teams!.teams.map((team) => (
+                      <li key={team.name}>
                         <NavigationMenuLink asChild>
                           <Link
-                            to={team.href}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            to={`/`}
+                            className="flex items-center gap-3 p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
-                            <div className="text-sm font-medium leading-none">
-                              {team.title}
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                              <img
+                                src={team.logo_url!}
+                                alt={`${team.name} logo`}
+                                className="w-full h-full object-contain"
+                              />
                             </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {team.description}
-                            </p>
+                            <span className="text-sm font-medium">
+                              {team.name}
+                            </span>
                           </Link>
                         </NavigationMenuLink>
                       </li>
@@ -109,7 +101,10 @@ export const Navbar = () => {
               {menuItems.map((item) => (
                 <NavigationMenuItem key={item.href}>
                   <Link to={item.href}>
-                    <Button variant="link" className="dark:text-white">
+                    <Button
+                      variant="link"
+                      className="dark:text-white hover:text-red-500"
+                    >
                       {item.title}
                     </Button>
                   </Link>
@@ -117,7 +112,7 @@ export const Navbar = () => {
               ))}
 
               {/* History - past games */}
-              <NavigationMenuItem>
+              {/* <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent dark:text-white dark:hover:bg-white/10">
                   <History className="mr-2 h-4 w-4" />
                   History
@@ -158,7 +153,7 @@ export const Navbar = () => {
                     </li>
                   </ul>
                 </NavigationMenuContent>
-              </NavigationMenuItem>
+              </NavigationMenuItem> */}
             </NavigationMenuList>
           </NavigationMenu>
 
@@ -186,3 +181,29 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
