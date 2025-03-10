@@ -7,7 +7,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "lib/components/ui/navigation-menu";
-import { Users } from "lucide-react";
 import React from "react";
 import { cn } from "../utils";
 import { Button } from "./ui/button";
@@ -52,12 +51,16 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
-          <div className="flex items-center gap-3 h-18 w-18">
-            <img
-              className="object-cover"
-              src="/ccbc_logo.png"
-              alt="ccbc_logo"
-            />
+          <div className="rounded-full p-2 hover:bg-red-500/10">
+            <div className="flex items-center gap-3 h-18 w-18">
+              <Link to={"/"}>
+                <img
+                  className="object-cover"
+                  src="/ccbc_logo.png"
+                  alt="ccbc_logo"
+                />
+              </Link>
+            </div>
           </div>
 
           {/* Main Navigation */}
@@ -66,13 +69,11 @@ export const Navbar = () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent hover:bg-white/10 hover:text-red-500">
                   <div className="flex items-center gap-1 hover:text-red-500">
-                    <Users className="mr-2 h-4 w-4 hover:text-red-500" />
                     <span className="hover:text-red-500">Teams</span>
                   </div>
                 </NavigationMenuTrigger>
                 {/* Teams Information */}
                 <NavigationMenuContent>
-                  {/* <div className="w-[300px] rounded-md shadow-lg bg-white dark:bg-slate-800"> */}
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 rounded-md shadow-lg bg-white dark:bg-slate-800">
                     {teams!.teams.map((team) => (
                       <li key={team.name}>

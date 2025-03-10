@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Heart } from "lucide-react";
 import { Button } from "~/lib/components/ui/button";
 import { Card, CardContent } from "~/lib/components/ui/card";
-
+import { convert24to12 } from "~/lib/date";
 interface GameCardProps {
   gameDate: string;
   startTime: string;
@@ -28,7 +28,7 @@ export function GameCard({
 }: GameCardProps) {
   // Format date: "25.03.10 Mon, 19:00"
   const dateObj = new Date(gameDate);
-  const formattedDate = format(dateObj, "yy.MM.dd EEE");
+  const formattedDate = format(dateObj, " EEEE MM/dd");
   // Parse the venue if possible
   const venue = court ? `${location} ${court}` : location;
 
@@ -38,9 +38,11 @@ export function GameCard({
         {/* Date, Venue and Favorite Button */}
         <div className="flex justify-between mb-2">
           <div className="text-xs text-gray-600">
-            <p>
-              {formattedDate} {startTime}
-            </p>
+            <div className="flex gap-1 text-black font-bold">
+              <p>{formattedDate}</p>
+              <p>{convert24to12(startTime)}</p>
+            </div>
+
             <p>{venue}</p>
           </div>
           <button className="text-gray-300 hover:text-red-500 transition-colors">
