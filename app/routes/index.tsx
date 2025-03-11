@@ -26,11 +26,8 @@ function Index() {
       </div>
       <div className="grid grid-cols-3 gap-2 m-auto py-4 px-16">
         <div className="col-span-2 pr-10 pl-5 pb-10">
-          <AspectRatio ratio={ 16 / 9 }>
-            <img
-              src="game_display/home_1.jpg"
-              alt="display game"
-            />
+          <AspectRatio ratio={16 / 9}>
+            <img src="game_display/home_1.jpg" alt="display game" />
           </AspectRatio>
         </div>
         <div className="container py-4 px-6 bg-white shadow-md rounded-lg">
@@ -52,7 +49,7 @@ function Index() {
                   <td className="py-2 text-center">{index + 1}</td>
                   <td className="py-2 flex items-center">
                     <img
-                      src={team.logo_url}
+                      src={`team_logos/${team.logo_url}`}
                       alt={team.name}
                       className="w-6 h-6 mr-2"
                     />

@@ -101,7 +101,7 @@ export function GamesTable({ dateStr, games }: GamesTableProps) {
                 <div className="h-8 w-8 flex-shrink-0">
                   {game.away_team_logo ? (
                     <img
-                      src={game.away_team_logo}
+                      src={`team_logos/${game.away_team_logo}`}
                       alt={`${game.away_team_name} logo`}
                       className="h-full w-full object-contain"
                     />
@@ -139,7 +139,7 @@ export function GamesTable({ dateStr, games }: GamesTableProps) {
                 <div className="h-8 w-8 flex-shrink-0">
                   {game.home_team_logo ? (
                     <img
-                      src={game.home_team_logo}
+                      src={`team_logos/${game.home_team_logo}`}
                       alt={`${game.home_team_name} logo`}
                       className="h-full w-full object-contain"
                     />

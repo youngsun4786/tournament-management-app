@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { db } from "~/db";
-import { supabaseServer } from "~/lib/utils/supabase-server";
 
 // Get all games with team information
 export const getGames = createServerFn({ method: "GET" }).handler(async () => {
@@ -32,34 +31,8 @@ export const getGames = createServerFn({ method: "GET" }).handler(async () => {
       away_team_logo: game.team_away_team_id.logo_url
     };
   });
-
-  // Process logo URLs to ensure they're full URLs if they exist
-  const gamesWithLogos = formattedGames.map(game => {
-    // Process home team logo
-    if (game.home_team_logo) { 
-      const { data: homeLogoData } = supabaseServer.storage
-        .from('media-images')
-        .getPublicUrl(`logos/${game.home_team_logo}`);
-      game.home_team_logo = homeLogoData.publicUrl;
-      if (game.home_team_name.toLowerCase() === 'tbd') {
-        game.home_team_logo = "/ccbc_logo.png";
-      }
-    }
-
-    // Process away team logo
-    if (game.away_team_logo) {
-      const { data: awayLogoData } = supabaseServer.storage
-        .from('media-images')
-        .getPublicUrl(`logos/${game.away_team_logo}`);
-      game.away_team_logo = awayLogoData.publicUrl;
-      if (game.away_team_name.toLowerCase() === 'tbd') {
-        game.away_team_logo = "/ccbc_logo.png";
-      }
-    }
-    return game;
-  });
-
-  return gamesWithLogos;
+  
+  return formattedGames;
 });
 
 // // Get games for a specific team

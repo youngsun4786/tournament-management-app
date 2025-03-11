@@ -56,7 +56,7 @@ export function GameCard({
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
               {homeTeamLogo ? (
                 <img
-                  src={homeTeamLogo}
+                  src={`team_logos/${homeTeamLogo}`}
                   alt={homeTeamName}
                   className="w-full h-full object-contain"
                 />
@@ -74,7 +74,7 @@ export function GameCard({
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
               {awayTeamLogo ? (
                 <img
-                  src={awayTeamLogo}
+                  src={`team_logos/${awayTeamLogo}`}
                   alt={awayTeamName}
                   className="w-full h-full object-contain"
                 />
