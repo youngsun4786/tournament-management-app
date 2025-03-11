@@ -80,11 +80,11 @@ export const Navbar = () => {
                         <NavigationMenuLink asChild>
                           <Link
                             to={`/`}
-                            className="flex items-center gap-3 p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
+                            className="flex items-center text-center gap-3 p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
                             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
                               <img
-                                src={team.logo_url!}
+                                src={`team_logos/${team.logo_url}`}
                                 alt={`${team.name} logo`}
                                 className="w-full h-full object-contain"
                               />
