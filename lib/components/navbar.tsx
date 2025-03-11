@@ -43,8 +43,8 @@ const menuItems = [
 ];
 
 export const Navbar = () => {
-  // const { teams } = useLoaderData({ from: "__root__" }) as ;
-  const { teams: teams } = useRouteContext({ from: "__root__" });
+  const { teams: teamInfo } = useRouteContext({ from: "__root__" });
+  const teams = teamInfo!.teams.filter((team) => team.name !== "TBD");
 
   return (
     <nav className=" dark:bg-black/95 dark:text-white shadow-sm shadow-slate-200">
@@ -75,7 +75,7 @@ export const Navbar = () => {
                 {/* Teams Information */}
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 rounded-md shadow-lg bg-white dark:bg-slate-800">
-                    {teams!.teams.map((team) => (
+                    {teams.map((team) => (
                       <li key={team.name}>
                         <NavigationMenuLink asChild>
                           <Link

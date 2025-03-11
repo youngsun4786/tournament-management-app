@@ -135,3 +135,4 @@ dist
 .netlify
 .vscode
 .idea
+.output

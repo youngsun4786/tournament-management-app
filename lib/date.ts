@@ -14,14 +14,3 @@ export const convert24to12 = (time: string) => {
   date.setHours(parseInt(hours), parseInt(minutes))
   return format(date, "h:mm a")
 }
-
-export const dayMap = {
-  "Sun": "Sunday",
-  "Mon": "Monday",
-  "Tue": "Tuesday",
-  "Wed": "Wednesday",
-  "Thu": "Thursday",
-  "Fri": "Friday",
-  "Sat": "Saturday",
-}
-

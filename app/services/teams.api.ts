@@ -38,8 +38,6 @@ export const getTeams = createServerFn({ method: "GET"}).handler(async () => {
 });
 
 export const getTeam = createServerFn({ method: "GET"}).handler(async ({ params }) => {
-
-
     const { teamId } = params;
     const { data: team, error } = await supabaseServer.from("teams").select("*").eq("id", teamId).single();
 

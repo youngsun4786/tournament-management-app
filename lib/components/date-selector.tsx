@@ -50,7 +50,7 @@ export function DateSelector({
   return (
     <div className="flex flex-col w-full mb-6">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-semibold">Game Schedule</h2>
+        <h2 className="text-lg font-semibold">Schedule</h2>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
