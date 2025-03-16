@@ -1,6 +1,6 @@
-import { GameService } from './domains/services/game.service';
-import { PlayerService } from './domains/services/player.service';
-import { TeamService } from './domains/services/team.service';
+import { GameService } from './services/game.service';
+import { PlayerService } from './services/player.service';
+import { TeamService } from './services/team.service';
 
 // let gameService: IGameService
 // let playerService: IPlayerService;

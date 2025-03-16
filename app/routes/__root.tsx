@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
 
 import { Navbar } from "lib/components/navbar";
-import { authQueries, gameQueries, teamQueries } from "~/app/domains/queries";
+import { authQueries, gameQueries, teamQueries } from "~/app/queries";
 import appCss from "~/lib/styles/app.css?url";
 
 const TanStackRouterDevtools =

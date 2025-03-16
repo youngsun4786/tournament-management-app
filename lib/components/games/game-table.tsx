@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { format, isAfter, isSameDay, parseISO } from "date-fns";
 import { useState } from "react";
-import { Game } from "~/app/domains/types/game";
+import { Game } from "~/app/types/game";
 import { convert24to12 } from "~/lib/date";
 
 interface GamesTableProps {

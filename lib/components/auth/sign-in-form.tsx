@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { signIn } from "~/app/domains/controllers/auth.api";
-import { SignInSchema } from "~/app/domains/schemas/auth.schema";
+import { signIn } from "~/app/controllers/auth.api";
+import { SignInSchema } from "~/app/schemas/auth.schema";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 

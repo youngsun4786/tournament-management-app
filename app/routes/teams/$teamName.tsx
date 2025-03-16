@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { teamQueries } from "~/app/domains/queries";
+import { teamQueries } from "~/app/queries";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 
 export const Route = createFileRoute("/teams/$teamName")({

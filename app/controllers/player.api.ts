@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { playerService } from "~/app/container";
-import { PlayerSchema } from "~/app/domains/schemas/player.schema";
+import { PlayerSchema } from "~/app/schemas/player.schema";
 
 // Get all players and their team names
 export const getPlayers = createServerFn({ method: "GET" }).handler(async () => {

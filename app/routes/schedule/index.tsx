@@ -2,7 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { Calendar, CalendarDays, Filter } from "lucide-react";
-import { gameQueries } from "~/app/domains/queries";
+import { gameQueries } from "~/app/queries";
 import { columns } from "~/lib/components/schedules/columns";
 import { DataTable } from "~/lib/components/schedules/data-table";
 import { Button } from "~/lib/components/ui/button";

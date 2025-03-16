@@ -2,8 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createLink, useRouter } from "@tanstack/react-router";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
-import { signOut } from "~/app/domains/controllers/auth.api";
-import { useAuthenticatedUser } from "~/app/domains/queries";
+import { signOut } from "~/app/controllers/auth.api";
+import { useAuthenticatedUser } from "~/app/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {

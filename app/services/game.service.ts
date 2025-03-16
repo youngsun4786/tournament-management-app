@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import type { Game, GameInsert, GameUpdate } from "~/app/domains/types/game";
+import type { Game, GameInsert, GameUpdate } from "~/app/types/game";
 import { db as drizzle_db } from "~/db";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 

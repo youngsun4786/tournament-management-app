@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { signUp } from "~/app/domains/controllers/auth.api";
-import { SignUpSchema, UserRoleType } from "~/app/domains/schemas/auth.schema";
+import { signUp } from "~/app/controllers/auth.api";
+import { SignUpSchema, UserRoleType } from "~/app/schemas/auth.schema";
 import { Label } from "~/lib/components/ui/label";
 import {
   Select,

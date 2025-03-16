@@ -1,9 +1,9 @@
 import { queryOptions, useQuery, useSuspenseQuery, UseSuspenseQueryResult } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getUser } from "~/app/domains/controllers/auth.api";
-import { getGames } from "~/app/domains/controllers/game.api";
-import { getPlayers } from "~/app/domains/controllers/player.api";
-import { getTeamByName, getTeams } from "~/app/domains/controllers/team.api";
+import { getUser } from "~/app/controllers/auth.api";
+import { getGames } from "~/app/controllers/game.api";
+import { getPlayers } from "~/app/controllers/player.api";
+import { getTeamByName, getTeams } from "~/app/controllers/team.api";
 
 
 export const useGetTeams = () => {

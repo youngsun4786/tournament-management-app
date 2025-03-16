@@ -2,7 +2,7 @@ import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import TeamSlider from "~/lib/components/team-slider";
 import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
-import { getGames } from "../domains/controllers/game.api";
+import { getGames } from "../controllers/game.api";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {

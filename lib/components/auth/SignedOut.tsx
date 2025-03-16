@@ -1,4 +1,4 @@
-import { useAuthentication } from "~/app/domains/queries";
+import { useAuthentication } from "~/app/queries";
 
 export const SignedOut = ({ children }: { children: React.ReactNode }) => {
   const { data } = useAuthentication();

@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start"
 import { supabaseServer } from "~/lib/utils/supabase-server"
 import {
-  AuthState,
-  SignInSchema,
-  SignUpSchema,
-  UserMetaSchema,
+    AuthState,
+    SignInSchema,
+    SignUpSchema,
+    UserMetaSchema,
 } from "../schemas/auth.schema"
 
 export const signUp = createServerFn()

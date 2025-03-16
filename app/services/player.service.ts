@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Player, PlayerInsert, PlayerUpdate } from "~/app/domains/types/player";
+import { Player, PlayerInsert, PlayerUpdate } from "~/app/types/player";
 import { db as drizzle_db } from "~/db";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 

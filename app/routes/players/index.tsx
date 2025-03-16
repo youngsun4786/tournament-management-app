@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { playerQueries } from "~/app/domains/queries";
+import { playerQueries } from "~/app/queries";
 import { columns } from "~/lib/components/players/columns";
 import { DataTable } from "~/lib/components/players/data-table";
 
