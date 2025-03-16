@@ -8,8 +8,12 @@ import {
   NavigationMenuTrigger,
 } from "lib/components/ui/navigation-menu";
 import React from "react";
-import { cn } from "../utils";
+import { cn } from "../utils/cn";
+import { SignedIn } from "./auth/SignedIn";
+import { SignedOut } from "./auth/SignedOut";
+import { ButtonLink } from "./button-link";
 import { Button } from "./ui/button";
+import { UserMenu } from "./user-menu";
 
 const menuItems = [
   {
@@ -44,7 +48,7 @@ const menuItems = [
 
 export const Navbar = () => {
   const { teams: teamInfo } = useRouteContext({ from: "__root__" });
-  const teams = teamInfo!.teams.filter((team) => team.name !== "TBD");
+  const teams = teamInfo!.filter((team) => team.name !== "TBD");
 
   return (
     <nav className=" dark:bg-black/95 dark:text-white shadow-sm shadow-slate-200">
@@ -77,14 +81,16 @@ export const Navbar = () => {
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 rounded-md shadow-lg bg-white dark:bg-slate-800">
                     {teams.map((team) => (
                       <li key={team.name}>
-                        <NavigationMenuLink asChild>
+                        <NavigationMenuItem asChild>
                           <Link
-                            to={`/`}
+                            to={`/teams/$teamName`}
+                            params={{ teamName: team.name }}
+                            preload="intent"
                             className="flex items-center text-center gap-3 p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
                             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
                               <img
-                                src={`team_logos/${team.logo_url}`}
+                                src={`/team_logos/${team.logo_url}`}
                                 alt={`${team.name} logo`}
                                 className="w-full h-full object-contain"
                               />
@@ -93,7 +99,7 @@ export const Navbar = () => {
                               {team.name}
                             </span>
                           </Link>
-                        </NavigationMenuLink>
+                        </NavigationMenuItem>
                       </li>
                     ))}
                   </ul>
@@ -101,14 +107,13 @@ export const Navbar = () => {
               </NavigationMenuItem>
               {menuItems.map((item) => (
                 <NavigationMenuItem key={item.href}>
-                  <Link to={item.href}>
-                    <Button
-                      variant="link"
-                      className="dark:text-white hover:text-red-500"
-                    >
-                      {item.title}
-                    </Button>
-                  </Link>
+                  <ButtonLink
+                    to={item.href}
+                    variant="link"
+                    className="dark:text-white hover:text-red-500"
+                  >
+                    {item.title}
+                  </ButtonLink>
                 </NavigationMenuItem>
               ))}
 
@@ -173,9 +178,19 @@ export const Navbar = () => {
             >
               Contact Us
             </Button>
-            <Button variant="ghost" size="sm" className="hover:text-red-500">
-              Login
-            </Button>
+            <SignedIn>
+              <UserMenu />
+            </SignedIn>
+            <SignedOut>
+              <ButtonLink
+                to="/sign-in"
+                variant={"ghost"}
+                size="sm"
+                className="hover:text-red-500"
+              >
+                Login
+              </ButtonLink>
+            </SignedOut>
           </div>
         </div>
       </div>

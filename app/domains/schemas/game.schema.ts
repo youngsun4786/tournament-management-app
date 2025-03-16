@@ -29,15 +29,3 @@ export const GameWithTeamsSchema = GameSchema.extend({
 
 export type Game = z.infer<typeof GameSchema>;
 export type GameWithTeams = z.infer<typeof GameWithTeamsSchema>;
-
-// Schema for game creation/update
-export const GameInputSchema = GameSchema.omit({ 
-  id: true, 
-  created_at: true 
-}).partial({
-  home_team_score: true,
-  away_team_score: true,
-  court: true,
-});
-
-export type GameInput = z.infer<typeof GameInputSchema>;

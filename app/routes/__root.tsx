@@ -1,4 +1,4 @@
-import { queryOptions, type QueryClient } from "@tanstack/react-query";
+import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
@@ -9,10 +9,9 @@ import {
 import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
 
-import { createServerFn } from "@tanstack/react-start";
 import { Navbar } from "lib/components/navbar";
+import { authQueries, gameQueries, teamQueries } from "~/app/domains/queries";
 import appCss from "~/lib/styles/app.css?url";
-import { getTeams } from "../services/teams.api";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -24,21 +23,20 @@ const TanStackRouterDevtools =
         }))
       );
 
-const getTeamsInfo = createServerFn().handler(async () => {
-  const teams = await getTeams();
-  return {
-    teams,
-  };
-});
+// const getTeamsInfo = createServerFn().handler(async () => {
+//   const teams = await getTeams();
+//   return {
+//     teams,
+//   };
+// });
 
-const teamsQuery = queryOptions({
-  queryKey: ["teams"],
-  queryFn: ({ signal }) => getTeamsInfo({ signal }),
-});
+// const teamsQuery = queryOptions({
+//   queryKey: ["teams"],
+//   queryFn: ({ signal }) => getTeamsInfo({ signal }),
+// });
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
-  teams: Awaited<ReturnType<typeof getTeamsInfo>>;
 }>()({
   head: () => ({
     meta: [
@@ -56,16 +54,21 @@ export const Route = createRootRouteWithContext<{
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   beforeLoad: async ({ context }) => {
-    const teams = await context.queryClient.fetchQuery(teamsQuery);
+    const teams = await context.queryClient.ensureQueryData(teamQueries.list());
+    const games = await context.queryClient.ensureQueryData(gameQueries.list());
+    const authState = await context.queryClient.ensureQueryData(
+      authQueries.user()
+    );
     return {
       teams,
+      games,
+      authState,
     };
   },
   component: RootComponent,
 });
 
 function RootComponent() {
-
   return (
     <RootDocument>
       <Navbar />

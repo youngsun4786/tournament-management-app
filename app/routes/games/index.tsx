@@ -10,7 +10,7 @@ import {
   startOfToday,
 } from "date-fns";
 import { useMemo, useState } from "react";
-import { useGetGames } from "~/app/services/queries";
+import { useGetGames } from "~/app/domains/queries";
 import { DateSelector } from "~/lib/components/date-selector";
 import { GamesTable } from "~/lib/components/games/game-table";
 

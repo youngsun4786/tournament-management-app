@@ -11,16 +11,32 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignUpImport } from './routes/sign-up'
+import { Route as SignInImport } from './routes/sign-in'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as TeamsIndexImport } from './routes/teams/index'
 import { Route as StatsIndexImport } from './routes/stats/index'
 import { Route as StandingsIndexImport } from './routes/standings/index'
 import { Route as ScheduleIndexImport } from './routes/schedule/index'
 import { Route as PlayersIndexImport } from './routes/players/index'
 import { Route as GamesIndexImport } from './routes/games/index'
 import { Route as ContactUsIndexImport } from './routes/contact-us/index'
+import { Route as TeamsTeamNameImport } from './routes/teams/$teamName'
 
 // Create/Update Routes
+
+const SignUpRoute = SignUpImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SignInRoute = SignInImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AboutRoute = AboutImport.update({
   id: '/about',
@@ -31,6 +47,12 @@ const AboutRoute = AboutImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const TeamsIndexRoute = TeamsIndexImport.update({
+  id: '/teams/',
+  path: '/teams/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -70,6 +92,12 @@ const ContactUsIndexRoute = ContactUsIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const TeamsTeamNameRoute = TeamsTeamNameImport.update({
+  id: '/teams/$teamName',
+  path: '/teams/$teamName',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -86,6 +114,27 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInImport
+      parentRoute: typeof rootRoute
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpImport
+      parentRoute: typeof rootRoute
+    }
+    '/teams/$teamName': {
+      id: '/teams/$teamName'
+      path: '/teams/$teamName'
+      fullPath: '/teams/$teamName'
+      preLoaderRoute: typeof TeamsTeamNameImport
       parentRoute: typeof rootRoute
     }
     '/contact-us/': {
@@ -130,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatsIndexImport
       parentRoute: typeof rootRoute
     }
+    '/teams/': {
+      id: '/teams/'
+      path: '/teams'
+      fullPath: '/teams'
+      preLoaderRoute: typeof TeamsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -138,35 +194,47 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/games': typeof GamesIndexRoute
   '/players': typeof PlayersIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
   '/stats': typeof StatsIndexRoute
+  '/teams': typeof TeamsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/games': typeof GamesIndexRoute
   '/players': typeof PlayersIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
   '/stats': typeof StatsIndexRoute
+  '/teams': typeof TeamsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/sign-in': typeof SignInRoute
+  '/sign-up': typeof SignUpRoute
+  '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us/': typeof ContactUsIndexRoute
   '/games/': typeof GamesIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/schedule/': typeof ScheduleIndexRoute
   '/standings/': typeof StandingsIndexRoute
   '/stats/': typeof StatsIndexRoute
+  '/teams/': typeof TeamsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -174,55 +242,75 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/sign-in'
+    | '/sign-up'
+    | '/teams/$teamName'
     | '/contact-us'
     | '/games'
     | '/players'
     | '/schedule'
     | '/standings'
     | '/stats'
+    | '/teams'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/sign-in'
+    | '/sign-up'
+    | '/teams/$teamName'
     | '/contact-us'
     | '/games'
     | '/players'
     | '/schedule'
     | '/standings'
     | '/stats'
+    | '/teams'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/sign-in'
+    | '/sign-up'
+    | '/teams/$teamName'
     | '/contact-us/'
     | '/games/'
     | '/players/'
     | '/schedule/'
     | '/standings/'
     | '/stats/'
+    | '/teams/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  SignInRoute: typeof SignInRoute
+  SignUpRoute: typeof SignUpRoute
+  TeamsTeamNameRoute: typeof TeamsTeamNameRoute
   ContactUsIndexRoute: typeof ContactUsIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
   PlayersIndexRoute: typeof PlayersIndexRoute
   ScheduleIndexRoute: typeof ScheduleIndexRoute
   StandingsIndexRoute: typeof StandingsIndexRoute
   StatsIndexRoute: typeof StatsIndexRoute
+  TeamsIndexRoute: typeof TeamsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
+  TeamsTeamNameRoute: TeamsTeamNameRoute,
   ContactUsIndexRoute: ContactUsIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
   PlayersIndexRoute: PlayersIndexRoute,
   ScheduleIndexRoute: ScheduleIndexRoute,
   StandingsIndexRoute: StandingsIndexRoute,
   StatsIndexRoute: StatsIndexRoute,
+  TeamsIndexRoute: TeamsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -237,12 +325,16 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/sign-in",
+        "/sign-up",
+        "/teams/$teamName",
         "/contact-us/",
         "/games/",
         "/players/",
         "/schedule/",
         "/standings/",
-        "/stats/"
+        "/stats/",
+        "/teams/"
       ]
     },
     "/": {
@@ -250,6 +342,15 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.tsx"
+    },
+    "/sign-in": {
+      "filePath": "sign-in.tsx"
+    },
+    "/sign-up": {
+      "filePath": "sign-up.tsx"
+    },
+    "/teams/$teamName": {
+      "filePath": "teams/$teamName.tsx"
     },
     "/contact-us/": {
       "filePath": "contact-us/index.tsx"
@@ -268,6 +369,9 @@ export const routeTree = rootRoute
     },
     "/stats/": {
       "filePath": "stats/index.tsx"
+    },
+    "/teams/": {
+      "filePath": "teams/index.tsx"
     }
   }
 }

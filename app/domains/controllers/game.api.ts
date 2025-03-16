@@ -1,38 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
-import { db } from "~/db";
+import { gameService } from "~/app/container";
 
 // Get all games with team information
 export const getGames = createServerFn({ method: "GET" }).handler(async () => {
   // Query games with their related teams
-  const gamesWithTeams = await db.query.games.findMany({
-    with: {
-      team_home_team_id: true,
-      team_away_team_id: true,
-    },
-    orderBy: (games, { asc }) => [asc(games.game_date), asc(games.start_time)]
-  });
-
-  // Transform the result to match the SQL query structure
-  const formattedGames = gamesWithTeams.map(game => {
-    return {
-      game_id: game.id,
-      game_date: game.game_date,
-      start_time: game.start_time,
-      location: game.location,
-      court: game.court,
-      is_completed: game.is_completed,
-      home_team_score: game.home_team_score,
-      away_team_score: game.away_team_score,
-      home_team_id: game.team_home_team_id.id,
-      home_team_name: game.team_home_team_id.name,
-      home_team_logo: game.team_home_team_id.logo_url,
-      away_team_id: game.team_away_team_id.id,
-      away_team_name: game.team_away_team_id.name,
-      away_team_logo: game.team_away_team_id.logo_url
-    };
-  });
-  
-  return formattedGames;
+  try {
+    const gamesWithTeams = await gameService.getWithTeams();
+    return gamesWithTeams;
+  } catch (error) {
+    throw new Error("Failed to fetch games with teams information");
+  }  
 });
 
 // // Get games for a specific team

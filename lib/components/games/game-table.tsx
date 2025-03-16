@@ -10,25 +10,8 @@ import {
 } from "@tanstack/react-table";
 import { format, isAfter, isSameDay, parseISO } from "date-fns";
 import { useState } from "react";
+import { Game } from "~/app/domains/types/game";
 import { convert24to12 } from "~/lib/date";
-
-// Define the game type based on the API response structure
-type Game = {
-  game_id: string;
-  game_date: string;
-  start_time: string;
-  location: string | null;
-  court: string | null;
-  is_completed: boolean | null;
-  home_team_score: number;
-  away_team_score: number;
-  home_team_id: string;
-  home_team_name: string;
-  home_team_logo: string | null;
-  away_team_id: string;
-  away_team_name: string;
-  away_team_logo: string | null;
-};
 
 interface GamesTableProps {
   dateStr: string;
@@ -86,6 +69,13 @@ export function GamesTable({ dateStr, games }: GamesTableProps) {
       header: "Matchup",
       cell: (info) => {
         const game = info.row.original;
+        if (game.away_team_name === "TBD") {
+          game.away_team_logo = "ccbc_logo.png";
+        }
+        if (game.home_team_name === "TBD") {
+          game.home_team_logo = "ccbc_logo.png";
+        }
+
         return (
           <div className="flex items-center justify-between gap-2 min-w-[300px]">
             {/* Away Team */}
@@ -101,7 +91,7 @@ export function GamesTable({ dateStr, games }: GamesTableProps) {
                 <div className="h-8 w-8 flex-shrink-0">
                   {game.away_team_logo ? (
                     <img
-                      src={`team_logos/${game.away_team_logo}`}
+                      src={`/team_logos/${game.away_team_name === "TBD" ? "ccbc_logo.png" : game.away_team_logo}`}
                       alt={`${game.away_team_name} logo`}
                       className="h-full w-full object-contain"
                     />
@@ -139,7 +129,7 @@ export function GamesTable({ dateStr, games }: GamesTableProps) {
                 <div className="h-8 w-8 flex-shrink-0">
                   {game.home_team_logo ? (
                     <img
-                      src={`team_logos/${game.home_team_logo}`}
+                      src={`/team_logos/${game.home_team_name === "TBD" ? "ccbc_logo.png" : game.home_team_logo}`}
                       alt={`${game.home_team_name} logo`}
                       className="h-full w-full object-contain"
                     />

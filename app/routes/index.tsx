@@ -1,8 +1,8 @@
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
-import { AspectRatio } from "~/components/ui/aspect-ratio";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import TeamSlider from "~/lib/components/team-slider";
-import { getGames } from "../services/games.api";
+import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
+import { getGames } from "../domains/controllers/game.api";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { teams: teamInfo } = useRouteContext({ from: "__root__" });
-  const teams = teamInfo!.teams.filter((team) => team.name !== "TBD");
+  const teams = teamInfo!.filter((team) => team.name !== "TBD");
 
   return (
     <div>
@@ -189,7 +189,7 @@ function Index() {
         </div>
 
         <div className="pt-4 pb-20 px-6 flex items-center justify-center">
-            <TeamSlider></TeamSlider>
+          <TeamSlider></TeamSlider>
         </div>
 
         {/* ------------- SPONSORS --------------- */}
