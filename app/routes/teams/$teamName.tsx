@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { teamQueries } from "~/app/queries";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/teams/$teamName")({
 
 function RouteComponent() {
   const { teamName } = Route.useParams();
-  const { data: team } = useQuery(teamQueries.detail(teamName));
+  const { data: team } = useSuspenseQuery(teamQueries.detail(teamName));
 
   if (!team) {
     return <div className="p-8">Loading team information...</div>;
@@ -42,6 +42,7 @@ function RouteComponent() {
       <div className="max-w-full bg-slate-100 dark:bg-gray-800">
         <div className="container mx-auto">
           <CarouselSpacing
+            isTeamInfo={true}
             filter={(game) =>
               game.home_team_name === team.name ||
               game.away_team_name === team.name

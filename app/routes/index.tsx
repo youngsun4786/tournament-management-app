@@ -1,8 +1,8 @@
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { getGames } from "~/app/controllers/game.api";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import TeamSlider from "~/lib/components/team-slider";
 import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
-import { getGames } from "../controllers/game.api";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -25,7 +25,7 @@ function Index() {
       </div>
       <div className="w-full bg-slate-100 dark:bg-gray-800">
         <div className="container mx-auto">
-          <CarouselSpacing />
+          <CarouselSpacing isTeamInfo={false} />
         </div>
       </div>
 

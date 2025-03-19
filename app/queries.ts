@@ -4,7 +4,7 @@ import { getUser } from "~/app/controllers/auth.api";
 import { getGames } from "~/app/controllers/game.api";
 import { getPlayers } from "~/app/controllers/player.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
-
+import { getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
 
 export const useGetTeams = () => {
     return useQuery({
@@ -53,6 +53,19 @@ export const playerQueries = {
     }),
 }
 
+export const playerGameStatsQueries = {
+  all: ["playerGameStats"],
+  list: () =>
+    queryOptions({
+      queryKey: [...playerGameStatsQueries.all, "list"],
+      // queryFn: ({signal}) => getPlayerGameStats({signal}),
+    }),
+  detail: (gameId: string) =>
+    queryOptions({
+      queryKey: [...playerGameStatsQueries.all, "detail", gameId],
+      queryFn: () => getPlayerGameStatsByGameId({ data: { gameId: gameId } }),
+    }),
+}
 
 export const authQueries = {
     all: ["auth"],

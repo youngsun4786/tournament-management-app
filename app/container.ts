@@ -1,7 +1,7 @@
 import { GameService } from './services/game.service';
+import { PlayerGameStatsService } from './services/player-game-stats.service';
 import { PlayerService } from './services/player.service';
 import { TeamService } from './services/team.service';
-
 // let gameService: IGameService
 // let playerService: IPlayerService;
 // let teamService: ITeamService;
@@ -18,5 +18,7 @@ import { TeamService } from './services/team.service';
 const gameService = new GameService();
 const playerService = new PlayerService();
 const teamService = new TeamService();
+const playerGameStatsService = new PlayerGameStatsService();
 
-export { gameService, playerService, teamService };
+export { gameService, playerService, teamService, playerGameStatsService };
+

@@ -91,6 +91,91 @@ export type Database = {
           },
         ]
       }
+      players: {
+        Row: {
+          created_at: string | null
+          height: string | null
+          id: string
+          jersey_number: number | null
+          name: string
+          position: string | null
+          team_id: string | null
+          updated_at: string | null
+          weight: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          height?: string | null
+          id?: string
+          jersey_number?: number | null
+          name: string
+          position?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+          weight?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          height?: string | null
+          id?: string
+          jersey_number?: number | null
+          name?: string
+          position?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+          weight?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          team_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seasons: {
         Row: {
           created_at: string
@@ -124,20 +209,57 @@ export type Database = {
           id: string
           logo_url: string | null
           name: string
+          season_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           logo_url?: string | null
           name?: string
+          season_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           logo_url?: string | null
           name?: string
+          season_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "teams_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: number
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: number
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: number
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -147,7 +269,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "score-keeper" | "player" | "captain"
+      role: "captain" | "score-keeper" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never

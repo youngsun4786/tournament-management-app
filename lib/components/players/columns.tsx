@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { Player } from "~/app/domains/types";
+import { Player } from "~/app/types/player";
 import {
   DropdownMenu,
   DropdownMenuContent,

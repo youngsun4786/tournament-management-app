@@ -17,10 +17,6 @@ import { UserMenu } from "./user-menu";
 
 const menuItems = [
   {
-    title: "Games",
-    href: "/games",
-  },
-  {
     title: "Schedule",
     href: "/schedule",
     description: "Check out the upcoming games and match times.",

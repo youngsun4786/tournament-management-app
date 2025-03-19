@@ -1,36 +1,21 @@
 import { format } from "date-fns";
 import { Heart } from "lucide-react";
-import { Button } from "~/lib/components/ui/button";
+import { Game } from "~/app/types/game";
 import { Card, CardContent } from "~/lib/components/ui/card";
 import { convert24to12 } from "~/lib/date";
+import { ButtonLink } from "../button-link";
+
 interface GameCardProps {
-  gameDate: string;
-  startTime: string;
-  location: string;
-  court?: string | null;
-  isCompleted: boolean;
-  homeTeamName: string;
-  homeTeamLogo?: string | null;
-  awayTeamName: string;
-  awayTeamLogo?: string | null;
+  id: string;
+  game: Game;
 }
 
-export function GameCard({
-  gameDate,
-  startTime,
-  location,
-  court,
-  isCompleted,
-  homeTeamName,
-  homeTeamLogo,
-  awayTeamName,
-  awayTeamLogo,
-}: GameCardProps) {
+export function GameCard({ game }: GameCardProps) {
   // Format date: "25.03.10 Mon, 19:00"
-  const dateObj = new Date(gameDate);
+  const dateObj = new Date(game.game_date);
   const formattedDate = format(dateObj, " EEEE MM/dd");
   // Parse the venue if possible
-  const venue = court ? `${location} ${court}` : location;
+  const venue = game.court ? `${game.location} ${game.court}` : game.location;
 
   return (
     <Card className="h-full">
@@ -40,7 +25,7 @@ export function GameCard({
           <div className="text-xs text-gray-600">
             <div className="flex gap-1 text-black font-bold">
               <p>{formattedDate}</p>
-              <p>{convert24to12(startTime)}</p>
+              <p>{convert24to12(game.start_time)}</p>
             </div>
             <p>{venue}</p>
           </div>
@@ -54,51 +39,57 @@ export function GameCard({
           {/* Home Team */}
           <div className="flex items-center">
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
-              {homeTeamLogo ? (
+              {game.home_team_logo ? (
                 <img
-                  src={`/team_logos/${homeTeamLogo}`}
-                  alt={homeTeamName}
+                  src={`/team_logos/${game.home_team_logo}`}
+                  alt={game.home_team_name}
                   className="w-full h-full object-contain"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-500">
-                  {homeTeamName.substring(0, 2)}
+                  {game.home_team_name.substring(0, 2)}
                 </div>
               )}
             </div>
-            <div className="font-semibold text-sm">{homeTeamName}</div>
+            <div className="font-semibold text-sm">{game.home_team_name}</div>
           </div>
 
           {/* Away Team */}
           <div className="flex items-center">
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
-              {awayTeamLogo ? (
+              {game.away_team_logo ? (
                 <img
-                  src={`/team_logos/${awayTeamLogo}`}
-                  alt={awayTeamName}
+                  src={`/team_logos/${game.away_team_logo}`}
+                  alt={game.away_team_name}
                   className="w-full h-full object-contain"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-500">
-                  {awayTeamName.substring(0, 2)}
+                  {game.away_team_name.substring(0, 2)}
                 </div>
               )}
             </div>
-            <div className="font-semibold text-sm">{awayTeamName}</div>
+            <div className="font-semibold text-sm">{game.away_team_name}</div>
           </div>
         </div>
 
         {/* Status and See details */}
         <div className="mt-3 flex justify-between items-center">
           <div
-            className={`py-1 px-2 text-xs border border-blue-600 text-blue-600 rounded ${isCompleted ? "bg-green-500 text-green-500" : ""}`}
+            className={`py-1 px-2 text-xs border rounded ${game.is_completed ? "border-green-500 text-green-500" : "border-blue-600 text-blue-600"}`}
           >
-            {isCompleted ? "Completed" : "Scheduled"}
+            {game.is_completed ? "Completed" : "Scheduled"}
           </div>
           <div>
-            <Button size="sm" variant="outline" className="text-xs">
+            <ButtonLink
+              size="sm"
+              variant="outline"
+              className="text-xs"
+              to="/games/$gameId"
+              params={{ gameId: game.game_id }}
+            >
               game details
-            </Button>
+            </ButtonLink>
           </div>
         </div>
       </CardContent>

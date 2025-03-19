@@ -1,9 +1,9 @@
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import {
-  games,
-  players,
-  seasons,
-  teams,
+	games,
+	players,
+	seasons,
+	teams,
 } from './schema';
 
 // Select types (what you get when querying)
