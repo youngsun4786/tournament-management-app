@@ -100,7 +100,7 @@ export const CaptainDashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {teamGames?.map((game) => (
-                <Card key={game.game_id} className="overflow-hidden">
+                <Card key={game.id} className="overflow-hidden">
                   <CardHeader className="bg-muted pb-2">
                     <div className="flex justify-between items-center">
                       <CardTitle className="text-lg">
@@ -150,7 +150,7 @@ export const CaptainDashboard = () => {
                     </div>
                     <div className="flex justify-end">
                       <Button
-                        onClick={() => handleAddStats(game.game_id)}
+                        onClick={() => handleAddStats(game.id)}
                         className="w-full"
                       >
                         {game.is_completed ? "View/Update Stats" : "Add Stats"}
@@ -194,12 +194,12 @@ export const CaptainDashboard = () => {
                     <p className="text-muted-foreground">
                       For Game:{" "}
                       {
-                        teamGames?.find((g) => g.game_id === selectedGame)
+                        teamGames?.find((g) => g.id === selectedGame)
                           ?.home_team_name
                       }{" "}
                       vs{" "}
                       {
-                        teamGames?.find((g) => g.game_id === selectedGame)
+                        teamGames?.find((g) => g.id === selectedGame)
                           ?.away_team_name
                       }
                     </p>

@@ -20,10 +20,12 @@ import { Route as StatsIndexImport } from './routes/stats/index'
 import { Route as StandingsIndexImport } from './routes/standings/index'
 import { Route as ScheduleIndexImport } from './routes/schedule/index'
 import { Route as PlayersIndexImport } from './routes/players/index'
+import { Route as EditPlayersIndexImport } from './routes/edit-players/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as ContactUsIndexImport } from './routes/contact-us/index'
 import { Route as TeamsTeamNameImport } from './routes/teams/$teamName'
 import { Route as GamesGameIdImport } from './routes/games/$gameId'
+import { Route as EditPlayersGameIdImport } from './routes/edit-players/$gameId'
 
 // Create/Update Routes
 
@@ -81,6 +83,12 @@ const PlayersIndexRoute = PlayersIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const EditPlayersIndexRoute = EditPlayersIndexImport.update({
+  id: '/edit-players/',
+  path: '/edit-players/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -102,6 +110,12 @@ const TeamsTeamNameRoute = TeamsTeamNameImport.update({
 const GamesGameIdRoute = GamesGameIdImport.update({
   id: '/games/$gameId',
   path: '/games/$gameId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EditPlayersGameIdRoute = EditPlayersGameIdImport.update({
+  id: '/edit-players/$gameId',
+  path: '/edit-players/$gameId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -137,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
+    '/edit-players/$gameId': {
+      id: '/edit-players/$gameId'
+      path: '/edit-players/$gameId'
+      fullPath: '/edit-players/$gameId'
+      preLoaderRoute: typeof EditPlayersGameIdImport
+      parentRoute: typeof rootRoute
+    }
     '/games/$gameId': {
       id: '/games/$gameId'
       path: '/games/$gameId'
@@ -163,6 +184,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/edit-players/': {
+      id: '/edit-players/'
+      path: '/edit-players'
+      fullPath: '/edit-players'
+      preLoaderRoute: typeof EditPlayersIndexImport
       parentRoute: typeof rootRoute
     }
     '/players/': {
@@ -210,10 +238,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/edit-players/$gameId': typeof EditPlayersGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/edit-players': typeof EditPlayersIndexRoute
   '/players': typeof PlayersIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
@@ -226,10 +256,12 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/edit-players/$gameId': typeof EditPlayersGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/edit-players': typeof EditPlayersIndexRoute
   '/players': typeof PlayersIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
@@ -243,10 +275,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/edit-players/$gameId': typeof EditPlayersGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us/': typeof ContactUsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/edit-players/': typeof EditPlayersIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/schedule/': typeof ScheduleIndexRoute
   '/standings/': typeof StandingsIndexRoute
@@ -261,10 +295,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/sign-in'
     | '/sign-up'
+    | '/edit-players/$gameId'
     | '/games/$gameId'
     | '/teams/$teamName'
     | '/contact-us'
     | '/dashboard'
+    | '/edit-players'
     | '/players'
     | '/schedule'
     | '/standings'
@@ -276,10 +312,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/sign-in'
     | '/sign-up'
+    | '/edit-players/$gameId'
     | '/games/$gameId'
     | '/teams/$teamName'
     | '/contact-us'
     | '/dashboard'
+    | '/edit-players'
     | '/players'
     | '/schedule'
     | '/standings'
@@ -291,10 +329,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/sign-in'
     | '/sign-up'
+    | '/edit-players/$gameId'
     | '/games/$gameId'
     | '/teams/$teamName'
     | '/contact-us/'
     | '/dashboard/'
+    | '/edit-players/'
     | '/players/'
     | '/schedule/'
     | '/standings/'
@@ -308,10 +348,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  EditPlayersGameIdRoute: typeof EditPlayersGameIdRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
   TeamsTeamNameRoute: typeof TeamsTeamNameRoute
   ContactUsIndexRoute: typeof ContactUsIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
+  EditPlayersIndexRoute: typeof EditPlayersIndexRoute
   PlayersIndexRoute: typeof PlayersIndexRoute
   ScheduleIndexRoute: typeof ScheduleIndexRoute
   StandingsIndexRoute: typeof StandingsIndexRoute
@@ -324,10 +366,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  EditPlayersGameIdRoute: EditPlayersGameIdRoute,
   GamesGameIdRoute: GamesGameIdRoute,
   TeamsTeamNameRoute: TeamsTeamNameRoute,
   ContactUsIndexRoute: ContactUsIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
+  EditPlayersIndexRoute: EditPlayersIndexRoute,
   PlayersIndexRoute: PlayersIndexRoute,
   ScheduleIndexRoute: ScheduleIndexRoute,
   StandingsIndexRoute: StandingsIndexRoute,
@@ -349,10 +393,12 @@ export const routeTree = rootRoute
         "/about",
         "/sign-in",
         "/sign-up",
+        "/edit-players/$gameId",
         "/games/$gameId",
         "/teams/$teamName",
         "/contact-us/",
         "/dashboard/",
+        "/edit-players/",
         "/players/",
         "/schedule/",
         "/standings/",
@@ -372,6 +418,9 @@ export const routeTree = rootRoute
     "/sign-up": {
       "filePath": "sign-up.tsx"
     },
+    "/edit-players/$gameId": {
+      "filePath": "edit-players/$gameId.tsx"
+    },
     "/games/$gameId": {
       "filePath": "games/$gameId.tsx"
     },
@@ -383,6 +432,9 @@ export const routeTree = rootRoute
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
+    },
+    "/edit-players/": {
+      "filePath": "edit-players/index.tsx"
     },
     "/players/": {
       "filePath": "players/index.tsx"

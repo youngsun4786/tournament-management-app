@@ -56,7 +56,7 @@ export const playersRelations = relations(players, ({one, many}) => ({
 }));
 
 export const profilesRelations = relations(profiles, ({one, many}) => ({
-	usersInAuth: one(SupabaseAuthUsers.id, {
+	usersInAuth: one(SupabaseAuthUsers, {
 		fields: [profiles.id],
 		references: [SupabaseAuthUsers.id]
 	}),

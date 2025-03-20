@@ -36,9 +36,13 @@ const menuItems = [
     href: "/stats",
     description: "Explore detailed player and team performance data.",
   },
+  // {
+  //   title: "About",
+  //   href: "/about",
+  // },
   {
-    title: "About",
-    href: "/about",
+    title: "Edit Players",
+    href: "/edit-players",
   },
 ];
 

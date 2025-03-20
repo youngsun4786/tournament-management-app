@@ -4,10 +4,11 @@ import { db as drizzle_db } from "~/db";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 
 export interface IGameService {
-    getById(id: Game["game_id"]): Promise<Game>;
+    getById(id: Game["id"]): Promise<Game>;
     create(data: {game: GameInsert; userId: string;}): Promise<Game>;
     update(data: GameUpdate): Promise<Game>;
-    delete(data: {id: Game["game_id"]; userId: string}): Promise<Game>;
+    updateScore(data: GameUpdate): Promise<Game>;
+    delete(data: {id: Game["id"]; userId: string}): Promise<Game>;
     getWithTeams(): Promise<Game[]>;
 }
 
@@ -21,8 +22,8 @@ export class GameService implements IGameService {
     }
 
 
-    async getById(id: Game["game_id"]): Promise<Game> {
-        const {data, error} = await this.supabase.from("games").select().eq("game_id", id).single();
+    async getById(id: Game["id"]): Promise<Game> {
+        const {data, error} = await this.supabase.from("games").select().eq("id", id).single();
         if (!data || error) {
             throw new Error("Game not found");
         }
@@ -42,7 +43,7 @@ export class GameService implements IGameService {
         // Transform the result to match the SQL query structure
         const gamesWithTeams = games.map(game => {
             return {
-            game_id: game.id,
+            id: game.id,
             game_date: game.game_date,
             start_time: game.start_time,
             location: game.location,
@@ -74,7 +75,7 @@ export class GameService implements IGameService {
             is_completed: data.is_completed,
             home_team_score: data.home_team_score,
             away_team_score: data.away_team_score,
-        }).eq("game_id", data.game_id).select().single<Game>();
+        }).eq("id", data.id).select().single<Game>();
         if (!updated || error) {
             throw new Error("Failed to update game", {cause: error});
         }
@@ -82,7 +83,21 @@ export class GameService implements IGameService {
         return updated;
     }
 
-    async delete(data: {id: Game["game_id"]; userId: string}): Promise<Game> {
+    async updateScore(data: GameUpdate): Promise<Game> {
+        console.log("data", data);
+        const {data: updated, error} = await this.supabase.from("games").update({
+            home_team_score: data.home_team_score,
+            away_team_score: data.away_team_score,
+            is_completed: data.is_completed,
+        }).eq("id", data.id).select().single<Game>();
+        console.log("updated", updated);
+        if (!updated || error) {
+            throw new Error("Failed to update game score", {cause: error});
+        }
+        return updated;
+    }
+
+    async delete(data: {id: Game["id"]; userId: string}): Promise<Game> {
         return {} as Game;
     }
 

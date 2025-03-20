@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { bigint, boolean, date, foreignKey, integer, numeric, pgEnum, pgPolicy, pgSchema, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { bigint, boolean, date, foreignKey, integer, numeric, pgEnum, pgPolicy, pgSchema, pgTable, smallint, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
 
 export const app_role = pgEnum("app_role", ['admin', 'score-keeper', 'player', 'captain'])
@@ -46,21 +46,14 @@ export const games = pgTable("games", {
 		}).onUpdate("cascade").onDelete("restrict"),
 ]);
 
-export const seasons = pgTable("seasons", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	created_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	name: text().default('').notNull(),
-	start_date: date().notNull(),
-	end_date: date().notNull(),
-	is_active: boolean().default(false),
-});
-
 export const teams = pgTable("teams", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	created_at: timestamp({ withTimezone: true, mode: 'string' }).default(sql`(now() AT TIME ZONE 'utc'::text)`).notNull(),
 	name: text().default('').notNull(),
 	logo_url: text(),
 	season_id: uuid(),
+	wins: smallint().default(sql`'0'`).notNull(),
+	losses: smallint().default(sql`'0'`).notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.season_id],
@@ -70,6 +63,15 @@ export const teams = pgTable("teams", {
 	unique("teams_name_key").on(table.name),
 	pgPolicy("Enable read access for all users", { as: "permissive", for: "select", to: ["public"], using: sql`true` }),
 ]);
+
+export const seasons = pgTable("seasons", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	created_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	name: text().default('').notNull(),
+	start_date: date().notNull(),
+	end_date: date().notNull(),
+	is_active: boolean().default(false),
+});
 
 export const player_game_stats = pgTable("player_game_stats", {
 	id: uuid().default(sql`uuid_generate_v4()`).primaryKey().notNull(),
@@ -97,6 +99,9 @@ export const player_game_stats = pgTable("player_game_stats", {
 	plus_minus: integer().default(0),
 	created_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
 	updated_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
+	two_pointers_made: integer().default(0),
+	two_pointers_attempted: integer().default(0),
+	two_point_percentage: numeric({ precision: 5, scale:  2 }),
 }, (table) => [
 	foreignKey({
 			columns: [table.game_id],
@@ -109,7 +114,8 @@ export const player_game_stats = pgTable("player_game_stats", {
 			name: "player_game_stats_player_id_fkey"
 		}),
 	unique("player_game_stats_game_id_player_id_key").on(table.game_id, table.player_id),
-	pgPolicy("Enable read access for all users", { as: "permissive", for: "select", to: ["public"], using: sql`true` }),
+	pgPolicy("Enable insert for authenticated users only", { as: "permissive", for: "insert", to: ["public"], withCheck: sql`true`  }),
+	pgPolicy("Enable read access for all users", { as: "permissive", for: "select", to: ["public"] }),
 ]);
 
 export const players = pgTable("players", {
@@ -180,6 +186,9 @@ export const team_game_stats = pgTable("team_game_stats", {
 	personal_fouls: integer().default(0),
 	created_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
 	updated_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
+	two_pointers_made: integer().default(0),
+	two_pointers_attempted: integer().default(0),
+	two_point_percentage: numeric({ precision: 5, scale:  2 }),
 }, (table) => [
 	foreignKey({
 			columns: [table.game_id],

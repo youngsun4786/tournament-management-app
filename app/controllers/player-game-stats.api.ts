@@ -31,31 +31,10 @@ export const createPlayerGameStats = createServerFn({
 
 export const updatePlayerGameStats = createServerFn({
     method: "POST",
-}).validator(z.object({
-    pgs_id: z.string().uuid(),
-    game_id: z.string().uuid(),
-    player_id: z.string().uuid(),
-    minutes_played: z.number().nullable().default(0),
-    points: z.number().nullable().default(0),
-    field_goals_made: z.number().nullable().default(0),
-    field_goals_attempted: z.number().nullable().default(0),
-    three_pointers_made: z.number().nullable().default(0),
-    three_pointers_attempted: z.number().nullable().default(0),
-    free_throws_made: z.number().nullable().default(0),
-    free_throws_attempted: z.number().nullable().default(0),
-    offensive_rebounds: z.number().nullable().default(0),
-    defensive_rebounds: z.number().nullable().default(0),
-    total_rebounds: z.number().nullable().default(0),
-    assists: z.number().nullable().default(0),
-    steals: z.number().nullable().default(0),
-    blocks: z.number().nullable().default(0),
-    turnovers: z.number().nullable().default(0),
-    personal_fouls: z.number().nullable().default(0),
-    plus_minus: z.number().nullable().default(0),
-})).handler(async ({ data }) => {
+}).validator(PlayerGameStatsSchema).handler(async ({ data }) => {
     try {
         const stats = await playerGameStatsService.update({
-            id: data.pgs_id,
+            id: data.pgs_id!,
             ...data
         });
         return stats;

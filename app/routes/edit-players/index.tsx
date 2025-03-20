@@ -1,14 +1,101 @@
-import { Link } from "@tanstack/react-router";
+import { createFileRoute, useRouteContext } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
-import { ArrowUpDown, ExternalLink, PlayCircle } from "lucide-react";
+import { ArrowUpDown, Edit } from "lucide-react";
+import { useState } from "react";
+import { Game } from "~/app/types/game";
+import { ButtonLink } from "~/lib/components/button-link";
+import { DataTable } from "~/lib/components/schedules/data-table";
 import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/lib/components/ui/select";
 import { convert24to12 } from "~/lib/date";
-import { Game } from "~/app/types/game";
-import { ButtonLink } from "../button-link";
 
-export const columns: ColumnDef<Game>[] = [
+export const Route = createFileRoute("/edit-players/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const { games } = useRouteContext({ from: "__root__" });
+  const [selectedTeam, setSelectedTeam] = useState<string>("All team");
+  const [selectedFilter, setSelectedFilter] = useState<string>("All");
+
+  // Get unique team names for the dropdown
+  const teamNames = [
+    "All team",
+    ...Array.from(
+      new Set(
+        games.flatMap((game) => [game.home_team_name, game.away_team_name])
+      )
+    ),
+  ].sort();
+
+  // Filter games based on selection
+  const filteredGames = games.filter((game) => {
+    const teamFilter =
+      selectedTeam === "All team" ||
+      game.home_team_name === selectedTeam ||
+      game.away_team_name === selectedTeam;
+
+    const statusFilter =
+      selectedFilter === "All" ||
+      (selectedFilter === "Completed" && game.is_completed);
+
+    return teamFilter && statusFilter;
+  });
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Edit Player Stats</h1>
+
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex gap-4">
+          <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Team" />
+            </SelectTrigger>
+            <SelectContent>
+              {teamNames.map((team) => (
+                <SelectItem key={team} value={team}>
+                  {team}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex overflow-x-auto rounded-lg border">
+          <Button
+            variant={selectedFilter === "All" ? "default" : "ghost"}
+            className="rounded-none"
+            onClick={() => setSelectedFilter("All")}
+          >
+            All
+          </Button>
+          <Button
+            variant={selectedFilter === "Completed" ? "default" : "ghost"}
+            className="rounded-none"
+            onClick={() => setSelectedFilter("Completed")}
+          >
+            Completed
+          </Button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <DataTable columns={columns} data={filteredGames} />
+      </div>
+    </div>
+  );
+}
+
+const columns: ColumnDef<Game>[] = [
   {
     accessorKey: "game_date",
     meta: {
@@ -91,26 +178,11 @@ export const columns: ColumnDef<Game>[] = [
       return (
         <div className="flex items-center justify-items-center gap-2 w-full px-6 py-2">
           <div className="flex flex-col items-end gap-2 min-w-[130px]">
-            <Link
-              to={`/teams/$teamName`}
-              params={{ teamName: game.home_team_name }}
-              className="flex items-center gap-2 hover:underline hover:text-red-500"
+            <span
+              className={`font-medium text-right ${homeWon ? "font-bold text-blue-600" : ""}`}
             >
-              <span
-                className={`font-medium text-right ${homeWon ? "font-bold text-blue-600" : ""}`}
-              >
-                {game.home_team_name}
-              </span>
-              {game.home_team_logo ? (
-                <img
-                  src={game.home_team_name === "TBD" ? "/team_logos/ccbc_logo.png" : `/team_logos/${game.home_team_logo}`}
-                  alt={`${game.home_team_name} logo`}
-                  className="h-8 w-8"
-                />
-              ) : (
-                <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
-              )}
-            </Link>
+              {game.home_team_name}
+            </span>
           </div>
 
           {isCompleted ? (
@@ -135,26 +207,11 @@ export const columns: ColumnDef<Game>[] = [
           )}
 
           <div className="flex flex-col items-start gap-2 min-w-[130px]">
-            <Link
-              to={`/teams/$teamName`}
-              params={{ teamName: game.away_team_name }}
-              className="flex items-center gap-2 hover:underline hover:text-red-500"
+            <span
+              className={`font-medium text-left ${awayWon ? "font-bold text-blue-600" : ""}`}
             >
-              {game.away_team_logo ? (
-                <img
-                  src={game.away_team_name === "TBD" ? "/team_logos/ccbc_logo.png" : `/team_logos/${game.away_team_logo}`}
-                  alt={`${game.away_team_name} logo`}
-                  className="h-8 w-8"
-                />
-              ) : (
-                <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
-              )}
-              <span
-                className={`font-medium text-left ${awayWon ? "font-bold text-blue-600" : ""}`}
-              >
-                {game.away_team_name}
-              </span>
-            </Link>
+              {game.away_team_name}
+            </span>
           </div>
         </div>
       );
@@ -225,24 +282,16 @@ export const columns: ColumnDef<Game>[] = [
     cell: ({ row }) => {
       const game = row.original;
       return (
-        <div className="flex flex-col gap-2 w-full items-center justify-center">
+        <div className="flex justify-center">
           <ButtonLink
             variant="outline"
-            to="/games/$gameId"
+            to="/edit-players/$gameId"
             params={{ gameId: game.id }}
             className="w-24 flex gap-1 items-center justify-center"
           >
-            <ExternalLink className="h-3 w-3" />
-            <span>Details</span>
+            <Edit className="h-3 w-3" />
+            <span>Edit Stats</span>
           </ButtonLink>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-24 flex gap-1 items-center justify-center"
-          >
-            <PlayCircle className="h-3 w-3" />
-            <span>Highlight</span>
-          </Button>
         </div>
       );
     },

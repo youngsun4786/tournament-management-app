@@ -8,6 +8,8 @@ export const PlayerGameStatsSchema = z.object({
   points: z.number().int().nullable(),
   field_goals_made: z.number().int().nullable(),
   field_goals_attempted: z.number().int().nullable(),
+  two_pointers_made: z.number().int().nullable(),
+  two_pointers_attempted: z.number().int().nullable(),
   three_pointers_made: z.number().int().nullable(),
   three_pointers_attempted: z.number().int().nullable(),
   free_throws_made: z.number().int().nullable(),

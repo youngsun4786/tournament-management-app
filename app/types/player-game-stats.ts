@@ -9,13 +9,16 @@ export type PlayerGameStats = {
     points: number | null;
     field_goals_made: number | null;
     field_goals_attempted: number | null;
-    field_goal_percentage: string | null;
+    field_goal_percentage: number | null;
+    two_pointers_made: number | null;
+    two_pointers_attempted: number | null;
+    two_pointers_percentage: number | null;
     three_pointers_made: number | null;
     three_pointers_attempted: number | null;
-    three_point_percentage: string | null;
+    three_pointers_percentage: number | null;
     free_throws_made: number | null;
     free_throws_attempted: number | null;
-    free_throw_percentage: string | null;
+    free_throw_percentage: number | null;
     offensive_rebounds: number | null;
     defensive_rebounds: number | null;
     total_rebounds: number | null;
@@ -33,7 +36,7 @@ export type PlayerGameStatsWithPlayer = PlayerGameStats & {
 }
 
 export type PlayerGameStatsInsert = MakeOptional<PlayerGameStats, 
-"pgs_id" | "field_goal_percentage" | "three_point_percentage" | "free_throw_percentage"  | "updated_at"
+"pgs_id" | "field_goal_percentage" | "three_pointers_percentage" | "free_throw_percentage" | "two_pointers_percentage" | "total_rebounds" | "updated_at"
 >;
 
 export type PlayerGameStatsUpdate = Partial<PlayerGameStats>;

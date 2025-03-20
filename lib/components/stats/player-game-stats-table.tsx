@@ -1,5 +1,3 @@
-import { Pencil } from "lucide-react";
-import { useState } from "react";
 import { PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
 import {
   Table,
@@ -9,167 +7,212 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { PlayerGameStatsForm } from "./player-game-stats-form";
 
 interface PlayerGameStatsTableProps {
-  gameId: string;
-  canEdit?: boolean;
   playerStats: PlayerGameStatsWithPlayer[];
+  isLoading: boolean;
+  isError: boolean;
 }
 
 export const PlayerGameStatsTable = ({
-  gameId,
-  canEdit = false,
   playerStats,
+  isLoading,
+  isError,
 }: PlayerGameStatsTableProps) => {
-  const [editingStat, setEditingStat] =
-    useState<PlayerGameStatsWithPlayer | null>(null);
-
-  if (editingStat) {
-    return (
-      <div className="space-y-4">
-        <Button
-          variant="outline"
-          onClick={() => setEditingStat(null)}
-          className="mb-4"
-        >
-          Back to Stats Table
-        </Button>
-        <PlayerGameStatsForm
-          gameId={gameId}
-          playerId={editingStat.player_id!}
-          initialData={editingStat}
-          onSuccess={() => setEditingStat(null)}
-        />
-      </div>
-    );
-  }
+  // Group stats by team
+  const groupedStats = playerStats?.reduce(
+    (acc, stat) => {
+      // Get team id from the player's team relationship
+      // Since we might not have team_id directly on player, use a reliable identifier
+      const teamName = stat.player?.team_name || "Unknown Team";
+      if (!acc[teamName]) {
+        acc[teamName] = {
+          teamName,
+          stats: [],
+        };
+      }
+      acc[teamName].stats.push(stat);
+      return acc;
+    },
+    {} as Record<
+      string,
+      { teamName: string; stats: PlayerGameStatsWithPlayer[] }
+    >
+  );
 
   const statHeaders = [
-    { key: "name", label: "Player" },
-    { key: "minutes_played", label: "MIN" },
-    { key: "points", label: "PTS" },
-    { key: "field_goals", label: "FG" },
-    { key: "three_pointers", label: "3PT" },
-    { key: "free_throws", label: "FT" },
-    { key: "rebounds", label: "REB" },
-    { key: "assists", label: "AST" },
-    { key: "steals", label: "STL" },
-    { key: "blocks", label: "BLK" },
-    { key: "turnovers", label: "TO" },
-    { key: "personal_fouls", label: "PF" },
-    { key: "plus_minus", label: "+/-" },
+    { key: "jersey_number", label: "No.", className: "text-center" },
+    { key: "name", label: "Player", className: "text-left" },
+    { key: "minutes_played", label: "MIN", className: "text-center" },
+    { key: "points", label: "PTS", className: "text-center" },
+    { key: "two_pointers_made", label: "2PM", className: "text-center" },
+    { key: "two_pointers_attempted", label: "2PA", className: "text-center" },
+    { key: "two_pointers_percentage", label: "2P%", className: "text-center" },
+    { key: "three_pointers_made", label: "3PM", className: "text-center" },
+    { key: "three_pointers_attempted", label: "3PA", className: "text-center" },
+    {
+      key: "three_pointers_percentage",
+      label: "3P%",
+      className: "text-center",
+    },
+    { key: "field_goals_made", label: "FGM", className: "text-center" },
+    { key: "field_goals_attempted", label: "FGA", className: "text-center" },
+    { key: "field_goals_percentage", label: "FG%", className: "text-center" },
+    { key: "free_throws_made", label: "FTM", className: "text-center" },
+    { key: "free_throws_attempted", label: "FTA", className: "text-center" },
+    { key: "free_throws_percentage", label: "FT%", className: "text-center" },
+    { key: "rebounds", label: "REB", className: "text-center" },
+    { key: "assists", label: "AST", className: "text-center" },
+    { key: "steals", label: "STL", className: "text-center" },
+    { key: "blocks", label: "BLK", className: "text-center" },
+    { key: "turnovers", label: "TO", className: "text-center" },
+    { key: "personal_fouls", label: "PF", className: "text-center" },
+    { key: "plus_minus", label: "+/-", className: "text-center" },
   ];
 
-  const formatStat = (
-    made: number | null,
-    attempted: number | null,
-    percentage: number | null
-  ) => {
-    if (made === null || attempted === null) return "-";
-    return `${made}-${attempted} (${percentage?.toFixed(1)}%)`;
+  const formatStat = (attempted: number | null, made: number | null) => {
+    if (attempted === null || made === null) {
+      return "-";
+    }
+    if (attempted === 0) {
+      return "0%";
+    }
+    return `${((made / attempted) * 100).toFixed(1)}%`;
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">Player Statistics</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {statHeaders.map((header) => (
-                  <TableHead
-                    key={header.key}
-                    className="text-center whitespace-nowrap"
-                  >
-                    {header.label}
-                  </TableHead>
-                ))}
-                {canEdit && <TableHead className="w-[50px]" />}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {playerStats?.map((stat) => (
-                <TableRow key={stat.pgs_id}>
-                  <TableCell className="font-medium">
-                    {stat.player.name}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.minutes_played ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.points ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatStat(
-                      stat.field_goals_made,
-                      stat.field_goals_attempted,
-                      stat.field_goal_percentage
-                        ? parseFloat(stat.field_goal_percentage)
-                        : null
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatStat(
-                      stat.three_pointers_made,
-                      stat.three_pointers_attempted,
-                      stat.three_point_percentage
-                        ? parseFloat(stat.three_point_percentage)
-                        : null
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {formatStat(
-                      stat.free_throws_made,
-                      stat.free_throws_attempted,
-                      stat.free_throw_percentage
-                        ? parseFloat(stat.free_throw_percentage)
-                        : null
-                    )}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.total_rebounds ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.assists ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.steals ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.blocks ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.turnovers ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.personal_fouls ?? "-"}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {stat.plus_minus ?? "-"}
-                  </TableCell>
-                  {canEdit && (
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setEditingStat(stat)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Player Game Statistics</h2>
+      </div>
+      {isLoading ? (
+        <div className="text-center py-10">Loading player statistics...</div>
+      ) : playerStats?.length === 0 ? (
+        <Card>
+          <CardContent className="py-10 text-center">
+            <p className="text-gray-500">
+              No player statistics available for this game yet.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {groupedStats &&
+            Object.values(groupedStats).map(({ teamName, stats }) => (
+              <Card key={teamName} className="mb-6">
+                <CardHeader>
+                  <CardTitle>{teamName}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {statHeaders.map((header) => (
+                            <TableHead
+                              key={header.key}
+                              className={header.className}
+                            >
+                              {header.label}
+                            </TableHead>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {stats.map((stat) => (
+                          <TableRow key={stat.pgs_id}>
+                            <TableCell className="text-center">
+                              {stat.player?.jersey_number}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {stat.player?.name}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.minutes_played}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.points}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.two_pointers_made}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.two_pointers_attempted}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {formatStat(
+                                stat.two_pointers_attempted,
+                                stat.two_pointers_made
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.three_pointers_made}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.three_pointers_attempted}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {formatStat(
+                                stat.three_pointers_attempted,
+                                stat.three_pointers_made
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.field_goals_made}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.field_goals_attempted}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {formatStat(
+                                stat.field_goals_attempted,
+                                stat.field_goals_made
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.free_throws_made}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.free_throws_attempted}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {formatStat(
+                                stat.free_throws_attempted,
+                                stat.free_throws_made
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.total_rebounds}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.assists}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.steals}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.blocks}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.turnovers}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.personal_fouls}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {stat.plus_minus}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+        </>
+      )}
+    </div>
   );
 };

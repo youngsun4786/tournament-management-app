@@ -86,7 +86,7 @@ export function GameCard({ game }: GameCardProps) {
               variant="outline"
               className="text-xs"
               to="/games/$gameId"
-              params={{ gameId: game.game_id }}
+              params={{ gameId: game.id }}
             >
               game details
             </ButtonLink>

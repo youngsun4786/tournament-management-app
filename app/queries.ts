@@ -2,9 +2,9 @@ import { queryOptions, useQuery, useSuspenseQuery, UseSuspenseQueryResult } from
 import { useServerFn } from "@tanstack/react-start";
 import { getUser } from "~/app/controllers/auth.api";
 import { getGames } from "~/app/controllers/game.api";
+import { getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
 import { getPlayers } from "~/app/controllers/player.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
-import { getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
 
 export const useGetTeams = () => {
     return useQuery({
@@ -40,7 +40,13 @@ export const gameQueries = {
   list: () => 
     queryOptions({
       queryKey: [...gameQueries.all, "list"],
-      queryFn: ({signal}) => getGames({signal})})
+      queryFn: ({signal}) => getGames({signal})
+    }),
+  detail: (gameId: string) =>
+    queryOptions({
+      queryKey: [...gameQueries.all, "detail", gameId],
+      queryFn: () => getGames() // We'll filter the game in the component
+    })
 }
 
 
@@ -64,6 +70,19 @@ export const playerGameStatsQueries = {
     queryOptions({
       queryKey: [...playerGameStatsQueries.all, "detail", gameId],
       queryFn: () => getPlayerGameStatsByGameId({ data: { gameId: gameId } }),
+    }),
+}
+
+export const teamGameStatsQueries = {
+  all: ["teamGameStats"],
+  byGame: (gameId: string) =>
+    queryOptions({
+      queryKey: [...teamGameStatsQueries.all, "byGame", gameId],
+      queryFn: () => {
+        // Since we don't have a dedicated API for team stats yet, we'll calculate them
+        // from player stats in the component
+        return getPlayerGameStatsByGameId({ data: { gameId: gameId } });
+      },
     }),
 }
 

@@ -2,7 +2,7 @@ import type { MakeOptional } from "~/lib/utils/make-optional-type";
 
 // Game type from API response
 export type Game = {
-    game_id: string;
+    id: string;
     game_date: string;
     start_time: string;
     location: string | null;
@@ -19,6 +19,6 @@ export type Game = {
 };
 
 export type GameInsert = MakeOptional<Game,
-   "game_id" | "is_completed" | "court" | "location" | "home_team_logo" | "away_team_logo">;
+   "id" | "is_completed" | "court" | "location" | "home_team_logo" | "away_team_logo">;
 
 export type GameUpdate = Partial<Game>;

@@ -43,11 +43,11 @@ export function CarouselSpacing({ filter, isTeamInfo }: CarouselSpacingProps) {
           {upcomingGames.length > 0 ? (
             upcomingGames.map((game) => (
               <CarouselItem
-                key={game.game_id}
+                key={game.id}
                 className="pl-4 md:basis-1/3 lg:basis-1/4"
               >
                 <div className="h-full">
-                  <GameCard id={game.game_id} game={game} />
+                  <GameCard id={game.id} game={game} />
                 </div>
               </CarouselItem>
             ))

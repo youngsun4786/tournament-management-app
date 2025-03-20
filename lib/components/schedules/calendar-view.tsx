@@ -90,7 +90,7 @@ export function CalendarView({ games, currentDate }: CalendarViewProps) {
                     <ScrollArea className="h-[100px]">
                       <div className="space-y-2">
                         {gamesByDate[day].map((game) => (
-                          <Card key={game.game_id} className="p-2 text-xs">
+                          <Card key={game.id} className="p-2 text-xs">
                             <div className="flex justify-between items-center mb-1">
                               <span className="font-semibold">
                                 {game.start_time.slice(0, 5)}

@@ -31,20 +31,37 @@ export const PlayerGameStatsForm = ({
 
   const mutation = useMutation({
     mutationFn: async (formData: PlayerStatsFormData & { pgs_id?: string }) => {
-      console.log("formData", formData);
+      // Calculate derived fields
+      const twoPointersMade = Number(formData.two_pointers_made || 0);
+      const twoPointersAttempted = Number(formData.two_pointers_attempted || 0);
+      const threePointersMade = Number(formData.three_pointers_made || 0);
+      const threePointersAttempted = Number(
+        formData.three_pointers_attempted || 0
+      );
+      const offensiveRebounds = Number(formData.offensive_rebounds || 0);
+      const defensiveRebounds = Number(formData.defensive_rebounds || 0);
+
+      // Calculate field goals (sum of 2PT and 3PT)
+      formData.field_goals_made = twoPointersMade + threePointersMade;
+      formData.field_goals_attempted =
+        twoPointersAttempted + threePointersAttempted;
+
+      // Calculate total rebounds
+      formData.total_rebounds = offensiveRebounds + defensiveRebounds;
+
+      // Convert all string values to numbers
       formData.minutes_played = Number(formData.minutes_played);
       formData.points = Number(formData.points);
-      formData.field_goals_made = Number(formData.field_goals_made);
-      formData.field_goals_attempted = Number(formData.field_goals_attempted);
       formData.three_pointers_made = Number(formData.three_pointers_made);
       formData.three_pointers_attempted = Number(
         formData.three_pointers_attempted
       );
+      formData.two_pointers_made = twoPointersMade;
+      formData.two_pointers_attempted = twoPointersAttempted;
       formData.free_throws_made = Number(formData.free_throws_made);
       formData.free_throws_attempted = Number(formData.free_throws_attempted);
       formData.offensive_rebounds = Number(formData.offensive_rebounds);
       formData.defensive_rebounds = Number(formData.defensive_rebounds);
-      formData.total_rebounds = Number(formData.total_rebounds);
       formData.assists = Number(formData.assists);
       formData.steals = Number(formData.steals);
       formData.blocks = Number(formData.blocks);
@@ -83,6 +100,8 @@ export const PlayerGameStatsForm = ({
       points: initialData?.points ?? 0,
       field_goals_made: initialData?.field_goals_made ?? 0,
       field_goals_attempted: initialData?.field_goals_attempted ?? 0,
+      two_pointers_made: initialData?.two_pointers_made ?? 0,
+      two_pointers_attempted: initialData?.two_pointers_attempted ?? 0,
       three_pointers_made: initialData?.three_pointers_made ?? 0,
       three_pointers_attempted: initialData?.three_pointers_attempted ?? 0,
       free_throws_made: initialData?.free_throws_made ?? 0,
@@ -102,29 +121,34 @@ export const PlayerGameStatsForm = ({
     },
   });
 
-  // Define the fields with typed names
-  const statFields = [
-    { name: "minutes_played" as const, label: "Minutes Played" },
-    { name: "points" as const, label: "Points" },
-    { name: "field_goals_made" as const, label: "FG Made" },
-    { name: "field_goals_attempted" as const, label: "FG Attempted" },
+  // Define the fields organized in columns as requested
+  const columnOneFields = [
+    { name: "two_pointers_made" as const, label: "2PT Made" },
+    { name: "two_pointers_attempted" as const, label: "2PT Attempted" },
     { name: "three_pointers_made" as const, label: "3PT Made" },
     { name: "three_pointers_attempted" as const, label: "3PT Attempted" },
     { name: "free_throws_made" as const, label: "FT Made" },
     { name: "free_throws_attempted" as const, label: "FT Attempted" },
+  ];
+
+  const columnTwoFields = [
     { name: "offensive_rebounds" as const, label: "Off. Rebounds" },
     { name: "defensive_rebounds" as const, label: "Def. Rebounds" },
-    { name: "total_rebounds" as const, label: "Total Rebounds" },
-    { name: "assists" as const, label: "Assists" },
     { name: "steals" as const, label: "Steals" },
     { name: "blocks" as const, label: "Blocks" },
+    { name: "assists" as const, label: "Assists" },
     { name: "turnovers" as const, label: "Turnovers" },
-    { name: "personal_fouls" as const, label: "Personal Fouls" },
+  ];
+
+  const columnThreeFields = [
     { name: "plus_minus" as const, label: "Plus/Minus" },
+    { name: "minutes_played" as const, label: "Minutes Played" },
+    { name: "points" as const, label: "Points" },
+    { name: "personal_fouls" as const, label: "Personal Fouls" },
   ];
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-center">
           {initialData ? "Edit Player Stats" : "Enter Player Stats"}
@@ -132,28 +156,70 @@ export const PlayerGameStatsForm = ({
       </CardHeader>
       <CardContent>
         <form
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
         >
-          {statFields.map((field) => (
-            <form.AppField
-              key={field.name}
-              name={field.name}
-              children={(formField) => (
-                <FormField
-                  id={field.name}
-                  label={field.label}
-                  field={formField}
-                  text_type="text"
-                  className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
-                />
-              )}
-            />
-          ))}
-          <div className="col-span-1 md:col-span-2">
+          {/* Column 1 */}
+          <div className="space-y-4">
+            {columnOneFields.map((field) => (
+              <form.AppField
+                key={field.name}
+                name={field.name}
+                children={(formField) => (
+                  <FormField
+                    id={field.name}
+                    label={field.label}
+                    field={formField}
+                    text_type="text"
+                    className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              />
+            ))}
+          </div>
+
+          {/* Column 2 */}
+          <div className="space-y-4">
+            {columnTwoFields.map((field) => (
+              <form.AppField
+                key={field.name}
+                name={field.name}
+                children={(formField) => (
+                  <FormField
+                    id={field.name}
+                    label={field.label}
+                    field={formField}
+                    text_type="text"
+                    className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              />
+            ))}
+          </div>
+
+          {/* Column 3 */}
+          <div className="space-y-4">
+            {columnThreeFields.map((field) => (
+              <form.AppField
+                key={field.name}
+                name={field.name}
+                children={(formField) => (
+                  <FormField
+                    id={field.name}
+                    label={field.label}
+                    field={formField}
+                    text_type="text"
+                    className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              />
+            ))}
+          </div>
+
+          <div className="col-span-1 md:col-span-3 mt-6">
             <form.AppForm>
               <form.SubmitButton
                 label={initialData ? "Update Stats" : "Save Stats"}
