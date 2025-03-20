@@ -1,4 +1,3 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   format,
@@ -17,8 +16,8 @@ import {
   List,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { gameQueries } from "~/app/queries";
 import { Game } from "~/app/types/game";
+import { getGames } from "~/app/controllers/game.api";
 import { CalendarView } from "~/lib/components/schedules/calendar-view";
 import { columns } from "~/lib/components/schedules/columns";
 import { DataTable } from "~/lib/components/schedules/data-table";
@@ -38,11 +37,17 @@ type GameTypeFilter = "all" | "regular" | "playoff";
 type ViewMode = "list" | "calendar";
 
 export const Route = createFileRoute("/schedule/")({
+  loader: async () => {
+    const games = await getGames();
+    return {
+      games,
+    };
+  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: games } = useSuspenseQuery(gameQueries.list());
+  const { games } = Route.useLoaderData();
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
   const [viewMode, setViewMode] = useState<ViewMode>("list");
@@ -54,7 +59,7 @@ function RouteComponent() {
   // Extract unique teams from games for the dropdown
   const teams = [
     ...new Set(
-      games.flatMap((game) => [
+      games!.flatMap((game) => [
         { id: game.home_team_id, name: game.home_team_name },
         { id: game.away_team_id, name: game.away_team_name },
       ])
@@ -104,7 +109,7 @@ function RouteComponent() {
   };
 
   // Filter games based on selected filters
-  const filteredGames = games.filter((game) => {
+  const filteredGames = games!.filter((game) => {
     const gameDate = parseISO(game.game_date);
 
     // Today Only filter (higher priority)

@@ -2,10 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
 import { ArrowUpDown, ExternalLink, PlayCircle } from "lucide-react";
+import { Game } from "~/app/types/game";
 import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
 import { convert24to12 } from "~/lib/date";
-import { Game } from "~/app/types/game";
 import { ButtonLink } from "../button-link";
 
 export const columns: ColumnDef<Game>[] = [
@@ -94,7 +94,7 @@ export const columns: ColumnDef<Game>[] = [
             <Link
               to={`/teams/$teamName`}
               params={{ teamName: game.home_team_name }}
-              className="flex items-center gap-2 hover:underline hover:text-red-500"
+              className="flex items-center gap-2 hover:underline"
             >
               <span
                 className={`font-medium text-right ${homeWon ? "font-bold text-blue-600" : ""}`}
@@ -103,7 +103,11 @@ export const columns: ColumnDef<Game>[] = [
               </span>
               {game.home_team_logo ? (
                 <img
-                  src={game.home_team_name === "TBD" ? "/team_logos/ccbc_logo.png" : `/team_logos/${game.home_team_logo}`}
+                  src={
+                    game.home_team_name === "TBD"
+                      ? "/team_logos/ccbc_logo.png"
+                      : `/team_logos/${game.home_team_logo}`
+                  }
                   alt={`${game.home_team_name} logo`}
                   className="h-8 w-8"
                 />
@@ -138,11 +142,15 @@ export const columns: ColumnDef<Game>[] = [
             <Link
               to={`/teams/$teamName`}
               params={{ teamName: game.away_team_name }}
-              className="flex items-center gap-2 hover:underline hover:text-red-500"
+              className="flex items-center gap-2 hover:underline"
             >
               {game.away_team_logo ? (
                 <img
-                  src={game.away_team_name === "TBD" ? "/team_logos/ccbc_logo.png" : `/team_logos/${game.away_team_logo}`}
+                  src={
+                    game.away_team_name === "TBD"
+                      ? "/team_logos/ccbc_logo.png"
+                      : `/team_logos/${game.away_team_logo}`
+                  }
                   alt={`${game.away_team_name} logo`}
                   className="h-8 w-8"
                 />

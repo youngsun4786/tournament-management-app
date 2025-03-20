@@ -19,7 +19,7 @@ export const Route = createFileRoute("/games/$gameId")({
       playerGameStatsQueries.detail(params.gameId)
     );
     await context.queryClient.ensureQueryData(
-      gameQueries.detail(params.gameId)
+      gameQueries.list()
     );
   },
   // beforeLoad: async ({ params }) => {
@@ -38,8 +38,7 @@ function RouteComponent() {
     isLoading,
     isError,
   } = useSuspenseQuery(playerGameStatsQueries.detail(gameId));
-  const { data: games } = useSuspenseQuery(gameQueries.detail(gameId));
-
+  const { data: games } = useSuspenseQuery(gameQueries.list());
   const gameInfo = games?.find((game) => game.id === gameId);
 
   if (!gameInfo) {

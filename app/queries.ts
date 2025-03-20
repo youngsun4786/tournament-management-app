@@ -1,7 +1,7 @@
 import { queryOptions, useQuery, useSuspenseQuery, UseSuspenseQueryResult } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getUser } from "~/app/controllers/auth.api";
-import { getGames } from "~/app/controllers/game.api";
+import { getGameById, getGames } from "~/app/controllers/game.api";
 import { getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
 import { getPlayers } from "~/app/controllers/player.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
@@ -45,7 +45,7 @@ export const gameQueries = {
   detail: (gameId: string) =>
     queryOptions({
       queryKey: [...gameQueries.all, "detail", gameId],
-      queryFn: () => getGames() // We'll filter the game in the component
+      queryFn: () => getGameById({ data: { gameId: gameId } }) // We'll filter the game in the component
     })
 }
 

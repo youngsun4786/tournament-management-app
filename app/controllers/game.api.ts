@@ -12,9 +12,25 @@ export const getGames = createServerFn({ method: "GET" }).handler(async () => {
   }  
 });
 
+
+export const getGameById = createServerFn({
+  method: "GET",
+}).validator(
+  z.object({
+    gameId: z.string().uuid()
+  })
+).handler(async ({ data }) => {
+  try {
+    const game = await gameService.getById(data.gameId);
+    return game;
+  } catch (error) {
+    throw new Error("Failed to fetch game by id");
+  }
+});
+
+
 export const updateGameScore = createServerFn({
   method: "POST",
-
 }).validator(
     z.object({
       game_id: z.string().uuid(),

@@ -94,6 +94,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead className="text-center">No.</TableHead>
                           <TableHead className="text-left">Player</TableHead>
                           <TableHead className="text-center">MIN</TableHead>
                           <TableHead className="text-center">PTS</TableHead>
@@ -113,6 +114,9 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                       <TableBody>
                         {stats.map((stat) => (
                           <TableRow key={stat.pgs_id}>
+                            <TableCell className="text-center">
+                              {stat.player?.jersey_number}
+                            </TableCell>
                             <TableCell className="font-medium">
                               {stat.player?.name}
                             </TableCell>
