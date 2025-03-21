@@ -2,7 +2,7 @@ import { queryOptions, useQuery, useSuspenseQuery, UseSuspenseQueryResult } from
 import { useServerFn } from "@tanstack/react-start";
 import { getUser } from "~/app/controllers/auth.api";
 import { getGameById, getGames } from "~/app/controllers/game.api";
-import { getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
+import { getAveragePlayerStatsAllPlayers, getAveragePlayerStatsByPlayerId, getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
 import { getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
 import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
@@ -93,6 +93,35 @@ export const playerGameStatsQueries = {
       queryKey: [...playerGameStatsQueries.all, "detail", gameId],
       queryFn: () => getPlayerGameStatsByGameId({ data: { gameId: gameId } }),
     }),
+
+    playerGameStatsAverage: (playerId: string) => ({
+      queryKey: [...playerGameStatsQueries.all, "playerGameStatsAverage", playerId],
+        queryFn: async () => getAveragePlayerStatsByPlayerId({ data: { playerId: playerId } })
+    }),
+
+    playerGameStatsAverages: () => ({
+      queryKey: [...playerGameStatsQueries.all, "playerGameStatsAverages"],
+      queryFn: async () => getAveragePlayerStatsAllPlayers()
+    }),
+
+    playerGameStatsAveragesByTeam: (teamId: string) => ({
+      queryKey: [...playerGameStatsQueries.all, "playerGameStatsAveragesByTeam", teamId],
+      queryFn: async () => {
+        const allPlayerStats = await getAveragePlayerStatsAllPlayers();
+
+        // Filter players by team_id with careful null checking
+        return allPlayerStats.filter(playerStat => {
+          // Check that playerStat and playerStat.player exist
+          if (!playerStat || !playerStat.player) {
+            return false;
+          }
+          
+          // Access team_id directly from the player object
+          return playerStat.player.team_id === teamId;
+        });
+      }
+    }),
+
 }
 
 export const teamGameStatsQueries = {

@@ -1,5 +1,10 @@
+import React from "react";
 import { Game } from "~/app/types/game";
 import { TeamGameStatsWithTeam } from "~/app/types/team-game-stats";
+import {
+  GlossaryItem,
+  StatsGlossary,
+} from "~/lib/components/ui/stats-glossary";
 import {
   Table,
   TableBody,
@@ -64,33 +69,35 @@ export const TeamOverallStatsTable = ({
     );
   }
 
-  // Associate games with team stats
-  const statsByGameId: Record<string, TeamGameStatsWithTeam> = {};
-
-  teamStats.forEach((stat) => {
-    if (stat.game_id) {
-      statsByGameId[stat.game_id] = stat;
+  // Map games by their IDs for faster lookups
+  const gamesById: Record<string, Game> = {};
+  games.forEach((game) => {
+    if (game.id) {
+      gamesById[game.id] = game;
     }
   });
 
-  // Create filtered sets of stats
+  // Create filtered sets of stats with proper win/loss determination
   const homeGames: TeamGameStatsWithTeam[] = [];
   const awayGames: TeamGameStatsWithTeam[] = [];
   const winGames: TeamGameStatsWithTeam[] = [];
   const lossGames: TeamGameStatsWithTeam[] = [];
   const monthlyGames: Record<string, TeamGameStatsWithTeam[]> = {};
 
-  // First map games by their IDs for faster lookups
-  const gamesById: Record<string, Game> = {};
-  games.forEach((game) => {
-    gamesById[game.id] = game;
+  // Process stats with associated games
+  const validStats = teamStats.filter((stat) => {
+    // Only include stats that have a corresponding game and the game_id is not null
+    return (
+      stat.game_id !== null &&
+      typeof stat.game_id === "string" &&
+      gamesById[stat.game_id]
+    );
   });
 
-  // Process stats with associated games
-  teamStats.forEach((stat) => {
-    if (!stat.game_id) return;
-
-    const game = gamesById[stat.game_id];
+  validStats.forEach((stat) => {
+    // We already filtered out null game_ids
+    const gameId = stat.game_id as string;
+    const game = gamesById[gameId];
     if (!game) return;
 
     // Home or Away
@@ -100,7 +107,7 @@ export const TeamOverallStatsTable = ({
       awayGames.push(stat);
     }
 
-    // Win or Loss
+    // Win or Loss - use actual game score comparison
     const isHome = game.home_team_id === teamId;
     const teamScore = isHome ? game.home_team_score : game.away_team_score;
     const opponentScore = isHome ? game.away_team_score : game.home_team_score;
@@ -110,8 +117,9 @@ export const TeamOverallStatsTable = ({
     } else if (teamScore < opponentScore) {
       lossGames.push(stat);
     }
+    // Note: We don't handle ties here as they're uncommon in basketball
 
-    // Month
+    // Month grouping
     const date = new Date(game.game_date);
     const month = date.toLocaleString("default", { month: "long" });
     if (!monthlyGames[month]) {
@@ -195,7 +203,11 @@ export const TeamOverallStatsTable = ({
       totals.pf += stat.team_fouls || 0;
 
       // Calculate plus/minus using game data
-      if (stat.game_id && gamesById[stat.game_id]) {
+      if (
+        stat.game_id &&
+        typeof stat.game_id === "string" &&
+        gamesById[stat.game_id]
+      ) {
         const game = gamesById[stat.game_id];
         const isHome = game.home_team_id === teamId;
         const teamScore = isHome ? game.home_team_score : game.away_team_score;
@@ -240,9 +252,9 @@ export const TeamOverallStatsTable = ({
     };
   };
 
-  // Calculate stats - use actual win/loss count for overall
+  // Calculate stats with actual win/loss records
   const statsBreakdown: StatsBreakdown = {
-    overall: calculateAverages(teamStats, winGames.length, lossGames.length),
+    overall: calculateAverages(validStats, winGames.length, lossGames.length),
     home:
       homeGames.length > 0
         ? calculateAverages(
@@ -307,6 +319,12 @@ export const TeamOverallStatsTable = ({
     { key: "plus_minus", label: "+/-" },
   ];
 
+  // Convert columns to GlossaryItems for the tooltip
+  const glossaryItems: GlossaryItem[] = columns.map((col) => ({
+    key: col.key,
+    label: col.label,
+  }));
+
   // Helper for determining if a stat should be higher or lower
   const isHigherBetter = (key: string) => {
     return !["tov", "pf", "l"].includes(key);
@@ -370,27 +388,28 @@ export const TeamOverallStatsTable = ({
 
   return (
     <div className="overflow-x-auto">
+      <div className="flex justify-end mb-2">
+        <StatsGlossary items={glossaryItems} title="Team Stats Glossary" />
+      </div>
       <Table>
         <TableBody>
           {sections.map((section, sectionIndex) => (
-            <>
+            <React.Fragment key={`section-${sectionIndex}`}>
               {/* Header row for each section */}
-              <TableRow className="bg-muted/50">
-                <TableCell
-                  // colSpan={columns.length + 1}
-                  className="text-md py-1 text-gray-500"
-                >
+              <TableRow key={`${sectionIndex}-header`} className="bg-muted/50">
+                <TableCell className="text-md py-1 text-gray-500">
                   {section.title}
                 </TableCell>
-                {
-                  columns.map((column) => {
-                    return (
-                      <TableCell key={column.key} className="text-center text-gray-500">
-                        {column.label}
-                      </TableCell>
-                    )
-                  })
-                }
+                {columns.map((column) => {
+                  return (
+                    <TableCell
+                      key={column.key}
+                      className="text-center text-gray-500"
+                    >
+                      {column.label}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
 
               {/* Data rows for each section */}
@@ -456,11 +475,11 @@ export const TeamOverallStatsTable = ({
 
               {/* Add space after each section except the last one */}
               {sectionIndex < sections.length - 1 && (
-                <TableRow className="h-6">
+                <TableRow key={`${sectionIndex}-spacer`} className="h-6">
                   <TableCell colSpan={columns.length + 1}></TableCell>
                 </TableRow>
               )}
-            </>
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>

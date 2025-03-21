@@ -9,6 +9,7 @@ export const getPlayers = createServerFn({ method: "GET" }).handler(async () => 
     const playersWithTeams = await playerService.getPlayers();
     return playersWithTeams;
   } catch (error) {
+    console.error("Error fetching players with teams information:", error);
     throw new Error("Failed to fetch players with teams information");
   }
 });
@@ -18,6 +19,7 @@ export const updatePlayer = createServerFn().validator(PlayerSchema).handler(asy
     const player = await playerService.update(data);
     return player;
   } catch (error) {
+    console.error("Error updating player:", error);
     throw new Error("Failed to update player");
   }
 });
@@ -27,6 +29,7 @@ export const deletePlayer = createServerFn().validator(z.string()).handler(async
     const player = await playerService.delete({playerId: data});
     return player;
   } catch (error) {
+    console.error("Error deleting player:", error);
     throw new Error("Failed to delete player");
   }
 });
@@ -36,6 +39,7 @@ export const createPlayer = createServerFn().validator(PlayerSchema).handler(asy
     const player = await playerService.create(data);
     return player;
   } catch (error) {
+    console.error("Error creating player:", error);
     throw new Error("Failed to create player");
   }
 });

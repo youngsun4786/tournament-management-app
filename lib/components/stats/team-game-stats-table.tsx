@@ -5,6 +5,10 @@ import {
   TeamGameStatsWithTeam,
 } from "~/app/types/team-game-stats";
 import {
+  GlossaryItem,
+  StatsGlossary,
+} from "~/lib/components/ui/stats-glossary";
+import {
   Table,
   TableBody,
   TableCell,
@@ -98,6 +102,12 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
     { key: "team_fouls", label: "PF" },
   ];
 
+  // Convert statsComparison to GlossaryItems for the tooltip
+  const glossaryItems: GlossaryItem[] = statsComparison.map((stat) => ({
+    key: stat.key,
+    label: stat.label,
+  }));
+
   const formatStat = (value: string | number | null) => {
     if (value === null) return "-";
     if (typeof value === "string" && value.includes("%")) return value;
@@ -133,8 +143,9 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Team Comparison</CardTitle>
+          <StatsGlossary items={glossaryItems} title="Game Stats Glossary" />
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">

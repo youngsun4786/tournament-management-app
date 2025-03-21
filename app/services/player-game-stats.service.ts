@@ -116,6 +116,7 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
             plus_minus: stat.plus_minus,
             updated_at: stat.updated_at?.toString(),
             player: {
+                team_id: stat.player!.team!.id,
                 name: stat.player!.name,
                 jersey_number: stat.player!.jersey_number,
                 position: stat.player!.position,
