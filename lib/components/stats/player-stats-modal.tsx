@@ -191,26 +191,45 @@ export const PlayerStatsModal = ({
             Add Player Stats
           </DialogTitle>
         </DialogHeader>
-        <div className="mb-4">
-          <Label htmlFor="player-select" className="mb-2 block">
-            Select Player
-          </Label>
-          <Select
-            value={selectedPlayer || ""}
-            onValueChange={setSelectedPlayer}
-            disabled={loading}
-          >
-            <SelectTrigger id="player-select" className="w-full">
-              <SelectValue placeholder="Select a player" />
-            </SelectTrigger>
-            <SelectContent>
-              {players.map((player) => (
-                <SelectItem key={player.id} value={player.id}>
-                  {player.jersey_number} - {player.name} ({player.team_name})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="mb-4 pt-4 flex justify-between">
+          <div className="flex items-center justify-center">
+            <Label>Select one player from right to add stats</Label>
+          </div>
+          <div className="flex items-center justify-center gap-4">
+            {/* Group players by team */}
+            {Object.entries(
+              players.reduce((acc, player) => {
+                const teamName = player.team_name || "Unknown Team";
+                if (!acc[teamName]) {
+                  acc[teamName] = [];
+                }
+                acc[teamName].push(player);
+                return acc;
+              }, {} as Record<string, typeof players>)
+            ).map(([teamName, teamPlayers]) => (
+              <div key={teamName}>
+                <Label htmlFor={`player-select-${teamName}`} className="mb-2 block">
+                  {teamName}
+                </Label>
+                <Select
+                  value={selectedPlayer || ""}
+                  onValueChange={setSelectedPlayer}
+                  disabled={loading}
+                >
+                  <SelectTrigger id={`player-select-${teamName}`} className="w-full">
+                    <SelectValue placeholder={`Select player`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teamPlayers.map((player) => (
+                      <SelectItem key={player.id} value={player.id}>
+                        {player.jersey_number} - {player.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
         </div>
         <form
           className="grid grid-cols-1 md:grid-cols-3 gap-3"

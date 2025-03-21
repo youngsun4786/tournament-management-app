@@ -39,3 +39,18 @@ export const createPlayer = createServerFn().validator(PlayerSchema).handler(asy
     throw new Error("Failed to create player");
   }
 });
+
+// Get players by team ID
+export const getPlayersByTeamId = createServerFn({
+  method: "GET",
+}).validator(z.object({
+  teamId: z.string().uuid(),
+})).handler(async ({ data }) => {
+  try {
+    const players = await playerService.getPlayersByTeamId(data.teamId);
+    return players;
+  } catch (error) {
+    console.error("Error fetching players by team ID:", error);
+    throw new Error("Failed to fetch players by team");
+  }
+});

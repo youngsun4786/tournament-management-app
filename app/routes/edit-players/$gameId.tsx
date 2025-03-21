@@ -22,15 +22,15 @@ function RouteComponent() {
       </h1>
 
       <div className="grid grid-cols-1 gap-6">
+        <div className="flex flex-col gap-4">
+          <PlayerStatsManager gameId={gameId} />
+        </div>
         <div className="flex flex-col justify-center items-center gap-4">
           <FinalScoreForm
             gameId={gameId}
             home_team_name={gameInfo.home_team_name}
             away_team_name={gameInfo.away_team_name}
           />
-        </div>
-        <div className="flex flex-col gap-4">
-          <PlayerStatsManager gameId={gameId} />
         </div>
       </div>
     </div>

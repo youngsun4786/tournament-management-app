@@ -1,11 +1,10 @@
 import type { MakeOptional } from "~/lib/utils/make-optional-type";
-import type { Player } from "./player";
+import type { Team } from "./team";
 
-export type PlayerGameStats = {
-    pgs_id: string;
+export type TeamGameStats = {
+    tgs_id: string;
     game_id: string | null;
-    player_id: string | null;
-    minutes_played: number | null;
+    team_id: string | null;
     points: number | null;
     field_goals_made: number | null;
     field_goals_attempted: number | null;
@@ -26,17 +25,15 @@ export type PlayerGameStats = {
     steals: number | null;
     blocks: number | null;
     turnovers: number | null;
-    personal_fouls: number | null;
-    plus_minus: number | null;
-    updated_at: string | undefined;
+    team_fouls: number | null;
 }
 
-export type PlayerGameStatsWithPlayer = PlayerGameStats & {
-    player: Omit<Player, "player_id" | "height" | "weight"> ;
+export type TeamGameStatsWithTeam = TeamGameStats & {
+    team: Omit<Team, "logo_url" | "season_id" | "created_at" | "updated_at"> ;
 }
 
-export type PlayerGameStatsInsert = MakeOptional<PlayerGameStats, 
-"pgs_id" | "field_goal_percentage" | "three_point_percentage" | "free_throw_percentage" | "two_point_percentage" | "total_rebounds" | "updated_at"
+export type TeamGameStatsInsert = MakeOptional<TeamGameStats, 
+"tgs_id" | "field_goal_percentage" | "three_point_percentage" | "free_throw_percentage" | "two_point_percentage" | "total_rebounds"
 >;
 
-export type PlayerGameStatsUpdate = Partial<PlayerGameStats>;
+export type PlayerGameStatsUpdate = Partial<TeamGameStats>;

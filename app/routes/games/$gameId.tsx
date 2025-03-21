@@ -1,9 +1,14 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDown } from "lucide-react";
-import { gameQueries, playerGameStatsQueries } from "~/app/queries";
+import {
+  gameQueries,
+  playerGameStatsQueries,
+  teamGameStatsQueries,
+} from "~/app/queries";
 import type { PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
 import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
+import { TeamGameStatsTable } from "~/lib/components/stats/team-game-stats-table";
 import { Button } from "~/lib/components/ui/button";
 import {
   Card,
@@ -12,6 +17,12 @@ import {
   CardHeader,
   CardTitle,
 } from "~/lib/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "~/lib/components/ui/tabs";
 
 export const Route = createFileRoute("/games/$gameId")({
   loader: async ({ params, context }) => {
@@ -19,8 +30,9 @@ export const Route = createFileRoute("/games/$gameId")({
       playerGameStatsQueries.detail(params.gameId)
     );
     await context.queryClient.ensureQueryData(
-      gameQueries.list()
+      teamGameStatsQueries.detail(params.gameId)
     );
+    await context.queryClient.ensureQueryData(gameQueries.list());
   },
   // beforeLoad: async ({ params }) => {
   //   const playerStats = await playerGameStatsService.getByGameId(params.gameId);
@@ -280,12 +292,23 @@ function RouteComponent() {
 
         {/* Player Stats Table */}
         <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Player Statistics</h2>
-          <PlayerGameStatsTable
-            playerStats={playerStats}
-            isLoading={isLoading}
-            isError={isError}
-          />
+          <h2 className="text-2xl font-bold mb-4">Game Statistics</h2>
+          <Tabs defaultValue="player-stats" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="player-stats">Player Stats</TabsTrigger>
+              <TabsTrigger value="team-stats">Team Stats</TabsTrigger>
+            </TabsList>
+            <TabsContent value="player-stats">
+              <PlayerGameStatsTable
+                playerStats={playerStats}
+                isLoading={isLoading}
+                isError={isError}
+              />
+            </TabsContent>
+            <TabsContent value="team-stats">
+              <TeamGameStatsTable gameId={gameId} />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Game Video Section */}

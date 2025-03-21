@@ -68,7 +68,7 @@ export const FinalScoreForm = ({
     <Card className="max-w-lg">
       <CardHeader>
         <CardTitle>Update Game Score</CardTitle>
-        <CardDescription>Enter the final score for the game</CardDescription>
+        <CardDescription>Enter final score after updating ALL PLAYER STATS</CardDescription>
       </CardHeader>
       <CardContent>
         <form

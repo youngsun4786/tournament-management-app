@@ -1,6 +1,8 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { eq } from "drizzle-orm";
 import { Player, PlayerInsert, PlayerUpdate } from "~/app/types/player";
 import { db as drizzle_db } from "~/db";
+import { players } from "~/db/schema";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 
 export interface IPlayerService {
@@ -8,6 +10,7 @@ export interface IPlayerService {
     update(data: PlayerUpdate): Promise<Player>;
     delete(data: {playerId : Player["player_id"];}): Promise<Player>;
     getPlayers(): Promise<Player[]>;
+    getPlayersByTeamId(teamId: string): Promise<Player[]>;
 }
 
 export class PlayerService implements IPlayerService {
@@ -62,6 +65,32 @@ export class PlayerService implements IPlayerService {
             height: player.height,
             weight: player.weight,
             position: player.position
+            };
+        });
+
+        return playersWithTeams;
+    }
+
+    async getPlayersByTeamId(teamId: string): Promise<Player[]> {
+        // Query players by team ID with their related team info
+        const teamPlayers = await this.drizzle_db.query.players.findMany({
+            where: eq(players.team_id, teamId),
+            with: {
+                team: true
+            },
+            orderBy: (players, { asc }) => [asc(players.jersey_number)]
+        });
+
+        // Transform the result to match the expected structure
+        const playersWithTeams = teamPlayers.map(player => {
+            return {
+                player_id: player.id,
+                team_name: player.team!.name,
+                name: player.name,
+                jersey_number: player.jersey_number,
+                height: player.height,
+                weight: player.weight,
+                position: player.position
             };
         });
 

@@ -183,7 +183,7 @@ export const team_game_stats = pgTable("team_game_stats", {
 	steals: integer().default(0),
 	blocks: integer().default(0),
 	turnovers: integer().default(0),
-	personal_fouls: integer().default(0),
+	team_fouls: integer().default(0),
 	created_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
 	updated_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
 	two_pointers_made: integer().default(0),

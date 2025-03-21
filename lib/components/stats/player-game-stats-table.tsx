@@ -66,7 +66,7 @@ export const PlayerGameStatsTable = ({
     { key: "assists", label: "AST", className: "text-center" },
     { key: "steals", label: "STL", className: "text-center" },
     { key: "blocks", label: "BLK", className: "text-center" },
-    { key: "turnovers", label: "TO", className: "text-center" },
+    { key: "turnovers", label: "TOV", className: "text-center" },
     { key: "personal_fouls", label: "PF", className: "text-center" },
     { key: "plus_minus", label: "+/-", className: "text-center" },
   ];
@@ -84,7 +84,6 @@ export const PlayerGameStatsTable = ({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Player Game Statistics</h2>
       </div>
       {isLoading ? (
         <div className="text-center py-10">Loading player statistics...</div>

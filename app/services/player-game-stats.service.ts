@@ -1,10 +1,8 @@
-import { SupabaseClient } from "@supabase/supabase-js";
 import { and, eq } from "drizzle-orm";
 import type { Player } from "~/app/types/player";
 import type { PlayerGameStats, PlayerGameStatsInsert, PlayerGameStatsUpdate, PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
 import { db as drizzle_db } from "~/db";
 import { player_game_stats } from "~/db/schema";
-import { supabaseServer } from "~/lib/utils/supabase-server";
 
 export interface IPlayerGameStatsService {
     getByGameId(gameId: string): Promise<PlayerGameStatsWithPlayer[]>;
@@ -16,11 +14,9 @@ export interface IPlayerGameStatsService {
 }
 
 export class PlayerGameStatsService implements IPlayerGameStatsService {
-    private supabase: SupabaseClient;
     private drizzle_db: typeof drizzle_db;
 
     constructor() {
-        this.supabase = supabaseServer;
         this.drizzle_db = drizzle_db;
     }
 
@@ -134,6 +130,10 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
         const stats = await this.drizzle_db.query.player_game_stats.findFirst({
             where: and(eq(player_game_stats.game_id, gameId), eq(player_game_stats.player_id, playerId))
         });
+
+        if (!stats) {
+            throw new Error('Player game stats not found');
+        }
 
         return stats;
     }

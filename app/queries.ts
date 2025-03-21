@@ -3,7 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getUser } from "~/app/controllers/auth.api";
 import { getGameById, getGames } from "~/app/controllers/game.api";
 import { getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
-import { getPlayers } from "~/app/controllers/player.api";
+import { getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
+import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
 
 export const useGetTeams = () => {
@@ -18,6 +19,13 @@ export const useGetGames = () => {
     return useQuery({
         queryKey: ["games"],
         queryFn: useServerFn(getGames),
+    })
+}
+
+export const useGetTeamStats = () => {
+    return useQuery({
+        queryKey: ["teamStats"],
+        queryFn: useServerFn(getTeamStats),
     })
 }
 
@@ -46,6 +54,15 @@ export const gameQueries = {
     queryOptions({
       queryKey: [...gameQueries.all, "detail", gameId],
       queryFn: () => getGameById({ data: { gameId: gameId } }) // We'll filter the game in the component
+    }),
+  teamGames: (teamId: string) =>
+    queryOptions({
+      queryKey: [...gameQueries.all, "teamGames", teamId],
+      queryFn: ({signal}) => getGames({signal}).then(games => 
+        games.filter(game => 
+          game.home_team_id === teamId || game.away_team_id === teamId
+        )
+      )
     })
 }
 
@@ -56,6 +73,11 @@ export const playerQueries = {
     queryOptions({
       queryKey: [...playerQueries.all, "list"],
       queryFn: ({signal}) => getPlayers({signal}),
+    }),
+  teamPlayers: (teamId: string) =>
+    queryOptions({
+      queryKey: [...playerQueries.all, "teamPlayers", teamId],
+      queryFn: () => getPlayersByTeamId({ data: { teamId: teamId } }),
     }),
 }
 
@@ -75,14 +97,20 @@ export const playerGameStatsQueries = {
 
 export const teamGameStatsQueries = {
   all: ["teamGameStats"],
-  byGame: (gameId: string) =>
+  list: () =>
     queryOptions({
-      queryKey: [...teamGameStatsQueries.all, "byGame", gameId],
-      queryFn: () => {
-        // Since we don't have a dedicated API for team stats yet, we'll calculate them
-        // from player stats in the component
-        return getPlayerGameStatsByGameId({ data: { gameId: gameId } });
-      },
+      queryKey: [...teamGameStatsQueries.all, "list"],
+      queryFn: ({signal}) => getTeamStats({signal}),
+    }),
+  detail: (gameId: string) =>
+    queryOptions({
+      queryKey: [...teamGameStatsQueries.all, "detail", gameId],
+      queryFn: () => getTeamStatsByGameId({ data: { gameId: gameId } }),
+    }),
+  teamStats: (teamId: string) =>
+    queryOptions({
+      queryKey: [...teamGameStatsQueries.all, "teamStats", teamId],
+      queryFn: () => getTeamStatsByTeamId({ data: { teamId: teamId } }),
     }),
 }
 
@@ -95,7 +123,6 @@ export const authQueries = {
       }),
   }
   
-
 export const useAuthentication = () => {
     return useSuspenseQuery(authQueries.user())
   }

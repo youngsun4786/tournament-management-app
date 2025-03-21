@@ -61,7 +61,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Player Game Statistics</h2>
+        <h2 className="text-2xl font-bold">Player Statistics</h2>
         <Button onClick={handleAddStats} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           Add Player Stats

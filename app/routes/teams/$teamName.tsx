@@ -1,23 +1,108 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { teamQueries } from "~/app/queries";
+import {
+  gameQueries,
+  playerQueries,
+  teamGameStatsQueries,
+  teamQueries,
+} from "~/app/queries";
+import { Game } from "~/app/types/game";
+import { Player } from "~/app/types/player";
+import { TeamGameStatsWithTeam } from "~/app/types/team-game-stats";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
+import { TeamOverallStatsTable } from "~/lib/components/stats/team-overall-stats-table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "~/lib/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/lib/components/ui/table";
 
 export const Route = createFileRoute("/teams/$teamName")({
-  loader: async ({ params, context }) => {
-    await context.queryClient.ensureQueryData(
+  beforeLoad: async ({ params, context }) => {
+    const team = await context.queryClient.ensureQueryData(
       teamQueries.detail(params.teamName)
     );
+
+    if (team) {
+      // Pre-fetch team players and stats
+      const players = await context.queryClient.ensureQueryData(
+        playerQueries.teamPlayers(team.id)
+      );
+
+      const teamStats = await context.queryClient.ensureQueryData(
+        teamGameStatsQueries.teamStats(team.id)
+      );
+
+      // Pre-fetch all games for the team
+      const games = await context.queryClient.ensureQueryData(
+        gameQueries.teamGames(team.id)
+      );
+
+      return { team, players, teamStats, games };
+    }
   },
   component: RouteComponent,
 });
 
+// Add interfaces for the team stats
+interface GroupedStats {
+  all: TeamGameStatsWithTeam[];
+  wins: TeamGameStatsWithTeam[];
+  losses: TeamGameStatsWithTeam[];
+}
+
 function RouteComponent() {
   const { teamName } = Route.useParams();
   const { data: team } = useSuspenseQuery(teamQueries.detail(teamName));
+  const { data: players = [] } = useSuspenseQuery(
+    playerQueries.teamPlayers(team?.id || "")
+  ) as { data: Player[] };
+
+  const { data: teamStats = [] } = useSuspenseQuery(
+    teamGameStatsQueries.teamStats(team?.id || "")
+  ) as { data: TeamGameStatsWithTeam[] };
+
+  const { data: games = [] } = useSuspenseQuery(
+    gameQueries.teamGames(team?.id || "")
+  ) as { data: Game[] };
 
   if (!team) {
     return <div className="p-8">Loading team information...</div>;
+  }
+
+  // Process team stats to calculate averages
+  const groupedStats: GroupedStats = {
+    all: [],
+    wins: [],
+    losses: [],
+  };
+
+  if (teamStats && teamStats.length > 0) {
+    teamStats.forEach((stat) => {
+      // Add to all games
+      groupedStats.all.push(stat);
+
+      // We need to load game data to determine if it was a win or loss
+      // For now, we'll just categorize by points comparison
+      // In a real app, we would have the game data linked to the stats
+      const points = stat.points || 0;
+      const threshold = 50; // Example threshold
+
+      if (points > threshold) {
+        groupedStats.wins.push(stat);
+      } else {
+        groupedStats.losses.push(stat);
+      }
+    });
   }
 
   return (
@@ -51,29 +136,86 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-8">
-        {/* Team stats and details would go here */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Team Roster</h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Player information will be displayed here.
-            </p>
-          </div>
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 gap-6">
+          {/* Team Roster */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-bold text-xl">Roster</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {players && players.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16 text-center">No.</TableHead>
+                      <TableHead className="text-center">Name</TableHead>
+                      <TableHead className="text-center">Position</TableHead>
+                      <TableHead className="text-center">Height</TableHead>
+                      <TableHead className="text-center">Weight</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {players.map((player) => (
+                      <TableRow key={player.player_id}>
+                        <TableCell className="text-center">
+                          {player.jersey_number}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {player.name}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {player.position || "-"}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {player.height ? `${player.height} cm` : "-"}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {player.weight ? `${player.weight} kg` : "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-muted-foreground">
+                  No players found for this team.
+                </p>
+              )}
+            </CardContent>
+          </Card>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Team Stats</h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Team statistics will be displayed here.
-            </p>
-          </div>
+          {/* Team Stats */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-bold text-xl">Team Stats</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {teamStats.length > 0 ? (
+                <TeamOverallStatsTable
+                  teamName={team.name}
+                  teamStats={teamStats}
+                  games={games}
+                  teamId={team.id}
+                />
+              ) : (
+                <p className="text-muted-foreground">
+                  No stats available for this team.
+                </p>
+              )}
+            </CardContent>
+          </Card>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Recent Games</h2>
-            <p className="text-gray-500 dark:text-gray-400">
-              Recent game results will be displayed here.
-            </p>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Games</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Recent game results will be displayed here.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
