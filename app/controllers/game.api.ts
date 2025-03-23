@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "vinxi";
 import { gameService } from "~/app/container";
+import { supabaseServer } from "~/lib/utils/supabase-server";
 // Get all games with team information
 export const getGames = createServerFn({ method: "GET" }).handler(async () => {
   // Query games with their related teams
@@ -48,6 +49,29 @@ export const updateGameScore = createServerFn({
   }
 });
 
+
+export const getGamesForTeams = createServerFn({ method: "GET" })
+.validator(z.object({ teamIds: z.array(z.string()) }))
+.handler(async ({ data }) => {
+    const { teamIds } = data;
+    
+    if (!teamIds.length) {
+        return [];
+    }
+    
+    // Build the OR filter for home_team_id and away_team_id
+    const { data: games, error } = await supabaseServer
+        .from("games")
+        .select("*")
+        .or(`home_team_id.in.(${teamIds.join(",")}),away_team_id.in.(${teamIds.join(",")})`);
+    
+    if (error) {
+        error.message = "Failed to fetch games for teams";
+        throw error;
+    }
+    
+    return games || [];
+});
 
 // // Get games for a specific team
 // export const getTeamGames = createServerFn({

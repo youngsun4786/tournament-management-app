@@ -1,7 +1,7 @@
 import type { MakeOptional } from "~/lib/utils/make-optional-type";
 
 export type Team = {
-    team_id: string;
+    id: string;
     name: string;
     logo_url: string;
     season_id: string;
@@ -11,6 +11,6 @@ export type Team = {
     updated_at: string;
 }
 
-export type TeamInsert = MakeOptional<Team, "team_id" | "created_at" | "updated_at">;
+export type TeamInsert = MakeOptional<Team, "id" | "created_at" | "updated_at">;
 export type TeamUpdate = Partial<Team>;
 

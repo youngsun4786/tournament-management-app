@@ -31,6 +31,34 @@ export type PlayerGameStats = {
     updated_at: string | undefined;
 }
 
+export type PlayerGameStatsTotal = {
+    player: Omit<Player, "player_id" | "height" | "weight"> ;
+    total_points: number;
+    total_rebounds: number;
+    total_assists: number;
+    total_steals: number;
+    total_blocks: number;
+    total_turnovers: number;
+    total_personal_fouls: number;
+    total_plus_minus: number;
+    // percentages
+    total_field_goal_percentage: number;
+    total_two_point_percentage: number;
+    total_three_point_percentage: number;
+    total_free_throw_percentage: number;
+    // attempts per game
+    total_field_goal_attempts: number;
+    total_two_point_attempts: number;
+    total_three_point_attempts: number;
+    total_free_throw_attempts: number;
+    // made per game
+    total_field_goals_made: number;
+    total_two_pointers_made: number;
+    total_three_pointers_made: number;
+    total_free_throws_made: number;
+    games_played: number;
+}
+
 export type PlayerGameStatsAverage = {
     player: Omit<Player, "player_id" | "height" | "weight"> ;
     points_per_game: number;

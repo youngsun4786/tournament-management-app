@@ -2,7 +2,13 @@ import { queryOptions, useQuery, useSuspenseQuery, UseSuspenseQueryResult } from
 import { useServerFn } from "@tanstack/react-start";
 import { getUser } from "~/app/controllers/auth.api";
 import { getGameById, getGames } from "~/app/controllers/game.api";
-import { getAveragePlayerStatsAllPlayers, getAveragePlayerStatsByPlayerId, getPlayerGameStatsByGameId } from "~/app/controllers/player-game-stats.api";
+import {
+  getAveragePlayerStatsAllPlayers,
+  getAveragePlayerStatsByPlayerId,
+  getPlayerGameStatsByGameId,
+  getPlayerStatsAllPlayers,
+  getTotalPlayerStatsAllPlayers,
+} from "~/app/controllers/player-game-stats.api";
 import { getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
 import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
@@ -86,7 +92,7 @@ export const playerGameStatsQueries = {
   list: () =>
     queryOptions({
       queryKey: [...playerGameStatsQueries.all, "list"],
-      // queryFn: ({signal}) => getPlayerGameStats({signal}),
+      queryFn: ({signal}) => getPlayerStatsAllPlayers({signal}),
     }),
   detail: (gameId: string) =>
     queryOptions({
@@ -102,6 +108,11 @@ export const playerGameStatsQueries = {
     playerGameStatsAverages: () => ({
       queryKey: [...playerGameStatsQueries.all, "playerGameStatsAverages"],
       queryFn: async () => getAveragePlayerStatsAllPlayers()
+    }),
+
+    playerGameStatsTotals: () => ({
+      queryKey: [...playerGameStatsQueries.all, "playerGameStatsTotals"],
+      queryFn: async () => getTotalPlayerStatsAllPlayers()
     }),
 
     playerGameStatsAveragesByTeam: (teamId: string) => ({
