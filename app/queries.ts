@@ -6,10 +6,11 @@ import {
   getAveragePlayerStatsAllPlayers,
   getAveragePlayerStatsByPlayerId,
   getPlayerGameStatsByGameId,
+  getPlayerGameStatsByPlayerId,
   getPlayerStatsAllPlayers,
   getTotalPlayerStatsAllPlayers,
 } from "~/app/controllers/player-game-stats.api";
-import { getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
+import { getPlayerById, getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
 import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
 import { getSeasons } from "./controllers/season.api";
@@ -89,6 +90,13 @@ export const playerQueries = {
       queryKey: [...playerQueries.all, "list"],
       queryFn: ({signal}) => getPlayers({signal}),
     }),
+
+  detail: (playerId: string) =>
+    queryOptions({
+      queryKey: [...playerQueries.all, "detail", playerId],
+      queryFn: () => getPlayerById({ data: { playerId: playerId } }),
+    }),
+    
   teamPlayers: (teamId: string) =>
     queryOptions({
       queryKey: [...playerQueries.all, "teamPlayers", teamId],
@@ -103,28 +111,38 @@ export const playerGameStatsQueries = {
       queryKey: [...playerGameStatsQueries.all, "list"],
       queryFn: ({signal}) => getPlayerStatsAllPlayers({signal}),
     }),
+
   detail: (gameId: string) =>
     queryOptions({
       queryKey: [...playerGameStatsQueries.all, "detail", gameId],
-      queryFn: () => getPlayerGameStatsByGameId({ data: { gameId: gameId } }),
+      queryFn: ({signal}) => getPlayerGameStatsByGameId({signal, data: { gameId: gameId } }),
     }),
 
-    playerGameStatsAverage: (playerId: string) => ({
+  playerGameStatsByPlayerId: (playerId: string) => (
+    queryOptions({
+      queryKey: [...playerGameStatsQueries.all, "playerGameStatsByPlayerId", playerId],
+      queryFn: ({signal}) => getPlayerGameStatsByPlayerId({signal, data: { playerId: playerId } })
+    })
+  ),
+
+  playerGameStatsAverage: (playerId: string) => (
+    queryOptions({
       queryKey: [...playerGameStatsQueries.all, "playerGameStatsAverage", playerId],
-        queryFn: async () => getAveragePlayerStatsByPlayerId({ data: { playerId: playerId } })
-    }),
+      queryFn: ({signal}) => getAveragePlayerStatsByPlayerId({signal, data: { playerId: playerId } })
+    })
+  ),
 
-    playerGameStatsAverages: () => ({
+  playerGameStatsAverages: () => ({
       queryKey: [...playerGameStatsQueries.all, "playerGameStatsAverages"],
       queryFn: async () => getAveragePlayerStatsAllPlayers()
     }),
 
-    playerGameStatsTotals: () => ({
+  playerGameStatsTotals: () => ({
       queryKey: [...playerGameStatsQueries.all, "playerGameStatsTotals"],
       queryFn: async () => getTotalPlayerStatsAllPlayers()
     }),
 
-    playerGameStatsAveragesByTeam: (teamId: string) => ({
+  playerGameStatsAveragesByTeam: (teamId: string) => ({
       queryKey: [...playerGameStatsQueries.all, "playerGameStatsAveragesByTeam", teamId],
       queryFn: async () => {
         const allPlayerStats = await getAveragePlayerStatsAllPlayers();

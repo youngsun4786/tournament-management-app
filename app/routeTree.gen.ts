@@ -24,6 +24,7 @@ import { Route as EditPlayersIndexImport } from './routes/edit-players/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as ContactUsIndexImport } from './routes/contact-us/index'
 import { Route as TeamsTeamNameImport } from './routes/teams/$teamName'
+import { Route as PlayersPlayerIdImport } from './routes/players/$playerId'
 import { Route as GamesGameIdImport } from './routes/games/$gameId'
 import { Route as EditPlayersGameIdImport } from './routes/edit-players/$gameId'
 
@@ -107,6 +108,12 @@ const TeamsTeamNameRoute = TeamsTeamNameImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const PlayersPlayerIdRoute = PlayersPlayerIdImport.update({
+  id: '/players/$playerId',
+  path: '/players/$playerId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const GamesGameIdRoute = GamesGameIdImport.update({
   id: '/games/$gameId',
   path: '/games/$gameId',
@@ -163,6 +170,13 @@ declare module '@tanstack/react-router' {
       path: '/games/$gameId'
       fullPath: '/games/$gameId'
       preLoaderRoute: typeof GamesGameIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/players/$playerId': {
+      id: '/players/$playerId'
+      path: '/players/$playerId'
+      fullPath: '/players/$playerId'
+      preLoaderRoute: typeof PlayersPlayerIdImport
       parentRoute: typeof rootRoute
     }
     '/teams/$teamName': {
@@ -240,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/edit-players/$gameId': typeof EditPlayersGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
+  '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -258,6 +273,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/edit-players/$gameId': typeof EditPlayersGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
+  '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -277,6 +293,7 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/edit-players/$gameId': typeof EditPlayersGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
+  '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/contact-us/': typeof ContactUsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -297,6 +314,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/edit-players/$gameId'
     | '/games/$gameId'
+    | '/players/$playerId'
     | '/teams/$teamName'
     | '/contact-us'
     | '/dashboard'
@@ -314,6 +332,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/edit-players/$gameId'
     | '/games/$gameId'
+    | '/players/$playerId'
     | '/teams/$teamName'
     | '/contact-us'
     | '/dashboard'
@@ -331,6 +350,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/edit-players/$gameId'
     | '/games/$gameId'
+    | '/players/$playerId'
     | '/teams/$teamName'
     | '/contact-us/'
     | '/dashboard/'
@@ -350,6 +370,7 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   EditPlayersGameIdRoute: typeof EditPlayersGameIdRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
+  PlayersPlayerIdRoute: typeof PlayersPlayerIdRoute
   TeamsTeamNameRoute: typeof TeamsTeamNameRoute
   ContactUsIndexRoute: typeof ContactUsIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -368,6 +389,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   EditPlayersGameIdRoute: EditPlayersGameIdRoute,
   GamesGameIdRoute: GamesGameIdRoute,
+  PlayersPlayerIdRoute: PlayersPlayerIdRoute,
   TeamsTeamNameRoute: TeamsTeamNameRoute,
   ContactUsIndexRoute: ContactUsIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
@@ -395,6 +417,7 @@ export const routeTree = rootRoute
         "/sign-up",
         "/edit-players/$gameId",
         "/games/$gameId",
+        "/players/$playerId",
         "/teams/$teamName",
         "/contact-us/",
         "/dashboard/",
@@ -423,6 +446,9 @@ export const routeTree = rootRoute
     },
     "/games/$gameId": {
       "filePath": "games/$gameId.tsx"
+    },
+    "/players/$playerId": {
+      "filePath": "players/$playerId.tsx"
     },
     "/teams/$teamName": {
       "filePath": "teams/$teamName.tsx"

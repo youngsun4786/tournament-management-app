@@ -14,6 +14,19 @@ export const getPlayers = createServerFn({ method: "GET" }).handler(async () => 
   }
 });
 
+export const getPlayerById = createServerFn({ method: "GET" }).validator(z.object({
+  playerId: z.string().uuid(),
+})).handler(async ({ data }) => {
+  try {
+    const player = await playerService.getPlayerById(data.playerId);
+    return player;
+  } catch (error) {
+    console.error("Error fetching player by ID:", error);
+    throw new Error("Failed to fetch player by ID");
+  }
+});
+
+
 export const updatePlayer = createServerFn().validator(PlayerSchema).handler(async ({ data }) => {
   try {
     const player = await playerService.update(data);

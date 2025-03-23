@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import { Player } from "~/app/types/player";
@@ -23,7 +24,13 @@ export const columns: ColumnDef<Player>[] = [
           <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
             {player.name.charAt(0)}
           </div>
-          <span className="font-medium">{player.name}</span>
+          <Link
+            to={"/players/$playerId"}
+            params={{ playerId: player.player_id }}
+            className="hover:underline"
+          >
+            <span className="font-medium">{player.name}</span>
+          </Link>
         </div>
       );
     },

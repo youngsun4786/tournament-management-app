@@ -10,6 +10,7 @@ export interface IPlayerService {
     update(data: PlayerUpdate): Promise<Player>;
     delete(data: {playerId : Player["player_id"];}): Promise<Player>;
     getPlayers(): Promise<Player[]>;
+    getPlayerById(playerId: string): Promise<Player>;
     getPlayersByTeamId(teamId: string): Promise<Player[]>;
 }
 
@@ -71,6 +72,14 @@ export class PlayerService implements IPlayerService {
         return playersWithTeams;
     }
 
+    async getPlayerById(playerId: string): Promise<Player> {
+        const {data: player, error} = await this.supabase.from("players").select("*").eq("id", playerId).single<Player>();
+        if (!player || error) {
+            throw new Error("Failed to get player by ID", {cause: error});
+        }
+        return player;
+    }
+
     async getPlayersByTeamId(teamId: string): Promise<Player[]> {
         // Query players by team ID with their related team info
         const teamPlayers = await this.drizzle_db.query.players.findMany({
@@ -85,6 +94,7 @@ export class PlayerService implements IPlayerService {
         const playersWithTeams = teamPlayers.map(player => {
             return {
                 player_id: player.id,
+                team_id: player.team!.id,
                 team_name: player.team!.name,
                 name: player.name,
                 jersey_number: player.jersey_number,

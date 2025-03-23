@@ -34,12 +34,6 @@ export const Route = createFileRoute("/games/$gameId")({
     );
     await context.queryClient.ensureQueryData(gameQueries.list());
   },
-  // beforeLoad: async ({ params }) => {
-  //   const playerStats = await playerGameStatsService.getByGameId(params.gameId);
-  //   return {
-  //     playerStats,
-  //   };
-  // },
   component: RouteComponent,
 });
 
