@@ -1,6 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { Game, GameInsert, GameUpdate } from "~/app/types/game";
 import { db as drizzle_db } from "~/db";
+import { or } from "drizzle-orm/sql";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 
 export interface IGameService {
@@ -10,6 +11,7 @@ export interface IGameService {
     updateScore(data: GameUpdate): Promise<Game>;
     delete(data: {id: Game["id"]; userId: string}): Promise<Game>;
     getWithTeams(): Promise<Game[]>;
+    getGamesForTeams(teamIds: string[]): Promise<Game[]>;
 }
 
 export class GameService implements IGameService {
@@ -59,6 +61,38 @@ export class GameService implements IGameService {
             away_team_logo: game.team_away_team_id.logo_url
             };
         });
+        return gamesWithTeams;
+    }
+
+    async getGamesForTeams(teamIds: string[]): Promise<Game[]> {
+        const games = await this.drizzle_db.query.games.findMany({
+            where: (games, { inArray }) => or(inArray(games.home_team_id, teamIds), inArray(games.away_team_id, teamIds)),
+            with: {
+                team_home_team_id: true,
+                team_away_team_id: true,
+            }
+        });
+
+        // Transform the result to match the SQL query structure
+        const gamesWithTeams = games.map(game => {
+            return {
+            id: game.id,
+            game_date: game.game_date,
+            start_time: game.start_time,
+            location: game.location,
+            court: game.court,
+            is_completed: game.is_completed,
+            home_team_score: game.home_team_score,
+            away_team_score: game.away_team_score,
+            home_team_id: game.team_home_team_id.id,
+            home_team_name: game.team_home_team_id.name,
+            home_team_logo: game.team_home_team_id.logo_url,
+            away_team_id: game.team_away_team_id.id,
+            away_team_name: game.team_away_team_id.name,
+            away_team_logo: game.team_away_team_id.logo_url
+            };
+        });
+
         return gamesWithTeams;
     }
 

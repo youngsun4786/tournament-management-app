@@ -1,25 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getGamesForTeams } from "~/app/controllers/game.api";
 import { getTeamsBySeason } from "~/app/controllers/team.api";
-import type { Season } from "~/app/types/season";
+import { useGetSeasons } from "~/app/queries";
 import type { Game } from "~/app/types/game";
+import type { TeamWithSeason } from "~/app/types/team";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "~/lib/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "~/lib/components/ui/table";
-import { supabaseServer } from "~/lib/utils/supabase-server";
 // Define a more flexible game type that matches what comes from the database
 
 type TeamStanding = {
@@ -39,44 +39,33 @@ type TeamStanding = {
     type: "W" | "L";
     count: number;
   };
-  last10: string; // e.g. "8-2"
-};
-
-// Function to fetch seasons
-const fetchSeasons = async (): Promise<Season[]> => {
-  const { data, error } = await supabaseServer
-    .from("seasons")
-    .select("*")
-    .order("start_date", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching seasons:", error);
-    throw new Error("Failed to fetch seasons");
-  }
-
-  return data as Season[];
-};
-
-// Define type for the team data we receive
-type TeamData = {
-  id: string;
-  name: string;
-  logo_url: string;
-  season_id: string | null;
-  wins: number;
-  losses: number;
-  created_at: string;
-  updated_at: string | null;
+  last5: string; // e.g. "8-2"
 };
 
 const calculateTeamStandings = (
-  teams: TeamData[],
+  teams: TeamWithSeason[],
   games: Game[]
 ): TeamStanding[] => {
+  // Filter to only completed games
+  const completedGames = games.filter((game) => game.is_completed === true);
+
+  // Create map for tracking which teams have actually played games
+  const teamsWithGames = new Set<string>();
+
+  // Add teams to the set if they've played games
+  completedGames.forEach((game) => {
+    teamsWithGames.add(game.home_team_id);
+    teamsWithGames.add(game.away_team_id);
+  });
+
+  // Only include teams that are in the game data (have actually played games)
+  const activeTeams = teams.filter((team) => teamsWithGames.has(team.id));
+
+  // Initialize standings object
   const standings: { [key: string]: TeamStanding } = {};
 
-  // Initialize standings for all teams
-  teams.forEach((team) => {
+  // Initialize standings for teams that have actually played games
+  activeTeams.forEach((team) => {
     standings[team.id] = {
       id: team.id,
       name: team.name,
@@ -94,14 +83,11 @@ const calculateTeamStandings = (
         type: "W",
         count: 0,
       },
-      last10: "0-0",
+      last5: "0-0",
     };
   });
 
-  // Process completed games
-  const completedGames = games.filter((game) => game.is_completed === true);
-
-  // Sort games by date (oldest first)
+  // Sort games by date (oldest first) for accurate streak calculation
   completedGames.sort(
     (a, b) => new Date(a.game_date).getTime() - new Date(b.game_date).getTime()
   );
@@ -110,8 +96,14 @@ const calculateTeamStandings = (
   completedGames.forEach((game) => {
     const homeTeam = standings[game.home_team_id];
     const awayTeam = standings[game.away_team_id];
+    console.log(game.game_date)
+    console.log("home team: ", homeTeam.name);
+    console.log("home score: ", game.home_team_score);
+    console.log("away team: ", awayTeam.name);
+    console.log("away score: ", game.away_team_score);
+    console.log("\n")
 
-    if (homeTeam && awayTeam) {
+    if (homeTeam && awayTeam && (game.home_team_score > 0 && game.away_team_score > 0)) {
       // Home team won
       if (game.home_team_score > game.away_team_score) {
         homeTeam.wins++;
@@ -135,11 +127,16 @@ const calculateTeamStandings = (
     }
   });
 
-  // Calculate streak and last10
-  teams.forEach((team) => {
+  // For teams that exist in the standings, calculate streak and last5
+  Object.keys(standings).forEach((teamId) => {
+    const team = teams.find((t) => t.id === teamId);
+    if (!team) return;
+
     const teamGames = completedGames.filter(
-      (game) => game.home_team_id === team.id || game.away_team_id === team.id
+      (game) => game.home_team_id === teamId || game.away_team_id === teamId
     );
+
+    if (teamGames.length === 0) return; // Skip if no games played
 
     // Sort team games by date (most recent first)
     teamGames.sort(
@@ -152,7 +149,7 @@ const calculateTeamStandings = (
     let streakType: "W" | "L" | null = null;
 
     for (const game of teamGames) {
-      const isHomeTeam = game.home_team_id === team.id;
+      const isHomeTeam = game.home_team_id === teamId;
       const homeWon = game.home_team_score > game.away_team_score;
       const teamWon = isHomeTeam ? homeWon : !homeWon;
 
@@ -170,29 +167,54 @@ const calculateTeamStandings = (
     }
 
     if (streakType) {
-      standings[team.id].streak = {
+      standings[teamId].streak = {
         type: streakType,
         count: currentStreak,
       };
     }
 
-    // Calculate last10
-    const last10Games = teamGames.slice(0, 10);
-    const wins = last10Games.filter((game) => {
-      const isHomeTeam = game.home_team_id === team.id;
+    // Calculate last5
+    const last5Games = teamGames.slice(0, 5);
+    const wins = last5Games.filter((game) => {
+      const isHomeTeam = game.home_team_id === teamId;
       const homeWon = game.home_team_score > game.away_team_score;
       return isHomeTeam ? homeWon : !homeWon;
     }).length;
 
-    const losses = last10Games.length - wins;
-    standings[team.id].last10 = `${wins}-${losses}`;
+    const losses = last5Games.length - wins;
+    standings[teamId].last5 = `${wins}-${losses}`;
 
     // Calculate win percentage
-    const totalGames = standings[team.id].wins + standings[team.id].losses;
-    standings[team.id].winPercentage =
+    const totalGames = standings[teamId].wins + standings[teamId].losses;
+    standings[teamId].winPercentage =
       totalGames > 0
-        ? parseFloat((standings[team.id].wins / totalGames).toFixed(3))
+        ? parseFloat((standings[teamId].wins / totalGames).toFixed(3))
         : 0;
+  });
+
+  // Add teams that haven't played any games yet
+  teams.forEach((team) => {
+    if (!standings[team.id]) {
+      standings[team.id] = {
+        id: team.id,
+        name: team.name,
+        logo_url: team.logo_url,
+        wins: 0,
+        losses: 0,
+        winPercentage: 0,
+        homeWins: 0,
+        homeLosses: 0,
+        awayWins: 0,
+        awayLosses: 0,
+        pointsScored: 0,
+        pointsAllowed: 0,
+        streak: {
+          type: "L",
+          count: 0,
+        },
+        last5: "0-0",
+      };
+    }
   });
 
   // Convert object to array and sort
@@ -201,36 +223,30 @@ const calculateTeamStandings = (
     if (b.winPercentage !== a.winPercentage) {
       return b.winPercentage - a.winPercentage;
     }
-    // Tiebreaker: head-to-head record (would need more complex logic)
-    // For now, just use point differential as tiebreaker
+
+    // If same win percentage, sort by total wins
+    if (b.wins !== a.wins) {
+      return b.wins - a.wins;
+    }
+
+    // If same wins, sort by point differential
     const aDiff = a.pointsScored - a.pointsAllowed;
     const bDiff = b.pointsScored - b.pointsAllowed;
-    return bDiff - aDiff;
+
+    if (bDiff !== aDiff) {
+      return bDiff - aDiff;
+    }
+
+    // If still tied, alphabetically by name
+    return a.name.localeCompare(b.name);
   });
 };
 
 export const ScoreBoard = () => {
-  const [selectedSeasonId, setSelectedSeasonId] = useState<string | null>(null);
-
   // Query to fetch seasons
-  const seasonsQuery = useQuery({
-    queryKey: ["seasons"],
-    queryFn: fetchSeasons,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-  // Set initial season when seasons are loaded
-  useEffect(() => {
-    if (
-      seasonsQuery.data &&
-      seasonsQuery.data.length > 0 &&
-      !selectedSeasonId
-    ) {
-      const activeSeason = seasonsQuery.data.find((season) => season.is_active);
-      setSelectedSeasonId(activeSeason?.id || seasonsQuery.data[0].id);
-    }
-  }, [seasonsQuery.data, selectedSeasonId]);
-
+  const seasonsQuery = useGetSeasons();
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string | null>(null);
+  
   // Query to fetch teams for the selected season
   const teamsQuery = useQuery({
     queryKey: ["teamsBySeason", selectedSeasonId],
@@ -241,10 +257,10 @@ export const ScoreBoard = () => {
         const teams = await getTeamsBySeason({
           data: { seasonId: selectedSeasonId },
         });
-        return teams as TeamData[];
+        return teams as TeamWithSeason[];
       } catch (error) {
         console.error("Error fetching teams:", error);
-        return [] as TeamData[];
+        return [] as TeamWithSeason[];
       }
     },
     enabled: !!selectedSeasonId,
@@ -271,10 +287,15 @@ export const ScoreBoard = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+
+  const teams = teamsQuery.data?.filter((team) => team.name !== "TBD");
+  const games = gamesQuery.data;
+  const activeSeason = seasonsQuery.data?.filter((season) => season.is_active)[0];
+
   // Compute standings based on teams and games
   const standings =
-    teamsQuery.data && gamesQuery.data
-      ? calculateTeamStandings(teamsQuery.data, gamesQuery.data)
+    teams && games
+      ? calculateTeamStandings(teams, games)
       : [];
 
   const isLoading =
@@ -287,10 +308,11 @@ export const ScoreBoard = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Season Standings</h2>
+        <div/>
         <div className="flex items-center space-x-2">
           <span className="text-sm font-medium">Season:</span>
           <Select
+            defaultValue={activeSeason?.id}
             value={selectedSeasonId || ""}
             onValueChange={handleSeasonChange}
             disabled={isLoading || !seasonsQuery.data?.length}
@@ -325,7 +347,7 @@ export const ScoreBoard = () => {
                 <TableHead className="text-center">Win%</TableHead>
                 <TableHead className="text-center">Home</TableHead>
                 <TableHead className="text-center">Away</TableHead>
-                <TableHead className="text-center">Last 10</TableHead>
+                <TableHead className="text-center">Last 5</TableHead>
                 <TableHead className="text-center">Streak</TableHead>
               </TableRow>
             </TableHeader>
@@ -339,7 +361,7 @@ export const ScoreBoard = () => {
                     <div className="flex items-center space-x-2">
                       {team.logo_url && (
                         <img
-                          src={team.logo_url}
+                          src={`/team_logos/${team.logo_url}`}
                           alt={`${team.name} logo`}
                           className="w-6 h-6 rounded-full"
                         />
@@ -358,16 +380,20 @@ export const ScoreBoard = () => {
                   <TableCell className="text-center">
                     {team.awayWins}-{team.awayLosses}
                   </TableCell>
-                  <TableCell className="text-center">{team.last10}</TableCell>
+                  <TableCell className="text-center">{team.last5}</TableCell>
                   <TableCell className="text-center">
                     <span
                       className={
                         team.streak.type === "W"
                           ? "text-green-600"
-                          : "text-red-600"
+                          : team.streak.count === 0
+                            ? "text-gray-400"
+                            : "text-red-600"
                       }
                     >
-                      {team.streak.type} {team.streak.count}
+                      {team.streak.count > 0
+                        ? `${team.streak.type} ${team.streak.count}`
+                        : "-"}
                     </span>
                   </TableCell>
                 </TableRow>
@@ -385,16 +411,16 @@ export const ScoreBoard = () => {
       )}
 
       {/* Debug information - remove in production */}
-      {teamsQuery.data && gamesQuery.data && (
+      {/* {teamsQuery.data && gamesQuery.data && (
         <div className="mt-8 p-4 bg-gray-100 rounded-md text-xs">
-          <p>Teams in this season: {teamsQuery.data.length}</p>
-          <p>Games involving these teams: {gamesQuery.data.length}</p>
+          <p>Active teams this season: {teamsQuery.data.length}</p>
+          <p>Total games: {gamesQuery.data.length}</p>
           <p>
             Completed games:{" "}
             {gamesQuery.data.filter((g) => g.is_completed === true).length}
           </p>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

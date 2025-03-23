@@ -56,13 +56,13 @@ export class TeamGameStatsService implements ITeamGameStatsService {
             turnovers: teamStat.turnovers,
             team_fouls: teamStat.team_fouls,
             team: {
-                team_id: teamStat.team!.id,
+                id: teamStat.team!.id,
                 name: teamStat.team!.name,
                 logo_url: teamStat.team!.logo_url,
                 season_id: teamStat.team!.season_id,
                 wins: teamStat.team!.wins,
                 losses: teamStat.team!.losses,
-            } as Omit<Team, "logo_url" | "season_id" | "created_at" | "updated_at">,
+            } as Omit<Team, "logo_url" | "season_id" | "created_at">,
         }));
 
         return teamStatsWithTeam;
@@ -105,13 +105,13 @@ export class TeamGameStatsService implements ITeamGameStatsService {
             turnovers: teamStat.turnovers,
             team_fouls: teamStat.team_fouls,
             team: {
-                team_id: teamStat.team!.id,
+                id: teamStat.team!.id,
                 name: teamStat.team!.name,
                 logo_url: teamStat.team!.logo_url,
                 season_id: teamStat.team!.season_id,
                 wins: teamStat.team!.wins,
                 losses: teamStat.team!.losses,
-            } as Omit<Team, "logo_url" | "season_id" | "created_at" | "updated_at">,
+            } as Omit<Team, "logo_url" | "season_id" | "created_at">,
         }));
         return teamStatsWithTeam;
     }
@@ -154,13 +154,13 @@ export class TeamGameStatsService implements ITeamGameStatsService {
             turnovers: teamStat.turnovers,
             team_fouls: teamStat.team_fouls,
             team: {
-                team_id: teamStat.team!.id,
+                id: teamStat.team!.id,
                 name: teamStat.team!.name,
                 logo_url: teamStat.team!.logo_url,
                 season_id: teamStat.team!.season_id,
                 wins: teamStat.team!.wins,
                 losses: teamStat.team!.losses,
-            } as Omit<Team, "logo_url" | "season_id" | "created_at" | "updated_at">,
+            } as Omit<Team, "logo_url" | "season_id" | "created_at">,
         }));
 
         return teamStatsWithTeam;

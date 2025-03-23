@@ -12,6 +12,7 @@ import {
 import { getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
 import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
 import { getTeamByName, getTeams } from "~/app/controllers/team.api";
+import { getSeasons } from "./controllers/season.api";
 
 export const useGetTeams = () => {
     return useQuery({
@@ -32,6 +33,14 @@ export const useGetTeamStats = () => {
     return useQuery({
         queryKey: ["teamStats"],
         queryFn: useServerFn(getTeamStats),
+    })
+}
+
+export const useGetSeasons = () => {
+    return useQuery({
+        queryKey: ["seasons"],
+        queryFn: useServerFn(getSeasons),
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
 }
 

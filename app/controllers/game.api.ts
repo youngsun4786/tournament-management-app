@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "vinxi";
 import { gameService } from "~/app/container";
-import { supabaseServer } from "~/lib/utils/supabase-server";
 // Get all games with team information
 export const getGames = createServerFn({ method: "GET" }).handler(async () => {
   // Query games with their related teams
@@ -9,6 +8,7 @@ export const getGames = createServerFn({ method: "GET" }).handler(async () => {
     const gamesWithTeams = await gameService.getWithTeams();
     return gamesWithTeams;
   } catch (error) {
+    console.error("Error fetching games with teams information:", error);
     throw new Error("Failed to fetch games with teams information");
   }  
 });
@@ -25,6 +25,7 @@ export const getGameById = createServerFn({
     const game = await gameService.getById(data.gameId);
     return game;
   } catch (error) {
+    console.error("Error fetching game by id:", error);
     throw new Error("Failed to fetch game by id");
   }
 });
@@ -49,28 +50,17 @@ export const updateGameScore = createServerFn({
   }
 });
 
-
+// get games for a specific team
 export const getGamesForTeams = createServerFn({ method: "GET" })
 .validator(z.object({ teamIds: z.array(z.string()) }))
 .handler(async ({ data }) => {
-    const { teamIds } = data;
-    
-    if (!teamIds.length) {
-        return [];
-    }
-    
-    // Build the OR filter for home_team_id and away_team_id
-    const { data: games, error } = await supabaseServer
-        .from("games")
-        .select("*")
-        .or(`home_team_id.in.(${teamIds.join(",")}),away_team_id.in.(${teamIds.join(",")})`);
-    
-    if (error) {
-        error.message = "Failed to fetch games for teams";
-        throw error;
-    }
-    
-    return games || [];
+  try {
+    const games = await gameService.getGamesForTeams(data.teamIds);
+    return games;
+  } catch (error) {
+    console.error("Error fetching games for teams:", error);
+    throw new Error("Failed to fetch games for teams");
+  }
 });
 
 // // Get games for a specific team

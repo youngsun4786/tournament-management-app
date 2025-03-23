@@ -91,6 +91,114 @@ export type Database = {
           },
         ]
       }
+      player_game_stats: {
+        Row: {
+          assists: number | null
+          blocks: number | null
+          created_at: string | null
+          defensive_rebounds: number | null
+          field_goal_percentage: number | null
+          field_goals_attempted: number | null
+          field_goals_made: number | null
+          free_throw_percentage: number | null
+          free_throws_attempted: number | null
+          free_throws_made: number | null
+          game_id: string | null
+          id: string
+          minutes_played: number | null
+          offensive_rebounds: number | null
+          personal_fouls: number | null
+          player_id: string | null
+          plus_minus: number | null
+          points: number | null
+          steals: number | null
+          three_point_percentage: number | null
+          three_pointers_attempted: number | null
+          three_pointers_made: number | null
+          total_rebounds: number | null
+          turnovers: number | null
+          two_point_percentage: number | null
+          two_pointers_attempted: number | null
+          two_pointers_made: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assists?: number | null
+          blocks?: number | null
+          created_at?: string | null
+          defensive_rebounds?: number | null
+          field_goal_percentage?: number | null
+          field_goals_attempted?: number | null
+          field_goals_made?: number | null
+          free_throw_percentage?: number | null
+          free_throws_attempted?: number | null
+          free_throws_made?: number | null
+          game_id?: string | null
+          id?: string
+          minutes_played?: number | null
+          offensive_rebounds?: number | null
+          personal_fouls?: number | null
+          player_id?: string | null
+          plus_minus?: number | null
+          points?: number | null
+          steals?: number | null
+          three_point_percentage?: number | null
+          three_pointers_attempted?: number | null
+          three_pointers_made?: number | null
+          total_rebounds?: number | null
+          turnovers?: number | null
+          two_point_percentage?: number | null
+          two_pointers_attempted?: number | null
+          two_pointers_made?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assists?: number | null
+          blocks?: number | null
+          created_at?: string | null
+          defensive_rebounds?: number | null
+          field_goal_percentage?: number | null
+          field_goals_attempted?: number | null
+          field_goals_made?: number | null
+          free_throw_percentage?: number | null
+          free_throws_attempted?: number | null
+          free_throws_made?: number | null
+          game_id?: string | null
+          id?: string
+          minutes_played?: number | null
+          offensive_rebounds?: number | null
+          personal_fouls?: number | null
+          player_id?: string | null
+          plus_minus?: number | null
+          points?: number | null
+          steals?: number | null
+          three_point_percentage?: number | null
+          three_pointers_attempted?: number | null
+          three_pointers_made?: number | null
+          total_rebounds?: number | null
+          turnovers?: number | null
+          two_point_percentage?: number | null
+          two_pointers_attempted?: number | null
+          two_pointers_made?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_game_stats_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_game_stats_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           created_at: string | null
@@ -203,27 +311,135 @@ export type Database = {
         }
         Relationships: []
       }
+      team_game_stats: {
+        Row: {
+          assists: number | null
+          blocks: number | null
+          created_at: string | null
+          defensive_rebounds: number | null
+          field_goal_percentage: number | null
+          field_goals_attempted: number | null
+          field_goals_made: number | null
+          free_throw_percentage: number | null
+          free_throws_attempted: number | null
+          free_throws_made: number | null
+          game_id: string | null
+          id: string
+          offensive_rebounds: number | null
+          steals: number | null
+          team_fouls: number | null
+          team_id: string | null
+          three_point_percentage: number | null
+          three_pointers_attempted: number | null
+          three_pointers_made: number | null
+          total_points: number | null
+          total_rebounds: number | null
+          turnovers: number | null
+          two_point_percentage: number | null
+          two_pointers_attempted: number | null
+          two_pointers_made: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assists?: number | null
+          blocks?: number | null
+          created_at?: string | null
+          defensive_rebounds?: number | null
+          field_goal_percentage?: number | null
+          field_goals_attempted?: number | null
+          field_goals_made?: number | null
+          free_throw_percentage?: number | null
+          free_throws_attempted?: number | null
+          free_throws_made?: number | null
+          game_id?: string | null
+          id?: string
+          offensive_rebounds?: number | null
+          steals?: number | null
+          team_fouls?: number | null
+          team_id?: string | null
+          three_point_percentage?: number | null
+          three_pointers_attempted?: number | null
+          three_pointers_made?: number | null
+          total_points?: number | null
+          total_rebounds?: number | null
+          turnovers?: number | null
+          two_point_percentage?: number | null
+          two_pointers_attempted?: number | null
+          two_pointers_made?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assists?: number | null
+          blocks?: number | null
+          created_at?: string | null
+          defensive_rebounds?: number | null
+          field_goal_percentage?: number | null
+          field_goals_attempted?: number | null
+          field_goals_made?: number | null
+          free_throw_percentage?: number | null
+          free_throws_attempted?: number | null
+          free_throws_made?: number | null
+          game_id?: string | null
+          id?: string
+          offensive_rebounds?: number | null
+          steals?: number | null
+          team_fouls?: number | null
+          team_id?: string | null
+          three_point_percentage?: number | null
+          three_pointers_attempted?: number | null
+          three_pointers_made?: number | null
+          total_points?: number | null
+          total_rebounds?: number | null
+          turnovers?: number | null
+          two_point_percentage?: number | null
+          two_pointers_attempted?: number | null
+          two_pointers_made?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_game_stats_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_game_stats_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           created_at: string
           id: string
           logo_url: string | null
+          losses: number
           name: string
           season_id: string | null
+          wins: number
         }
         Insert: {
           created_at?: string
           id?: string
           logo_url?: string | null
+          losses?: number
           name?: string
           season_id?: string | null
+          wins?: number
         }
         Update: {
           created_at?: string
           id?: string
           logo_url?: string | null
+          losses?: number
           name?: string
           season_id?: string | null
+          wins?: number
         }
         Relationships: [
           {
@@ -270,7 +486,6 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "score-keeper" | "player" | "captain"
-      role: "captain" | "score-keeper" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
