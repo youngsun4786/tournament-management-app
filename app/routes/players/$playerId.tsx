@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
 import { playerGameStatsQueries, playerQueries } from "~/app/queries";
 import type { PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
+import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
 
 // Register ChartJS components
 ChartJS.register(
@@ -178,22 +179,18 @@ function RouteComponent() {
           <StatCard
             label="PPG"
             value={playerGameStatsAverage.points_per_game.toFixed(1)}
-            icon="🏀"
           />
           <StatCard
             label="RPG"
             value={playerGameStatsAverage.rebounds_per_game.toFixed(1)}
-            icon="🔄"
           />
           <StatCard
             label="APG"
             value={playerGameStatsAverage.assists_per_game.toFixed(1)}
-            icon="👐"
           />
           <StatCard
             label="Games"
             value={playerGameStatsAverage.games_played.toString()}
-            icon="📊"
           />
         </div>
       </div>
@@ -289,7 +286,12 @@ function RouteComponent() {
       </div>
 
       {/* Recent Games */}
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+      <PlayerGameStatsTable
+        playerStats={recentGames}
+        isLoading={isLoadingPlayerGameStats}
+        isPlayerProfile={true}
+      />
+      {/* <div className="bg-white rounded-2xl shadow-md overflow-hidden">
         <div className="p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">Recent Games</h2>
         </div>
@@ -356,7 +358,7 @@ function RouteComponent() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -365,16 +367,13 @@ function RouteComponent() {
 const StatCard = ({
   label,
   value,
-  icon,
 }: {
   label: string;
   value: string;
-  icon: string;
 }) => (
   <div className="text-center py-4">
     <div className="text-2xl font-bold text-gray-800 mb-1">{value}</div>
     <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
-      <span>{icon}</span>
       <span>{label}</span>
     </div>
   </div>
@@ -414,29 +413,11 @@ const ShootingStatCard = ({
         </span>
       </div>
       <div className="text-gray-500 text-sm">
-        {made}/{attempts}
+        <span>
+          {made} made | {attempts} attempts
+        </span>
       </div>
     </div>
   );
 };
 
-// Table components for cleaner code
-const TableHead = ({ children }: { children: React.ReactNode }) => (
-  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    {children}
-  </th>
-);
-
-const TableCell = ({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <td
-    className={`px-4 py-3 whitespace-nowrap text-sm text-gray-700 ${className}`}
-  >
-    {children}
-  </td>
-);

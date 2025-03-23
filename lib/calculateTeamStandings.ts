@@ -18,7 +18,7 @@ export type TeamStanding = {
       type: "W" | "L";
       count: number;
     };
-    last5: string; // e.g. "8-2"
+    last5: string; // e.g. "4-1"
 };
 
 
@@ -195,6 +195,14 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
 
   // Convert object to array and sort
   return Object.values(standings).sort((a, b) => {
+    // First, prioritize teams that have played at least one game
+    const aHasPlayed = a.wins + a.losses > 0;
+    const bHasPlayed = b.wins + b.losses > 0;
+    
+    if (aHasPlayed !== bHasPlayed) {
+      return aHasPlayed ? -1 : 1; // Teams that have played go first
+    }
+    
     // Sort by win percentage (descending)
     if (b.winPercentage !== a.winPercentage) {
       return b.winPercentage - a.winPercentage;

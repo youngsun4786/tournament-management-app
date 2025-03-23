@@ -37,6 +37,8 @@ function RouteComponent() {
     <div>
       <div className="container m-auto p-4">
         <h1 className="text-2xl font-bold">Players</h1>
+      </div>
+      <div className="container m-auto p-4">
         <DataTable
           columns={columns}
           data={players}

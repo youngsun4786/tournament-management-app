@@ -12,13 +12,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 interface PlayerGameStatsTableProps {
   playerStats: PlayerGameStatsWithPlayer[];
   isLoading: boolean;
-  isError: boolean;
+  isPlayerProfile: boolean;
 }
 
 export const PlayerGameStatsTable = ({
   playerStats,
   isLoading,
-  isError,
+  isPlayerProfile = false,
 }: PlayerGameStatsTableProps) => {
   // Group stats by team
   const groupedStats = playerStats?.reduce(
@@ -83,8 +83,7 @@ export const PlayerGameStatsTable = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-      </div>
+      <div className="flex justify-between items-center"></div>
       {isLoading ? (
         <div className="text-center py-10">Loading player statistics...</div>
       ) : playerStats?.length === 0 ? (
@@ -108,25 +107,41 @@ export const PlayerGameStatsTable = ({
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          {statHeaders.map((header) => (
-                            <TableHead
-                              key={header.key}
-                              className={header.className}
-                            >
-                              {header.label}
+                          {!isPlayerProfile && (
+                            <TableHead className="text-center">No.</TableHead>
+                          )}
+                          {!isPlayerProfile && (
+                            <TableHead className="text-center">
+                              Player
                             </TableHead>
-                          ))}
+                          )}
+                          {statHeaders.map(
+                            (header) =>
+                              header.key !== "name" &&
+                              header.key !== "jersey_number" && (
+                                <TableHead
+                                  key={header.key}
+                                  className={header.className}
+                                >
+                                  {header.label}
+                                </TableHead>
+                              )
+                          )}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {stats.map((stat) => (
                           <TableRow key={stat.pgs_id}>
-                            <TableCell className="text-center">
-                              {stat.player?.jersey_number}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {stat.player?.name}
-                            </TableCell>
+                            {!isPlayerProfile && (
+                              <TableCell className="text-center">
+                                {stat.player?.jersey_number}
+                              </TableCell>
+                            )}
+                            {!isPlayerProfile && (
+                              <TableCell className="font-medium">
+                                {stat.player?.name}
+                              </TableCell>
+                            )}
                             <TableCell className="text-center">
                               {stat.minutes_played}
                             </TableCell>

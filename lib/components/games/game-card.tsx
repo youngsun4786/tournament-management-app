@@ -41,7 +41,7 @@ export function GameCard({ game }: GameCardProps) {
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
               {game.home_team_logo ? (
                 <img
-                  src={`/team_logos/${game.home_team_logo}`}
+                  src={`/team_logos/${game.home_team_name === "TBD" ? "ccbc_logo.png" : game.home_team_logo}`}
                   alt={game.home_team_name}
                   className="w-full h-full object-contain"
                 />
@@ -59,7 +59,7 @@ export function GameCard({ game }: GameCardProps) {
             <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
               {game.away_team_logo ? (
                 <img
-                  src={`/team_logos/${game.away_team_logo}`}
+                  src={`/team_logos/${game.away_team_name === "TBD" ? "ccbc_logo.png" : game.away_team_logo}`}
                   alt={game.away_team_name}
                   className="w-full h-full object-contain"
                 />

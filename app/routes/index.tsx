@@ -1,8 +1,9 @@
-import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { getGames } from "~/app/controllers/game.api";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
+import { TeamRankings } from "~/lib/components/standings/team-rankings";
 import TeamSlider from "~/lib/components/team-slider";
-import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
+import { ImageCarousel } from "~/lib/components/ui/image-carousel";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -15,9 +16,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { teams: teamInfo } = useRouteContext({ from: "__root__" });
-  const teams = teamInfo!.filter((team) => team.name !== "TBD");
-
   return (
     <div>
       <div className="container mx-auto p-4">
@@ -37,16 +35,15 @@ function Index() {
             <h2 className="text-xl font-bold mb-4">Season Highlights</h2>
             {/* Main Image Section */}
             <div className="mb-8">
-              <AspectRatio
-                ratio={16 / 9}
+              <ImageCarousel
+                images={[
+                  "/game_display/home_1.jpg",
+                  "/game_display/home_2.jpg",
+                ]}
+                autoplayInterval={4000}
+                aspectRatio={16 / 9}
                 className="bg-gray-100 dark:bg-gray-800 overflow-hidden rounded-lg shadow-md"
-              >
-                <img
-                  src="game_display/home_1.jpg"
-                  alt="Season highlights"
-                  className="w-full h-full object-cover"
-                />
-              </AspectRatio>
+              />
             </div>
 
             {/* News Section */}
@@ -106,57 +103,7 @@ function Index() {
           {/* Sidebar - 20% */}
           <div className="w-full lg:w-1/4 mt-8 lg:mt-0">
             {/* Team Rankings */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
-              <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                <h2 className="text-lg font-bold">Team rankings</h2>
-              </div>
-
-              <div className="overflow-hidden">
-                <table className="min-w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-700 text-xs">
-                    <tr>
-                      <th className="px-2 py-2 text-left">Rank</th>
-                      <th className="px-2 py-2 text-left">Team</th>
-                      <th className="px-2 py-2 text-center">Win</th>
-                      <th className="px-2 py-2 text-center">Lose</th>
-                      <th className="px-2 py-2 text-center">PCT</th>
-                      <th className="px-2 py-2 text-center">GB</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-                    {teams.slice(0, 10).map((team, index) => (
-                      <tr
-                        key={team.id}
-                        className="text-xs hover:bg-gray-50 dark:hover:bg-gray-700"
-                      >
-                        <td className="px-2 py-2 text-center font-medium">
-                          {index + 1}
-                        </td>
-                        <td className="px-2 py-2">
-                          <div className="flex items-center">
-                            <div className="w-6 h-6 flex-shrink-0 mr-2">
-                              <img
-                                src={`team_logos/${team.logo_url}`}
-                                alt={team.name}
-                                className="w-6 h-6 mr-2"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = "none";
-                                }}
-                              />
-                            </div>
-                            <span className="max-w-[60px]">{team.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-2 py-2 text-center">--</td>
-                        <td className="px-2 py-2 text-center">--</td>
-                        <td className="px-2 py-2 text-center">--</td>
-                        <td className="px-2 py-2 text-center">--</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <TeamRankings />
 
             {/* Notices */}
             {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">

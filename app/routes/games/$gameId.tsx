@@ -197,7 +197,8 @@ function RouteComponent() {
                 )}
               </div>
 
-              <div>
+              {/* !TODO: ADD RECENT FORM TO DISPLAY LATEST WIN/LOSS STREAK */}
+              {/* <div>
                 <h3 className="font-medium mb-2">Recent Form</h3>
                 <div className="flex gap-1">
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
@@ -216,7 +217,7 @@ function RouteComponent() {
                     L
                   </div>
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 
@@ -260,7 +261,8 @@ function RouteComponent() {
                 )}
               </div>
 
-              <div>
+              {/* !TODO: ADD RECENT FORM TO DISPLAY LATEST WIN/LOSS STREAK */}
+              {/* <div>
                 <h3 className="font-medium mb-2">Recent Form</h3>
                 <div className="flex gap-1">
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
@@ -279,7 +281,7 @@ function RouteComponent() {
                     W
                   </div>
                 </div>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </div>
@@ -296,7 +298,7 @@ function RouteComponent() {
               <PlayerGameStatsTable
                 playerStats={playerStats}
                 isLoading={isLoading}
-                isError={isError}
+                isPlayerProfile={false}
               />
             </TabsContent>
             <TabsContent value="team-stats">

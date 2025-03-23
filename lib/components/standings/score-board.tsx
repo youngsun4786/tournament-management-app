@@ -44,7 +44,6 @@ export const ScoreBoard = () => {
       }
     },
     enabled: !!selectedSeasonId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Query to fetch games for the selected teams
@@ -64,7 +63,6 @@ export const ScoreBoard = () => {
       }
     },
     enabled: !!teamsQuery.data && teamsQuery.data.length > 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const teams = teamsQuery.data?.filter((team) => team.name !== "TBD");
@@ -150,7 +148,7 @@ export const ScoreBoard = () => {
                   <TableCell className="text-center">{team.wins}</TableCell>
                   <TableCell className="text-center">{team.losses}</TableCell>
                   <TableCell className="text-center">
-                    {team.winPercentage.toFixed(3)}
+                    {(team.winPercentage * 100).toFixed(1)}%
                   </TableCell>
                   <TableCell className="text-center">
                     {team.homeWins}-{team.homeLosses}
@@ -162,14 +160,14 @@ export const ScoreBoard = () => {
                   <TableCell className="text-center">
                     <span
                       className={
-                        team.streak.type === "W"
-                          ? "text-green-600"
-                          : team.streak.count === 0
-                            ? "text-gray-400"
+                        team.streak.count > 1
+                          ? team.streak.type === "W"
+                            ? "text-green-600"
                             : "text-red-600"
+                          : "text-gray-400"
                       }
                     >
-                      {team.streak.count > 0
+                      {team.streak.count > 1
                         ? `${team.streak.type} ${team.streak.count}`
                         : "-"}
                     </span>
