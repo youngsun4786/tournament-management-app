@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { PlusCircle, User } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -58,9 +58,12 @@ import {
 
 export const Route = createFileRoute("/edit-teams/")({
   component: EditTeamsPage,
-  loader: async (context) => {
+  loader: async (loaderContext) => {
+    if (!loaderContext.context.authState.isAuthenticated) {
+      throw redirect({ to: "/" });
+    }
     // check authentication and captain role in one function
-    const userRole = await requireCaptain(context);
+    const userRole = await requireCaptain(loaderContext);
     return {
       userRole,
     };

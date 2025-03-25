@@ -1,4 +1,3 @@
-import { CarouselService } from './services/carousel.service';
 import { GameService } from './services/game.service';
 import { PlayerGameStatsService } from './services/player-game-stats.service';
 import { PlayerService } from './services/player.service';
@@ -24,9 +23,8 @@ const teamService = new TeamService();
 const playerGameStatsService = new PlayerGameStatsService();
 const teamGameStatsService = new TeamGameStatsService();
 const seasonService = new SeasonService();
-const carouselService = new CarouselService();
 
 export {
-  carouselService, gameService, playerGameStatsService, playerService, seasonService, teamGameStatsService, teamService
+   gameService, playerGameStatsService, playerService, seasonService, teamGameStatsService, teamService
 };
 

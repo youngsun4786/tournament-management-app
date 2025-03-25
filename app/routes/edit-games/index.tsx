@@ -1,4 +1,4 @@
-import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute, redirect, useRouteContext } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
 import { ArrowUpDown, Edit } from "lucide-react";
@@ -21,6 +21,9 @@ import { convert24to12 } from "~/lib/date";
 export const Route = createFileRoute("/edit-games/")({
   component: RouteComponent,
   beforeLoad: async (loaderContext) => {
+    if (!loaderContext.context.authState.isAuthenticated) {
+      throw redirect({ to: "/" });
+    }
     const userRole = await requireScoreKeeper(loaderContext);
     return { userRole };
   },

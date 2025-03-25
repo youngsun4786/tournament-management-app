@@ -101,8 +101,6 @@ function RouteComponent() {
   const playerGameStatsAverages =
     playerGameStatsAveragesQuery.data as PlayerGameStatsAverage[];
 
-  console.log(playerGameStatsAverages);
-
   if (!team) {
     return <div className="p-8">Loading team information...</div>;
   }

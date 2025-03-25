@@ -39,7 +39,6 @@ export class PlayerService implements IPlayerService {
     }
 
     async update(data: PlayerUpdate): Promise<Player> {
-        console.log("data: ", data);
         const {data: player, error} = await this.supabase.from("players").update({
             name: data.name,
             jersey_number: data.jersey_number,

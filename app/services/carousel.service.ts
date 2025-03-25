@@ -1,5 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
+import { createClient } from "@supabase/supabase-js";
 interface CarouselImage {
   id: string;
   imageUrl: string;
@@ -21,28 +20,15 @@ interface UpdateOrderItem {
   displayOrder: number;
 }
 
-// Check if we're in a browser environment
-const isBrowser = typeof window !== 'undefined';
-
 export class CarouselService {
   private supabase;
 
   constructor() {
     // Only initialize Supabase client when needed (not during SSR hydration)
     this.supabase = createClient(
-      process.env.SUPABASE_URL || (isBrowser ? window.ENV?.SUPABASE_URL : ''),
-      process.env.SUPABASE_ANON_KEY || (isBrowser ? window.ENV?.SUPABASE_ANON_KEY : '')
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!
     );
-  }
-
-  async getImages(): Promise<CarouselImage[]> {
-    const { data, error } = await this.supabase
-      .from('carousel_images')
-      .select('*')
-      .order('displayOrder', { ascending: true });
-
-    if (error) throw error;
-    return data || [];
   }
 
   async addImage(params: AddImageParams): Promise<CarouselImage> {
@@ -118,9 +104,6 @@ export class CarouselService {
   // Upload an image to storage and return its URL
   async uploadImage(file: File, folderPath: string = 'carousel'): Promise<{ url: string, path: string }> {
     // Ensure this method is only called in the browser
-    if (!isBrowser) {
-      throw new Error('File upload can only be performed in the browser');
-    }
 
     // Generate a unique file name to avoid collisions
     const fileName = `${folderPath}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;

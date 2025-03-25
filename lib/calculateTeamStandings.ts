@@ -72,12 +72,6 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
   completedGames.forEach((game) => {
     const homeTeam = standings[game.home_team_id];
     const awayTeam = standings[game.away_team_id];
-    console.log(game.game_date)
-    console.log("home team: ", homeTeam.name);
-    console.log("home score: ", game.home_team_score);
-    console.log("away team: ", awayTeam.name);
-    console.log("away score: ", game.away_team_score);
-    console.log("\n")
 
     if (homeTeam && awayTeam && (game.home_team_score > 0 && game.away_team_score > 0)) {
       // Home team won

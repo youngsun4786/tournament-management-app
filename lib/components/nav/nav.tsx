@@ -4,8 +4,6 @@ import { useAuth } from "~/lib/hooks/useAuth";
 
 export const Nav = () => {
   const { isAuthenticated, user, userRole, signOut } = useAuth();
-  console.log("userRole", userRole);
-  console.log("isAuthenticated", isAuthenticated);
 
   // Role-based navigation links
   const getNavLinks = (role?: UserRoleType) => {

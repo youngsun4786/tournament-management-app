@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getGames } from "~/app/controllers/game.api";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import { TeamRankings } from "~/lib/components/standings/team-rankings";
 import TeamSlider from "~/lib/components/team-slider";
@@ -26,28 +25,26 @@ interface IndexPageLoaderData {
 export const Route = createFileRoute("/")({
   loader: async () => {
     try {
-      const games = await getGames();
 
       // Try to get carousel images from API
-      let carouselImages: string[] = DEFAULT_CAROUSEL_IMAGES;
+      const carouselImages: string[] = DEFAULT_CAROUSEL_IMAGES;
 
-      try {
-        // Dynamically import the API to avoid Buffer reference issues during SSR
-        const { getCarouselImages } = await import(
-          "~/app/controllers/carousel.api"
-        );
-        const images = await getCarouselImages();
+      // try {
+      //   // Dynamically import the API to avoid Buffer reference issues during SSR
+      //   const { getCarouselImages } = await import(
+      //     "~/app/controllers/carousel.api"
+      //   );
+      //   const images = await getCarouselImages();
 
-        if (images && images.length > 0) {
-          carouselImages = images.map((img) => img.imageUrl);
-        }
-      } catch (error) {
-        console.error("Error loading carousel images:", error);
-        // Use default images on error
-      }
+      //   if (images && images.length > 0) {
+      //     carouselImages = images.map((img) => img.imageUrl);
+      //   }
+      // } catch (error) {
+      //   console.error("Error loading carousel images:", error);
+      //   // Use default images on error
+      // }
 
       return {
-        games,
         carouselImages,
       } as IndexPageLoaderData;
     } catch (error) {
@@ -63,7 +60,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   // Extract data with fallbacks for type safety
-  const { games, carouselImages } = Route.useLoaderData();
+  const { carouselImages } = Route.useLoaderData();
   const images = carouselImages || DEFAULT_CAROUSEL_IMAGES;
 
   return (

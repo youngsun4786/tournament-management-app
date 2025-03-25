@@ -106,6 +106,7 @@ export const signIn = createServerFn()
 
 export const signOut = createServerFn().handler(async () => {
   await supabaseServer.auth.signOut()
+  
 })
 
 export const getUser = createServerFn().handler(async () => {
@@ -130,7 +131,7 @@ export const getUser = createServerFn().handler(async () => {
         lastName: metadata.lastName,
         teamId: metadata?.role === "captain" ? profileData?.team_id as string : null,
       },
-      role: metadata?.role as UserRoleType,
+      role: metadata.role as UserRoleType,
     },
   } as AuthState
 })
@@ -169,17 +170,9 @@ export const updateUser = createServerFn()
   })
 
 export const getUserRole = createServerFn().handler(async () => {
-  const { data } = await supabaseServer.auth.getUser()
+  const { data : { user } } = await supabaseServer.auth.getUser();
 
-  if (!data.user) {
-    return null;
+  if (user) {
+    return user.user_metadata.role as UserRoleType;
   }
-
-  const { data: roleData } = await supabaseServer
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', data.user.id)
-    .single();
-
-  return roleData?.role as UserRoleType;
 })
