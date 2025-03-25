@@ -11,8 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as UnauthorizedImport } from './routes/unauthorized'
+import { Route as UnauthenticatedImport } from './routes/unauthenticated'
 import { Route as SignUpImport } from './routes/sign-up'
 import { Route as SignInImport } from './routes/sign-in'
+import { Route as ProfileImport } from './routes/profile'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as TeamsIndexImport } from './routes/teams/index'
@@ -20,15 +23,29 @@ import { Route as StatsIndexImport } from './routes/stats/index'
 import { Route as StandingsIndexImport } from './routes/standings/index'
 import { Route as ScheduleIndexImport } from './routes/schedule/index'
 import { Route as PlayersIndexImport } from './routes/players/index'
-import { Route as EditPlayersIndexImport } from './routes/edit-players/index'
+import { Route as EditTeamsIndexImport } from './routes/edit-teams/index'
+import { Route as EditGamesIndexImport } from './routes/edit-games/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as ContactUsIndexImport } from './routes/contact-us/index'
+import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as TeamsTeamNameImport } from './routes/teams/$teamName'
 import { Route as PlayersPlayerIdImport } from './routes/players/$playerId'
 import { Route as GamesGameIdImport } from './routes/games/$gameId'
-import { Route as EditPlayersGameIdImport } from './routes/edit-players/$gameId'
+import { Route as EditGamesGameIdImport } from './routes/edit-games/$gameId'
 
 // Create/Update Routes
+
+const UnauthorizedRoute = UnauthorizedImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UnauthenticatedRoute = UnauthenticatedImport.update({
+  id: '/unauthenticated',
+  path: '/unauthenticated',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SignUpRoute = SignUpImport.update({
   id: '/sign-up',
@@ -39,6 +56,12 @@ const SignUpRoute = SignUpImport.update({
 const SignInRoute = SignInImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileRoute = ProfileImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -84,9 +107,15 @@ const PlayersIndexRoute = PlayersIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const EditPlayersIndexRoute = EditPlayersIndexImport.update({
-  id: '/edit-players/',
-  path: '/edit-players/',
+const EditTeamsIndexRoute = EditTeamsIndexImport.update({
+  id: '/edit-teams/',
+  path: '/edit-teams/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EditGamesIndexRoute = EditGamesIndexImport.update({
+  id: '/edit-games/',
+  path: '/edit-games/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -99,6 +128,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const ContactUsIndexRoute = ContactUsIndexImport.update({
   id: '/contact-us/',
   path: '/contact-us/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminIndexRoute = AdminIndexImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -120,9 +155,9 @@ const GamesGameIdRoute = GamesGameIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const EditPlayersGameIdRoute = EditPlayersGameIdImport.update({
-  id: '/edit-players/$gameId',
-  path: '/edit-players/$gameId',
+const EditGamesGameIdRoute = EditGamesGameIdImport.update({
+  id: '/edit-games/$gameId',
+  path: '/edit-games/$gameId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -144,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileImport
+      parentRoute: typeof rootRoute
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -158,11 +200,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpImport
       parentRoute: typeof rootRoute
     }
-    '/edit-players/$gameId': {
-      id: '/edit-players/$gameId'
-      path: '/edit-players/$gameId'
-      fullPath: '/edit-players/$gameId'
-      preLoaderRoute: typeof EditPlayersGameIdImport
+    '/unauthenticated': {
+      id: '/unauthenticated'
+      path: '/unauthenticated'
+      fullPath: '/unauthenticated'
+      preLoaderRoute: typeof UnauthenticatedImport
+      parentRoute: typeof rootRoute
+    }
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedImport
+      parentRoute: typeof rootRoute
+    }
+    '/edit-games/$gameId': {
+      id: '/edit-games/$gameId'
+      path: '/edit-games/$gameId'
+      fullPath: '/edit-games/$gameId'
+      preLoaderRoute: typeof EditGamesGameIdImport
       parentRoute: typeof rootRoute
     }
     '/games/$gameId': {
@@ -186,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamNameImport
       parentRoute: typeof rootRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/contact-us/': {
       id: '/contact-us/'
       path: '/contact-us'
@@ -200,11 +263,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexImport
       parentRoute: typeof rootRoute
     }
-    '/edit-players/': {
-      id: '/edit-players/'
-      path: '/edit-players'
-      fullPath: '/edit-players'
-      preLoaderRoute: typeof EditPlayersIndexImport
+    '/edit-games/': {
+      id: '/edit-games/'
+      path: '/edit-games'
+      fullPath: '/edit-games'
+      preLoaderRoute: typeof EditGamesIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/edit-teams/': {
+      id: '/edit-teams/'
+      path: '/edit-teams'
+      fullPath: '/edit-teams'
+      preLoaderRoute: typeof EditTeamsIndexImport
       parentRoute: typeof rootRoute
     }
     '/players/': {
@@ -250,15 +320,20 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/profile': typeof ProfileRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/edit-players/$gameId': typeof EditPlayersGameIdRoute
+  '/unauthenticated': typeof UnauthenticatedRoute
+  '/unauthorized': typeof UnauthorizedRoute
+  '/edit-games/$gameId': typeof EditGamesGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
+  '/admin': typeof AdminIndexRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/edit-players': typeof EditPlayersIndexRoute
+  '/edit-games': typeof EditGamesIndexRoute
+  '/edit-teams': typeof EditTeamsIndexRoute
   '/players': typeof PlayersIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
@@ -269,15 +344,20 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/profile': typeof ProfileRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/edit-players/$gameId': typeof EditPlayersGameIdRoute
+  '/unauthenticated': typeof UnauthenticatedRoute
+  '/unauthorized': typeof UnauthorizedRoute
+  '/edit-games/$gameId': typeof EditGamesGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
+  '/admin': typeof AdminIndexRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/edit-players': typeof EditPlayersIndexRoute
+  '/edit-games': typeof EditGamesIndexRoute
+  '/edit-teams': typeof EditTeamsIndexRoute
   '/players': typeof PlayersIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
@@ -289,15 +369,20 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/profile': typeof ProfileRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/edit-players/$gameId': typeof EditPlayersGameIdRoute
+  '/unauthenticated': typeof UnauthenticatedRoute
+  '/unauthorized': typeof UnauthorizedRoute
+  '/edit-games/$gameId': typeof EditGamesGameIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
+  '/admin/': typeof AdminIndexRoute
   '/contact-us/': typeof ContactUsIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/edit-players/': typeof EditPlayersIndexRoute
+  '/edit-games/': typeof EditGamesIndexRoute
+  '/edit-teams/': typeof EditTeamsIndexRoute
   '/players/': typeof PlayersIndexRoute
   '/schedule/': typeof ScheduleIndexRoute
   '/standings/': typeof StandingsIndexRoute
@@ -310,15 +395,20 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/profile'
     | '/sign-in'
     | '/sign-up'
-    | '/edit-players/$gameId'
+    | '/unauthenticated'
+    | '/unauthorized'
+    | '/edit-games/$gameId'
     | '/games/$gameId'
     | '/players/$playerId'
     | '/teams/$teamName'
+    | '/admin'
     | '/contact-us'
     | '/dashboard'
-    | '/edit-players'
+    | '/edit-games'
+    | '/edit-teams'
     | '/players'
     | '/schedule'
     | '/standings'
@@ -328,15 +418,20 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/profile'
     | '/sign-in'
     | '/sign-up'
-    | '/edit-players/$gameId'
+    | '/unauthenticated'
+    | '/unauthorized'
+    | '/edit-games/$gameId'
     | '/games/$gameId'
     | '/players/$playerId'
     | '/teams/$teamName'
+    | '/admin'
     | '/contact-us'
     | '/dashboard'
-    | '/edit-players'
+    | '/edit-games'
+    | '/edit-teams'
     | '/players'
     | '/schedule'
     | '/standings'
@@ -346,15 +441,20 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/profile'
     | '/sign-in'
     | '/sign-up'
-    | '/edit-players/$gameId'
+    | '/unauthenticated'
+    | '/unauthorized'
+    | '/edit-games/$gameId'
     | '/games/$gameId'
     | '/players/$playerId'
     | '/teams/$teamName'
+    | '/admin/'
     | '/contact-us/'
     | '/dashboard/'
-    | '/edit-players/'
+    | '/edit-games/'
+    | '/edit-teams/'
     | '/players/'
     | '/schedule/'
     | '/standings/'
@@ -366,15 +466,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ProfileRoute: typeof ProfileRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
-  EditPlayersGameIdRoute: typeof EditPlayersGameIdRoute
+  UnauthenticatedRoute: typeof UnauthenticatedRoute
+  UnauthorizedRoute: typeof UnauthorizedRoute
+  EditGamesGameIdRoute: typeof EditGamesGameIdRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
   PlayersPlayerIdRoute: typeof PlayersPlayerIdRoute
   TeamsTeamNameRoute: typeof TeamsTeamNameRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   ContactUsIndexRoute: typeof ContactUsIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  EditPlayersIndexRoute: typeof EditPlayersIndexRoute
+  EditGamesIndexRoute: typeof EditGamesIndexRoute
+  EditTeamsIndexRoute: typeof EditTeamsIndexRoute
   PlayersIndexRoute: typeof PlayersIndexRoute
   ScheduleIndexRoute: typeof ScheduleIndexRoute
   StandingsIndexRoute: typeof StandingsIndexRoute
@@ -385,15 +490,20 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ProfileRoute: ProfileRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
-  EditPlayersGameIdRoute: EditPlayersGameIdRoute,
+  UnauthenticatedRoute: UnauthenticatedRoute,
+  UnauthorizedRoute: UnauthorizedRoute,
+  EditGamesGameIdRoute: EditGamesGameIdRoute,
   GamesGameIdRoute: GamesGameIdRoute,
   PlayersPlayerIdRoute: PlayersPlayerIdRoute,
   TeamsTeamNameRoute: TeamsTeamNameRoute,
+  AdminIndexRoute: AdminIndexRoute,
   ContactUsIndexRoute: ContactUsIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  EditPlayersIndexRoute: EditPlayersIndexRoute,
+  EditGamesIndexRoute: EditGamesIndexRoute,
+  EditTeamsIndexRoute: EditTeamsIndexRoute,
   PlayersIndexRoute: PlayersIndexRoute,
   ScheduleIndexRoute: ScheduleIndexRoute,
   StandingsIndexRoute: StandingsIndexRoute,
@@ -413,15 +523,20 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/profile",
         "/sign-in",
         "/sign-up",
-        "/edit-players/$gameId",
+        "/unauthenticated",
+        "/unauthorized",
+        "/edit-games/$gameId",
         "/games/$gameId",
         "/players/$playerId",
         "/teams/$teamName",
+        "/admin/",
         "/contact-us/",
         "/dashboard/",
-        "/edit-players/",
+        "/edit-games/",
+        "/edit-teams/",
         "/players/",
         "/schedule/",
         "/standings/",
@@ -435,14 +550,23 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
+    "/profile": {
+      "filePath": "profile.tsx"
+    },
     "/sign-in": {
       "filePath": "sign-in.tsx"
     },
     "/sign-up": {
       "filePath": "sign-up.tsx"
     },
-    "/edit-players/$gameId": {
-      "filePath": "edit-players/$gameId.tsx"
+    "/unauthenticated": {
+      "filePath": "unauthenticated.tsx"
+    },
+    "/unauthorized": {
+      "filePath": "unauthorized.tsx"
+    },
+    "/edit-games/$gameId": {
+      "filePath": "edit-games/$gameId.tsx"
     },
     "/games/$gameId": {
       "filePath": "games/$gameId.tsx"
@@ -453,14 +577,20 @@ export const routeTree = rootRoute
     "/teams/$teamName": {
       "filePath": "teams/$teamName.tsx"
     },
+    "/admin/": {
+      "filePath": "admin/index.tsx"
+    },
     "/contact-us/": {
       "filePath": "contact-us/index.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
     },
-    "/edit-players/": {
-      "filePath": "edit-players/index.tsx"
+    "/edit-games/": {
+      "filePath": "edit-games/index.tsx"
+    },
+    "/edit-teams/": {
+      "filePath": "edit-teams/index.tsx"
     },
     "/players/": {
       "filePath": "players/index.tsx"

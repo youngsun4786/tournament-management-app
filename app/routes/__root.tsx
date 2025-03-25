@@ -6,10 +6,10 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
+import { Navbar } from "lib/components/navbar";
+import { Toaster } from "lib/components/ui/sonner";
 import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
-
-import { Navbar } from "lib/components/navbar";
 import { authQueries, gameQueries, teamQueries } from "~/app/queries";
 import appCss from "~/lib/styles/app.css?url";
 
@@ -22,18 +22,6 @@ const TanStackRouterDevtools =
           default: res.TanStackRouterDevtools,
         }))
       );
-
-// const getTeamsInfo = createServerFn().handler(async () => {
-//   const teams = await getTeams();
-//   return {
-//     teams,
-//   };
-// });
-
-// const teamsQuery = queryOptions({
-//   queryKey: ["teams"],
-//   queryFn: ({ signal }) => getTeamsInfo({ signal }),
-// });
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -92,6 +80,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <Suspense>
           <TanStackRouterDevtools position="bottom-right" />
         </Suspense>
+        <Toaster />
         <Scripts />
       </body>
     </html>

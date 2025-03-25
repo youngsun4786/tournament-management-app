@@ -5,17 +5,67 @@ import { TeamRankings } from "~/lib/components/standings/team-rankings";
 import TeamSlider from "~/lib/components/team-slider";
 import { ImageCarousel } from "~/lib/components/ui/image-carousel";
 
+// Define types for loader data
+interface Game {
+  id: string;
+  // Add other game properties as needed
+}
+
+// Default carousel images for when API calls fail
+const DEFAULT_CAROUSEL_IMAGES = [
+  "/game_display/home_1.jpg",
+  "/game_display/home_2.jpg",
+];
+
+// Define the return type from the loader
+interface IndexPageLoaderData {
+  games: Game[];
+  carouselImages: string[];
+}
+
 export const Route = createFileRoute("/")({
-  beforeLoad: async () => {
-    const games = await getGames();
-    return {
-      games,
-    };
+  loader: async () => {
+    try {
+      const games = await getGames();
+
+      // Try to get carousel images from API
+      let carouselImages: string[] = DEFAULT_CAROUSEL_IMAGES;
+
+      try {
+        // Dynamically import the API to avoid Buffer reference issues during SSR
+        const { getCarouselImages } = await import(
+          "~/app/controllers/carousel.api"
+        );
+        const images = await getCarouselImages();
+
+        if (images && images.length > 0) {
+          carouselImages = images.map((img) => img.imageUrl);
+        }
+      } catch (error) {
+        console.error("Error loading carousel images:", error);
+        // Use default images on error
+      }
+
+      return {
+        games,
+        carouselImages,
+      } as IndexPageLoaderData;
+    } catch (error) {
+      console.error("Error in beforeLoad:", error);
+      return {
+        games: [],
+        carouselImages: DEFAULT_CAROUSEL_IMAGES,
+      } as IndexPageLoaderData;
+    }
   },
   component: Index,
 });
 
 function Index() {
+  // Extract data with fallbacks for type safety
+  const { games, carouselImages } = Route.useLoaderData();
+  const images = carouselImages || DEFAULT_CAROUSEL_IMAGES;
+
   return (
     <div>
       <div className="container mx-auto p-4">
@@ -36,10 +86,7 @@ function Index() {
             {/* Main Image Section */}
             <div className="mb-8">
               <ImageCarousel
-                images={[
-                  "/game_display/home_1.jpg",
-                  "/game_display/home_2.jpg",
-                ]}
+                images={images}
                 autoplayInterval={4000}
                 aspectRatio={16 / 9}
                 className="bg-gray-100 dark:bg-gray-800 overflow-hidden rounded-lg shadow-md"

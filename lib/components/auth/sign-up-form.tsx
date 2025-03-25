@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { signUp } from "~/app/controllers/auth.api";
+import { useGetTeams } from "~/app/queries";
 import { SignUpSchema, UserRoleType } from "~/app/schemas/auth.schema";
 import { Label } from "~/lib/components/ui/label";
 import {
@@ -17,12 +19,14 @@ import { FormField } from "../form/form-field";
 export const SignUpForm = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const [showTeamSelect, setShowTeamSelect] = useState(false);
+  const { data: teamsData, isLoading, isError } = useGetTeams();
+  const teams = teamsData?.filter((team) => team.name !== "TBD");
 
   const signUpMutation = useMutation({
     mutationFn: (data: Parameters<typeof signUp>[0]) => signUp(data),
     onSuccess: () => {
       toast.success("You have successfully signed up.");
-
       queryClient.resetQueries();
       router.invalidate();
     },
@@ -36,6 +40,7 @@ export const SignUpForm = () => {
       password: "",
       confirmPassword: "",
       role: "captain" as UserRoleType,
+      teamId: "",
     } as SignUpSchema,
     onSubmit: async ({ value }) => {
       await signUpMutation.mutateAsync({
@@ -43,6 +48,15 @@ export const SignUpForm = () => {
       });
     },
   });
+
+  // Simplified approach - set teamId to empty string when role changes and it's not captain
+  const handleRoleChange = (
+    value: UserRoleType,
+    field: { handleChange: (value: UserRoleType) => void }
+  ) => {
+    field.handleChange(value);
+    setShowTeamSelect(value === "captain");
+  };
 
   return (
     <div className="max-w-md mx-auto w-full p-4 md:p-8 shadow-input bg-white dark:bg-black shadow-xl rounded-none md:rounded-2xl border border-gray-200 transition-all duration-300">
@@ -130,18 +144,12 @@ export const SignUpForm = () => {
         />
         <div className="flex flex-col space-y-1.5">
           <Label htmlFor="role">Select Role</Label>
-          <form.Field
-            name="role"
-            validators={{
-              onChange: SignUpSchema.shape.role,
-            }}
-          >
+          <form.Field name="role">
             {(field) => (
               <>
                 <Select
-                  defaultValue={field.state.value}
                   onValueChange={(value) =>
-                    field.handleChange(value as UserRoleType)
+                    handleRoleChange(value as UserRoleType, field)
                   }
                 >
                   <SelectTrigger id="role" className="w-full">
@@ -151,12 +159,60 @@ export const SignUpForm = () => {
                     <SelectItem value="captain">Captain</SelectItem>
                     <SelectItem value="score-keeper">Score Keeper</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="player">Player</SelectItem>
                   </SelectContent>
                 </Select>
               </>
             )}
           </form.Field>
         </div>
+
+        {showTeamSelect && (
+          <div className="flex flex-col space-y-1.5 mt-4">
+            <Label htmlFor="teamId">Select Your Team</Label>
+            <form.Field name="teamId">
+              {(field) => (
+                <>
+                  <Select
+                    defaultValue={field.state.value}
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.handleChange(value);
+                      }
+                    }}
+                  >
+                    <SelectTrigger id="teamId" className="w-full">
+                      <SelectValue placeholder="Select your team" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {isLoading ? (
+                        <SelectItem value="" disabled>
+                          Loading...
+                        </SelectItem>
+                      ) : isError ? (
+                        <SelectItem value="" disabled>
+                          Error loading teams
+                        </SelectItem>
+                      ) : (
+                        teams?.map((team) => (
+                          <SelectItem key={team.id} value={team.id}>
+                            {team.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {field.state.meta.errorMap.onChange && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {field.state.meta.errorMap.onChange}
+                    </p>
+                  )}
+                </>
+              )}
+            </form.Field>
+          </div>
+        )}
+
         <form.AppForm>
           <form.SubmitButton label="Sign Up" />
         </form.AppForm>

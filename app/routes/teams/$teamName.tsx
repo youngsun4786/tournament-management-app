@@ -33,7 +33,9 @@ import {
 } from "~/lib/components/ui/table";
 
 export const Route = createFileRoute("/teams/$teamName")({
-  beforeLoad: async ({ params, context }) => {
+  component: RouteComponent,
+  loader: async ({ params, context }) => {
+    // Pre-fetch data
     const team = await context.queryClient.ensureQueryData(
       teamQueries.detail(params.teamName)
     );
@@ -55,8 +57,9 @@ export const Route = createFileRoute("/teams/$teamName")({
         playerGameStatsQueries.playerGameStatsAveragesByTeam(team.id)
       );
     }
+
+    return { team };
   },
-  component: RouteComponent,
 });
 
 // Add interfaces for the team stats

@@ -30,29 +30,15 @@ export const getTeam = createServerFn({ method: "GET" })
 .validator(z.object({ teamId: z.string() }))
 .handler(async ({ data }) => {
     const { teamId } = data;
-    const { data: team, error } = await supabaseServer.from("teams").select("*").eq("id", teamId).single();
-
-    if (error) {
-        error.message = "Failed to fetch team";
-        throw error;
+    try {
+        const team = await teamService.getTeamById(teamId);
+        return team;
+    } catch (error) {
+        console.error("Error fetching team:", error);
+        throw new Error("Failed to fetch team");
     }
-
-    // If no team found, return null
-    if (!team) {
-        return null;
-    }
-
-    // Transform to match our Team type - maintain the original id
-    return {
-        id: team.id,
-        name: team.name,
-        logo_url: team.logo_url || "",
-        season_id: team.season_id,
-        wins: team.wins || 0,
-        losses: team.losses || 0,
-        created_at: team.created_at,
-    };
 });
+
 
 export const getTeamByName = createServerFn({ method: "GET" })
 .validator(z.object({ name: z.string() }))

@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
 import { ArrowUpDown, Edit } from "lucide-react";
 import { useState } from "react";
+import { requireScoreKeeper } from "~/app/services/auth.service";
 import { Game } from "~/app/types/game";
 import { ButtonLink } from "~/lib/components/button-link";
 import { DataTable } from "~/lib/components/schedules/data-table";
@@ -17,8 +18,12 @@ import {
 } from "~/lib/components/ui/select";
 import { convert24to12 } from "~/lib/date";
 
-export const Route = createFileRoute("/edit-players/")({
+export const Route = createFileRoute("/edit-games/")({
   component: RouteComponent,
+  beforeLoad: async (loaderContext) => {
+    const userRole = await requireScoreKeeper(loaderContext);
+    return { userRole };
+  },
 });
 
 function RouteComponent() {
@@ -285,7 +290,7 @@ const columns: ColumnDef<Game>[] = [
         <div className="flex justify-center">
           <ButtonLink
             variant="outline"
-            to="/edit-players/$gameId"
+            to="/edit-games/$gameId"
             params={{ gameId: game.id }}
             className="w-24 flex gap-1 items-center justify-center"
           >

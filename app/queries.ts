@@ -12,16 +12,8 @@ import {
 } from "~/app/controllers/player-game-stats.api";
 import { getPlayerById, getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
 import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
-import { getTeamByName, getTeams } from "~/app/controllers/team.api";
+import { getTeam, getTeamByName, getTeams } from "~/app/controllers/team.api";
 import { getSeasons } from "./controllers/season.api";
-
-export const useGetTeams = () => {
-    return useQuery({
-        queryKey: ["teams"],
-        queryFn: useServerFn(getTeams),
-    });
-};
-
 
 export const useGetGames = () => {
     return useQuery({
@@ -31,19 +23,29 @@ export const useGetGames = () => {
 }
 
 export const useGetTeamStats = () => {
-    return useQuery({
-        queryKey: ["teamStats"],
-        queryFn: useServerFn(getTeamStats),
-    })
+  return useSuspenseQuery(teamGameStatsQueries.list());
 }
 
 export const useGetSeasons = () => {
     return useQuery({
         queryKey: ["seasons"],
         queryFn: useServerFn(getSeasons),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 60 * 60 * 1000, // 1 hour
     })
 }
+
+export const useGetTeams = () => {
+  return useSuspenseQuery(teamQueries.list());
+};
+
+export const useGetTeamById = (teamId: string) => {
+  return useSuspenseQuery(teamQueries.getTeamById(teamId));
+};
+
+// --------- PLAYERS ---------
+export const useGetPlayersByTeamId = (teamId: string) => {
+  return useSuspenseQuery(playerQueries.teamPlayers(teamId));
+};
 
 export const teamQueries = {
   all: ["teams"],
@@ -56,6 +58,11 @@ export const teamQueries = {
     queryOptions({
       queryKey: [...teamQueries.all, "detail", teamName],
       queryFn: () => getTeamByName({ data: { name: teamName } }),
+    }),
+  getTeamById: (teamId: string) =>
+    queryOptions({
+      queryKey: [...teamQueries.all, "detail", teamId],
+      queryFn: () => getTeam({ data: { teamId: teamId } }),
     }),
 }
 
@@ -81,7 +88,6 @@ export const gameQueries = {
       )
     })
 }
-
 
 export const playerQueries = {
   all: ["players"],
@@ -192,9 +198,9 @@ export const authQueries = {
   
 export const useAuthentication = () => {
     return useSuspenseQuery(authQueries.user())
-  }
+}
   
-  export const useAuthenticatedUser = () => {
+export const useAuthenticatedUser = () => {
     const authQuery = useAuthentication()
   
     if (authQuery.data.isAuthenticated === false) {

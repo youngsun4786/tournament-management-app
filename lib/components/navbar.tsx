@@ -40,10 +40,6 @@ const menuItems = [
   //   title: "About",
   //   href: "/about",
   // },
-  {
-    title: "Edit Players",
-    href: "/edit-players",
-  },
 ];
 
 export const Navbar = () => {

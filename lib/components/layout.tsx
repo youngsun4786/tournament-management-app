@@ -6,8 +6,11 @@ export const Layout = ({
   children: React.ReactNode;
 }) => {
   return (
-    <main className={`flex flex-col max-w-6xl mx-auto p-4 ${className}`}>
-      {children}
-    </main>
+    <>
+      {/* <Nav /> */}
+      <main className={`flex flex-col max-w-6xl mx-auto p-4 ${className}`}>
+        {children}
+      </main>
+    </>
   );
 };

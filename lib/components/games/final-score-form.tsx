@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { updateGameScore } from "~/app/controllers/game.api";
+import { gameQueries } from "~/app/queries";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 import { SwitchField } from "../form/switch-field";
@@ -48,7 +49,7 @@ export const FinalScoreForm = ({
     },
     onSuccess: () => {
       toast.success("Game score updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["games"] });
+      queryClient.invalidateQueries(gameQueries.list());
     },
   });
 
@@ -68,7 +69,9 @@ export const FinalScoreForm = ({
     <Card className="max-w-lg">
       <CardHeader>
         <CardTitle>Update Game Score</CardTitle>
-        <CardDescription>Enter final score after updating ALL PLAYER STATS</CardDescription>
+        <CardDescription>
+          Enter final score after updating ALL PLAYER STATS
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form

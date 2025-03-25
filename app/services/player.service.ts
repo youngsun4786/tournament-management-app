@@ -24,7 +24,14 @@ export class PlayerService implements IPlayerService {
     }
 
     async create(data: PlayerInsert): Promise<Player> {
-        const {data: player, error} = await this.supabase.from("players").insert(data).select().single<Player>();
+        const {data: player, error} = await this.supabase.from("players").insert({
+            name: data.name,
+            jersey_number: data.jersey_number,
+            height: data.height,
+            weight: data.weight,
+            position: data.position,
+            team_id: data.team_id
+        }).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to create player", {cause: error});
         }
@@ -32,7 +39,14 @@ export class PlayerService implements IPlayerService {
     }
 
     async update(data: PlayerUpdate): Promise<Player> {
-        const {data: player, error} = await this.supabase.from("players").update(data).eq("player_id", data.player_id).select().single<Player>();
+        console.log("data: ", data);
+        const {data: player, error} = await this.supabase.from("players").update({
+            name: data.name,
+            jersey_number: data.jersey_number,
+            height: data.height,
+            weight: data.weight,
+            position: data.position
+        }).eq("id", data.id).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to update player", {cause: error});
         }
@@ -40,7 +54,7 @@ export class PlayerService implements IPlayerService {
     }
 
     async delete({ playerId }: { playerId: Player["player_id"]}): Promise<Player> {
-        const {data: player, error} = await this.supabase.from("players").delete().eq("player_id", playerId).select().single<Player>();
+        const {data: player, error} = await this.supabase.from("players").delete().eq("id", playerId).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to delete player", {cause: error});
         }
@@ -60,6 +74,7 @@ export class PlayerService implements IPlayerService {
         const playersWithTeams = players.map(player => {
             return {
             player_id: player.id,
+            team_id: player.team!.id,
             team_name: player.team!.name,
             name: player.name,
             jersey_number: player.jersey_number,

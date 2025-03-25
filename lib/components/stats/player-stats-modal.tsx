@@ -44,6 +44,13 @@ export const PlayerStatsModal = ({
   const queryClient = useQueryClient();
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
 
+  // Keep track of the current values for shot calculations
+  const [shotValues, setShotValues] = useState({
+    twoPointersMade: 0,
+    threePointersMade: 0,
+    freeThrowsMade: 0,
+  });
+
   // Fetch players using Tanstack Start API
   const { data: players = [], isLoading: loading } = useQuery({
     queryKey: ["gamePlayers", gameId],
@@ -84,7 +91,10 @@ export const PlayerStatsModal = ({
 
       // Convert all numeric fields
       formData.minutes_played = Number(formData.minutes_played);
-      formData.points = Number(formData.points);
+      formData.points =
+        shotValues.twoPointersMade * 2 +
+        shotValues.threePointersMade * 3 +
+        shotValues.freeThrowsMade;
       formData.three_pointers_made = Number(formData.three_pointers_made);
       formData.three_pointers_attempted = Number(
         formData.three_pointers_attempted
@@ -149,11 +159,28 @@ export const PlayerStatsModal = ({
     },
   });
 
-  // Reset form when modal closes
+  // Handler for when shot values change
+  const updatePoints = () => {
+    // Calculate points
+    const totalPoints =
+      shotValues.twoPointersMade * 2 +
+      shotValues.threePointersMade * 3 +
+      shotValues.freeThrowsMade;
+
+    // Update the points field
+    form.setFieldValue("points", totalPoints);
+  };
+
+  // Reset form and shot values when modal closes
   useEffect(() => {
     if (!open) {
       form.reset();
       setSelectedPlayer(null);
+      setShotValues({
+        twoPointersMade: 0,
+        threePointersMade: 0,
+        freeThrowsMade: 0,
+      });
     }
   }, [open, form]);
 
@@ -198,17 +225,23 @@ export const PlayerStatsModal = ({
           <div className="flex items-center justify-center gap-4">
             {/* Group players by team */}
             {Object.entries(
-              players.reduce((acc, player) => {
-                const teamName = player.team_name || "Unknown Team";
-                if (!acc[teamName]) {
-                  acc[teamName] = [];
-                }
-                acc[teamName].push(player);
-                return acc;
-              }, {} as Record<string, typeof players>)
+              players.reduce(
+                (acc, player) => {
+                  const teamName = player.team_name || "Unknown Team";
+                  if (!acc[teamName]) {
+                    acc[teamName] = [];
+                  }
+                  acc[teamName].push(player);
+                  return acc;
+                },
+                {} as Record<string, typeof players>
+              )
             ).map(([teamName, teamPlayers]) => (
               <div key={teamName}>
-                <Label htmlFor={`player-select-${teamName}`} className="mb-2 block">
+                <Label
+                  htmlFor={`player-select-${teamName}`}
+                  className="mb-2 block"
+                >
                   {teamName}
                 </Label>
                 <Select
@@ -216,7 +249,10 @@ export const PlayerStatsModal = ({
                   onValueChange={setSelectedPlayer}
                   disabled={loading}
                 >
-                  <SelectTrigger id={`player-select-${teamName}`} className="w-full">
+                  <SelectTrigger
+                    id={`player-select-${teamName}`}
+                    className="w-full"
+                  >
                     <SelectValue placeholder={`Select player`} />
                   </SelectTrigger>
                   <SelectContent>
@@ -251,6 +287,34 @@ export const PlayerStatsModal = ({
                     field={formField}
                     text_type="text"
                     className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
+                    onChange={
+                      field.name === "two_pointers_made" ||
+                      field.name === "three_pointers_made" ||
+                      field.name === "free_throws_made"
+                        ? () => {
+                            // Update the state with the new value
+                            const newValue = Number(formField.state.value || 0);
+                            if (field.name === "two_pointers_made") {
+                              setShotValues((prev) => ({
+                                ...prev,
+                                twoPointersMade: newValue,
+                              }));
+                            } else if (field.name === "three_pointers_made") {
+                              setShotValues((prev) => ({
+                                ...prev,
+                                threePointersMade: newValue,
+                              }));
+                            } else if (field.name === "free_throws_made") {
+                              setShotValues((prev) => ({
+                                ...prev,
+                                freeThrowsMade: newValue,
+                              }));
+                            }
+
+                            updatePoints();
+                          }
+                        : undefined
+                    }
                   />
                 )}
               />
@@ -294,7 +358,6 @@ export const PlayerStatsModal = ({
               />
             ))}
           </div>
-
           <DialogFooter className="col-span-1 md:col-span-3 pt-4">
             <form.AppForm>
               <form.SubmitButton label="Save Stats" />

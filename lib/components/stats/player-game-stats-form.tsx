@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
@@ -28,6 +29,13 @@ export const PlayerGameStatsForm = ({
   onSuccess,
 }: PlayerGameStatsFormProps) => {
   const queryClient = useQueryClient();
+
+  // Keep track of the current values for shot calculations
+  const [shotValues, setShotValues] = useState({
+    twoPointersMade: initialData?.two_pointers_made || 0,
+    threePointersMade: initialData?.three_pointers_made || 0,
+    freeThrowsMade: initialData?.free_throws_made || 0,
+  });
 
   const mutation = useMutation({
     mutationFn: async (formData: PlayerStatsFormData & { pgs_id?: string }) => {
@@ -121,6 +129,18 @@ export const PlayerGameStatsForm = ({
     },
   });
 
+  // Handler for when shot values change
+  const updatePoints = () => {
+    // Calculate points
+    const totalPoints =
+      shotValues.twoPointersMade * 2 +
+      shotValues.threePointersMade * 3 +
+      shotValues.freeThrowsMade;
+
+    // Update points field in the form
+    form.setFieldValue("points", totalPoints);
+  };
+
   // Define the fields organized in columns as requested
   const columnOneFields = [
     { name: "two_pointers_made" as const, label: "2PT Made" },
@@ -175,6 +195,34 @@ export const PlayerGameStatsForm = ({
                     field={formField}
                     text_type="text"
                     className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
+                    onChange={
+                      field.name === "two_pointers_made" ||
+                      field.name === "three_pointers_made" ||
+                      field.name === "free_throws_made"
+                        ? () => {
+                            // Update the state with the new value
+                            const newValue = Number(formField.state.value || 0);
+                            if (field.name === "two_pointers_made") {
+                              setShotValues((prev) => ({
+                                ...prev,
+                                twoPointersMade: newValue,
+                              }));
+                            } else if (field.name === "three_pointers_made") {
+                              setShotValues((prev) => ({
+                                ...prev,
+                                threePointersMade: newValue,
+                              }));
+                            } else if (field.name === "free_throws_made") {
+                              setShotValues((prev) => ({
+                                ...prev,
+                                freeThrowsMade: newValue,
+                              }));
+                            }
+                            // Update points after state update
+                            setTimeout(updatePoints, 0);
+                          }
+                        : undefined
+                    }
                   />
                 )}
               />

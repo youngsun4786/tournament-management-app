@@ -6,6 +6,7 @@ const UserRole = {
   SCORE_KEEPER: "score-keeper",
   ADMIN: "admin",
   CAPTAIN: "captain",
+  PLAYER: "player",
 } as const;
 
 // Use as a type
@@ -20,6 +21,7 @@ export const UserMetaSchema = z.object({
       message: "Last name must be at least 3 characters",
     }
   ).max(20),
+  teamId: z.string().uuid(),
 })
 
 export type UserMeta = z.infer<typeof UserMetaSchema>
@@ -30,10 +32,27 @@ export const SignUpSchema = z.object({
   lastName: UserMetaSchema.shape.lastName,  
   email: z.string().email(),
   password: z.string().min(6),
-  confirmPassword: z.string(),
+  confirmPassword: z.string().min(6),
   role: z.custom<UserRoleType>((value) => Object.values(UserRole).includes(value as UserRoleType), {
     message: "Please select a valid role",
   }),
+  teamId: z.union([
+    z.string().uuid(),
+    z.literal(""),
+  ]),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+}).refine((data) => {
+  // If role is captain, teamId is required and must be a valid UUID
+  if (data.role === "captain") {
+    return data.teamId && data.teamId.length > 0;
+  }
+  // For other roles, teamId is not validated
+  return true;
+}, {
+  message: "Team selection is required for captains",
+  path: ["teamId"],
 })
 
 export type SignUpSchema = z.infer<typeof SignUpSchema>
@@ -54,4 +73,8 @@ export type AuthState =
       user: User
     }
 
-export type User = { email?: string; meta: UserMeta }
+export type User = { 
+  email?: string; 
+  meta: UserMeta;
+  role?: UserRoleType;
+}

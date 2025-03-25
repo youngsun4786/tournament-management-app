@@ -1,11 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createLink, useRouter } from "@tanstack/react-router";
+import { createLink, useNavigate, useRouter } from "@tanstack/react-router";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { signOut } from "~/app/controllers/auth.api";
 import { useAuthenticatedUser } from "~/app/queries";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +12,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Switch } from "./ui/switch";
+} from "~/lib/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 
 const ItemLink = createLink(DropdownMenuItem);
 
 export function UserMenu() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const {
     data: { user },
   } = useAuthenticatedUser();
@@ -30,13 +31,15 @@ export function UserMenu() {
     await signOut();
     queryClient.resetQueries();
     router.invalidate();
+    toast.success("Logged out successfully");
+    navigate({ to: "/" });
   };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-10 w-10">
             <AvatarImage
               src="/placeholder.svg?height=32&width=32"
               alt="User avatar"
@@ -51,7 +54,7 @@ export function UserMenu() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.meta.username ?? "User"}
+              {user.meta.firstName} {user.meta.lastName}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
@@ -59,15 +62,38 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {/* <ItemLink
+        <ItemLink
           className="cursor-pointer"
           to="/profile"
           onClick={() => setOpen(false)}
         >
           Profile
-        </ItemLink> */}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        </ItemLink>
+        {user.role === "captain" && (
+          <>
+            <DropdownMenuSeparator />
+            <ItemLink className="cursor-pointer" to="/edit-teams">
+              Edit Teams
+            </ItemLink>
+          </>
+        )}
+        {user.role === "score-keeper" && (
+          <>
+            <DropdownMenuSeparator />
+            <ItemLink className="cursor-pointer" to="/edit-games">
+              Edit Games
+            </ItemLink>
+          </>
+        )}
+        {user.role === "admin" && (
+          <>
+            <DropdownMenuSeparator />
+            <ItemLink className="cursor-pointer" to="/admin">
+              Admin
+            </ItemLink>
+          </>
+        )}
+        {/* <DropdownMenuItem>
           <div className="flex items-center justify-between w-full">
             Dark Mode
             <Switch
@@ -79,6 +105,7 @@ export function UserMenu() {
             />
           </div>
         </DropdownMenuItem>
+        <DropdownMenuSeparator /> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-red-600 cursor-pointer"

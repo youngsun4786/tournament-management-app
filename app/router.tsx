@@ -1,10 +1,18 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-
+import { toast } from "sonner";
+import { ZodError } from "zod";
+import { fromError } from "zod-validation-error";
 import { DefaultCatchBoundary } from "~/lib/components/DefaultCatchBoundary";
 import { NotFound } from "~/lib/components/NotFound";
 import { routeTree } from "./routeTree.gen";
+
+function parseZodError(error: Error) {
+  try {
+    return new ZodError(JSON.parse(error.message));
+  } catch {}
+}
 
 export function createRouter() {
   const queryClient = new QueryClient({
@@ -14,6 +22,21 @@ export function createRouter() {
         staleTime: 5 * 60 * 1000, // 5 minutes
       },
     },
+    mutationCache: new MutationCache({
+      onError: (error) => {
+        if (error instanceof Error) {
+          const zodError = parseZodError(error);
+          if (zodError) {
+            toast.error(fromError(zodError, { maxIssuesInMessage: 2 }).message);
+            return;
+          }
+
+          toast.error(error.message);
+        } else if (typeof error === "string") {
+          toast.error(error);
+        }
+      },
+    }),
   });
 
   return routerWithQueryClient(

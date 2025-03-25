@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { signIn } from "~/app/controllers/auth.api";
 import { SignInSchema } from "~/app/schemas/auth.schema";
@@ -7,18 +7,15 @@ import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 
 export const SignInForm = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
+  const router = useRouter();
   const signInMutation = useMutation({
     mutationFn: (data: Parameters<typeof signIn>[0]) => signIn(data),
-    onSuccess: (response) => {
-      if (response?.error) {
-        toast.error(response.error);
-        return;
-      }
-
+    onSuccess: () => {
+      toast.success("You have successfully signed in.");
       queryClient.resetQueries();
+      router.invalidate();
       navigate({ to: "/" });
     },
   });

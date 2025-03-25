@@ -6,6 +6,7 @@ import { teams } from "~/db/schema";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 export interface ITeamService {
     getTeams(): Promise<TeamWithSeason[]>;
+    getTeamById(teamId: string): Promise<TeamWithSeason>;
     getTeamsBySeasonId(seasonId: string): Promise<TeamWithSeason[]>;
 }
 
@@ -41,6 +42,30 @@ export class TeamService implements ITeamService {
         }));
 
         return formattedTeams;
+    }
+
+    async getTeamById(teamId: string): Promise<TeamWithSeason> {
+        const teamData = await this.drizzle_db.query.teams.findFirst({
+            where: eq(teams.id, teamId),
+            with: {
+                season: true,
+            },
+        });
+
+        if (!teamData) {
+            throw new Error("Team not found");
+        }
+
+        return {
+            ...teamData,
+            season: {
+                id: teamData.season!.id,
+                name: teamData.season!.name,
+                start_date: teamData.season!.start_date,
+                end_date: teamData.season!.end_date,
+                is_active: teamData.season!.is_active ?? false
+            },
+        };
     }
 
     async getTeamsBySeasonId(seasonId: string): Promise<TeamWithSeason[]> {

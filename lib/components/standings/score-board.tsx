@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getGamesForTeams } from "~/app/controllers/game.api";
 import { getTeamsBySeason } from "~/app/controllers/team.api";
 import { useGetSeasons } from "~/app/queries";
@@ -26,6 +26,25 @@ export const ScoreBoard = () => {
   // Query to fetch seasons
   const seasonsQuery = useGetSeasons();
   const [selectedSeasonId, setSelectedSeasonId] = useState<string | null>(null);
+
+  // Set the default season when seasons data is available
+  useEffect(() => {
+    if (
+      seasonsQuery.data &&
+      seasonsQuery.data.length > 0 &&
+      !selectedSeasonId
+    ) {
+      // First try to find the active season
+      const activeSeason = seasonsQuery.data.find((season) => season.is_active);
+
+      // If there's an active season, use it; otherwise use the first season
+      if (activeSeason) {
+        setSelectedSeasonId(activeSeason.id);
+      } else {
+        setSelectedSeasonId(seasonsQuery.data[0].id);
+      }
+    }
+  }, [seasonsQuery.data, selectedSeasonId]);
 
   // Query to fetch teams for the selected season
   const teamsQuery = useQuery({
@@ -67,9 +86,6 @@ export const ScoreBoard = () => {
 
   const teams = teamsQuery.data?.filter((team) => team.name !== "TBD");
   const games = gamesQuery.data;
-  const activeSeason = seasonsQuery.data?.filter(
-    (season) => season.is_active
-  )[0];
 
   // Compute standings based on teams and games
   const standings = teams && games ? calculateTeamStandings(teams, games) : [];
@@ -88,7 +104,6 @@ export const ScoreBoard = () => {
         <div className="flex items-center space-x-2">
           <span className="text-sm font-medium">Season:</span>
           <Select
-            defaultValue={activeSeason?.id}
             value={selectedSeasonId || ""}
             onValueChange={handleSeasonChange}
             disabled={isLoading || !seasonsQuery.data?.length}

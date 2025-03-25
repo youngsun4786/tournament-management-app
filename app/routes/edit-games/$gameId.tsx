@@ -1,9 +1,14 @@
 import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { requireScoreKeeper } from "~/app/services/auth.service";
 import { FinalScoreForm } from "~/lib/components/games/final-score-form";
 import { PlayerStatsManager } from "~/lib/components/stats/player-stats-manager";
 
-export const Route = createFileRoute("/edit-players/$gameId")({
+export const Route = createFileRoute("/edit-games/$gameId")({
   component: RouteComponent,
+  beforeLoad: async (loaderContext) => {
+    const userRole = await requireScoreKeeper(loaderContext);
+    return { userRole };
+  },
 });
 
 function RouteComponent() {
@@ -22,7 +27,7 @@ function RouteComponent() {
       </h1>
 
       <div className="grid grid-cols-1 gap-6">
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 pb-10">
           <PlayerStatsManager gameId={gameId} />
         </div>
         <div className="flex flex-col justify-center items-center gap-4">

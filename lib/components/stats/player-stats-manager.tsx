@@ -76,9 +76,6 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
             <p className="text-gray-500">
               No player statistics available for this game yet.
             </p>
-            <Button onClick={handleAddStats} className="mt-4">
-              Add Player Stats
-            </Button>
           </CardContent>
         </Card>
       ) : (
