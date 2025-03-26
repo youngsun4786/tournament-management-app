@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { getBrowserClient } from "~/lib/utils/supabase-client";
+
 interface CarouselImage {
   id: string;
   imageUrl: string;
@@ -25,10 +26,7 @@ export class CarouselService {
 
   constructor() {
     // Only initialize Supabase client when needed (not during SSR hydration)
-    this.supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!
-    );
+    this.supabase = getBrowserClient();
   }
 
   async addImage(params: AddImageParams): Promise<CarouselImage> {

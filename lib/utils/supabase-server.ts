@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
+import { config } from 'dotenv';
 import { parseCookies, setCookie } from "vinxi/http";
 import { Database } from "../database.types";
+
+config({ path: '.env' });
+
 /**
  * Creates and returns a Supabase server client instance.
  *
