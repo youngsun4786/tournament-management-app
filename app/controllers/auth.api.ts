@@ -106,7 +106,7 @@ export const signIn = createServerFn()
 
 export const signOut = createServerFn().handler(async () => {
   await supabaseServer.auth.signOut()
-  
+
 })
 
 export const getUser = createServerFn().handler(async () => {

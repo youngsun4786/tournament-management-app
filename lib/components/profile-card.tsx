@@ -37,7 +37,7 @@ export function ProfileCard() {
     const formData = new FormData(e.currentTarget);
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
-    updateUserMutation.mutate({ data: { firstName, lastName } });
+    updateUserMutation.mutate({ data: { firstName, lastName, teamId: user.meta.teamId } });
   };
 
   return (
