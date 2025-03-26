@@ -11,7 +11,7 @@ export default defineConfig({
     casing: "preserve"
   },
   dbCredentials: {
-    url: process.env.DB_CONNECTION_STRING!,
+    url: process.env.DATABASE_URL!,
   },
   verbose: true,
   schemaFilter: ["public"],
