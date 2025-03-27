@@ -8,10 +8,14 @@ import {
   UserMetaSchema,
   UserRoleType,
 } from "../schemas/auth.schema";
-export const signUp = createServerFn()
+
+export const signUp = createServerFn(
+  {
+    method: 'POST',
+  }
+)
   .validator(SignUpSchema)
   .handler(async ({ data }) => {
-  
     const admin_emails = process.env.ADMIN_EMAILS!;
     const authorized_admin_emails = admin_emails.split(',')
       .map(email => email.trim().toLowerCase()) || [];
@@ -47,7 +51,11 @@ export const signUp = createServerFn()
     }
   })
 
-export const signIn = createServerFn()
+export const signIn = createServerFn(
+  {
+    method: 'POST',
+  }
+)
   .validator(SignInSchema)
   .handler(async ({ data }) => {
     const { error } = await supabaseServer.auth.signInWithPassword({
@@ -92,7 +100,9 @@ export const getUser = createServerFn().handler(async () => {
   } as AuthState
 })
 
-export const updateUser = createServerFn()
+export const updateUser = createServerFn({
+  method: 'POST',
+})
   .validator(UserMetaSchema)
   .handler(async ({ data }) => {
     const { error } = await supabaseServer.auth.updateUser({
