@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -17,7 +17,6 @@ import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 
 export const SignUpForm = () => {
-  const queryClient = useQueryClient();
   const router = useRouter();
   const [showTeamSelect, setShowTeamSelect] = useState(false);
   const { data: teamsData, isLoading, isError } = useGetTeams();
@@ -26,9 +25,11 @@ export const SignUpForm = () => {
   const signUpMutation = useMutation({
     mutationFn: (data: Parameters<typeof signUp>[0]) => signUp(data),
     onSuccess: () => {
-      toast.success("Confirmation email sent. Please check your email.");
-      queryClient.resetQueries();
       router.invalidate();
+      toast.success("Confirmation email sent. Please check your email.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 

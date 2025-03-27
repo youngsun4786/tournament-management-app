@@ -1,3 +1,4 @@
+import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 import {
@@ -7,7 +8,6 @@ import {
   UserMetaSchema,
   UserRoleType,
 } from "../schemas/auth.schema";
-
 export const signUp = createServerFn()
   .validator(SignUpSchema)
   .handler(async ({ data }) => {
@@ -31,8 +31,8 @@ export const signUp = createServerFn()
             lastName: data.lastName,
             role: roleToUse,
             teamId: data.teamId
-          }
-        }
+          },
+        },
       })
     if (error) {
       switch (error.code) {
@@ -45,51 +45,6 @@ export const signUp = createServerFn()
           throw new Error(error.message)
       }
     }
-
-    // if (userData.user) {
-    //   // Create profile record
-    //   const profileData: {
-    //     id: string;
-    //     email: string;
-    //     first_name: string;
-    //     last_name: string;
-    //     team_id?: string;
-    //   } = {
-    //     id: userData.user.id,
-    //     email: data.email,
-    //     first_name: data.firstName,
-    //     last_name: data.lastName,
-    //   };
-      
-    //   // Add team_id if role is captain
-    //   if (roleToUse === 'captain' && data.teamId) {
-    //     profileData.team_id = data.teamId;
-    //   }
-      
-    //   const { error: profileError } = await supabaseServer
-    //     .from('profiles')
-    //     .insert(profileData);
-      
-    //   if (profileError) {
-    //     throw new Error(profileError.message);
-    //   }
-
-    //   // Assign role to user
-    //   const { error: roleError } = await supabaseServer
-    //     .from('user_roles')
-    //     .insert({
-    //       user_id: userData.user.id,
-    //       role: roleToUse,
-    //     });
-
-    //   if (roleError) {
-    //     throw new Error(roleError.message);
-    //   }
-
-    //   return userData.user.id;
-    // }
-
-    // throw new Error("Something went wrong")
   })
 
 export const signIn = createServerFn()
@@ -107,7 +62,7 @@ export const signIn = createServerFn()
 
 export const signOut = createServerFn().handler(async () => {
   await supabaseServer.auth.signOut()
-
+  redirect({ to: "/" });
 })
 
 export const getUser = createServerFn().handler(async () => {

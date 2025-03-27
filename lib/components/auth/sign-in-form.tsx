@@ -16,7 +16,6 @@ export const SignInForm = () => {
       toast.success("You have successfully signed in.");
       queryClient.resetQueries();
       router.invalidate();
-      navigate({ to: "/" });
     },
   });
 

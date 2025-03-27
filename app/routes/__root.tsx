@@ -76,12 +76,12 @@ function RootDocument({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
-        <ReactQueryDevtools buttonPosition="bottom-left" />
+        <Scripts />
+        <Toaster />
         <Suspense>
+          <ReactQueryDevtools buttonPosition="bottom-left" />
           <TanStackRouterDevtools position="bottom-right" />
         </Suspense>
-        <Toaster />
-        <Scripts />
       </body>
     </html>
   );
