@@ -26,7 +26,7 @@ export const SignUpForm = () => {
   const signUpMutation = useMutation({
     mutationFn: (data: Parameters<typeof signUp>[0]) => signUp(data),
     onSuccess: () => {
-      toast.success("You have successfully signed up.");
+      toast.success("Confirmation email sent. Please check your email.");
       queryClient.resetQueries();
       router.invalidate();
     },

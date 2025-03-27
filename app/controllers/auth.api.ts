@@ -21,7 +21,7 @@ export const signUp = createServerFn()
       roleToUse = 'player';
     }
 
-    const { data: userData, error } =
+    const { error } =
       await supabaseServer.auth.signUp({
         email: data.email,
         password: data.password,
@@ -30,6 +30,7 @@ export const signUp = createServerFn()
             firstName: data.firstName,
             lastName: data.lastName,
             role: roleToUse,
+            teamId: data.teamId
           }
         }
       })
@@ -45,50 +46,50 @@ export const signUp = createServerFn()
       }
     }
 
-    if (userData.user) {
-      // Create profile record
-      const profileData: {
-        id: string;
-        email: string;
-        first_name: string;
-        last_name: string;
-        team_id?: string;
-      } = {
-        id: userData.user.id,
-        email: data.email,
-        first_name: data.firstName,
-        last_name: data.lastName,
-      };
+    // if (userData.user) {
+    //   // Create profile record
+    //   const profileData: {
+    //     id: string;
+    //     email: string;
+    //     first_name: string;
+    //     last_name: string;
+    //     team_id?: string;
+    //   } = {
+    //     id: userData.user.id,
+    //     email: data.email,
+    //     first_name: data.firstName,
+    //     last_name: data.lastName,
+    //   };
       
-      // Add team_id if role is captain
-      if (roleToUse === 'captain' && data.teamId) {
-        profileData.team_id = data.teamId;
-      }
+    //   // Add team_id if role is captain
+    //   if (roleToUse === 'captain' && data.teamId) {
+    //     profileData.team_id = data.teamId;
+    //   }
       
-      const { error: profileError } = await supabaseServer
-        .from('profiles')
-        .insert(profileData);
+    //   const { error: profileError } = await supabaseServer
+    //     .from('profiles')
+    //     .insert(profileData);
       
-      if (profileError) {
-        throw new Error(profileError.message);
-      }
+    //   if (profileError) {
+    //     throw new Error(profileError.message);
+    //   }
 
-      // Assign role to user
-      const { error: roleError } = await supabaseServer
-        .from('user_roles')
-        .insert({
-          user_id: userData.user.id,
-          role: roleToUse,
-        });
+    //   // Assign role to user
+    //   const { error: roleError } = await supabaseServer
+    //     .from('user_roles')
+    //     .insert({
+    //       user_id: userData.user.id,
+    //       role: roleToUse,
+    //     });
 
-      if (roleError) {
-        throw new Error(roleError.message);
-      }
+    //   if (roleError) {
+    //     throw new Error(roleError.message);
+    //   }
 
-      return userData.user.id;
-    }
+    //   return userData.user.id;
+    // }
 
-    throw new Error("Something went wrong")
+    // throw new Error("Something went wrong")
   })
 
 export const signIn = createServerFn()
