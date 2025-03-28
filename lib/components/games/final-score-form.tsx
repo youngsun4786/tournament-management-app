@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { updateGameScore } from "~/app/controllers/game.api";
 import { gameQueries } from "~/app/queries";
+import { Game } from "~/app/types/game";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 import { SwitchField } from "../form/switch-field";
@@ -14,9 +15,7 @@ import {
 } from "../ui/card";
 
 interface FinalScoreFormProps {
-  gameId: string;
-  home_team_name: string;
-  away_team_name: string;
+  game: Game;
 }
 
 type GameScoreFormData = {
@@ -26,11 +25,7 @@ type GameScoreFormData = {
   is_completed: boolean;
 };
 
-export const FinalScoreForm = ({
-  gameId,
-  home_team_name,
-  away_team_name,
-}: FinalScoreFormProps) => {
+export const FinalScoreForm = ({ game }: FinalScoreFormProps) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -40,7 +35,7 @@ export const FinalScoreForm = ({
       data.is_completed = Boolean(data.is_completed);
       return updateGameScore({
         data: {
-          game_id: gameId,
+          game_id: game.id,
           home_team_score: data.home_team_score,
           away_team_score: data.away_team_score,
           is_completed: data.is_completed,
@@ -55,10 +50,10 @@ export const FinalScoreForm = ({
 
   const form = useAppForm({
     defaultValues: {
-      game_id: gameId,
-      home_team_score: 0,
-      away_team_score: 0,
-      is_completed: false,
+      game_id: game.id,
+      home_team_score: game.home_team_score,
+      away_team_score: game.away_team_score,
+      is_completed: game.is_completed!,
     },
     onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
@@ -86,7 +81,7 @@ export const FinalScoreForm = ({
             children={(formField) => (
               <FormField
                 id="home_team_score"
-                label={`${home_team_name} Score`}
+                label={`${game.home_team_name} Score`}
                 field={formField}
                 className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
               />
@@ -97,7 +92,7 @@ export const FinalScoreForm = ({
             children={(formField) => (
               <FormField
                 id="away_team_score"
-                label={`${away_team_name} Score`}
+                label={`${game.away_team_name} Score`}
                 field={formField}
                 className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
               />

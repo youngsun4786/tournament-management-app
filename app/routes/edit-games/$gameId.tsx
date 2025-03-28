@@ -1,4 +1,8 @@
-import { createFileRoute, redirect, useRouteContext } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  useRouteContext,
+} from "@tanstack/react-router";
 import { requireScoreKeeper } from "~/app/services/auth.service";
 import { FinalScoreForm } from "~/lib/components/games/final-score-form";
 import { PlayerStatsManager } from "~/lib/components/stats/player-stats-manager";
@@ -35,9 +39,7 @@ function RouteComponent() {
         </div>
         <div className="flex flex-col justify-center items-center gap-4">
           <FinalScoreForm
-            gameId={gameId}
-            home_team_name={gameInfo.home_team_name}
-            away_team_name={gameInfo.away_team_name}
+            game={gameInfo}
           />
         </div>
       </div>
