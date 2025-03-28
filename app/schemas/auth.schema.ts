@@ -21,12 +21,11 @@ export const UserMetaSchema = z.object({
       message: "Last name must be at least 3 characters",
     }
   ).max(20),
-  teamId: z.string().uuid(),
+  teamId: z.string().uuid().nullable(),
 })
 
 export type UserMeta = z.infer<typeof UserMetaSchema>
 
-// TODO: Refine password === confirmPassword
 export const SignUpSchema = z.object({
   firstName: UserMetaSchema.shape.firstName,
   lastName: UserMetaSchema.shape.lastName,  
@@ -36,10 +35,7 @@ export const SignUpSchema = z.object({
   role: z.custom<UserRoleType>((value) => Object.values(UserRole).includes(value as UserRoleType), {
     message: "Please select a valid role",
   }),
-  teamId: z.union([
-    z.string().uuid(),
-    z.literal(""),
-  ]),
+  teamId: z.string().uuid().nullable(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
