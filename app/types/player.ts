@@ -12,4 +12,4 @@ export type Player = {
   };
 
   export type PlayerInsert = MakeOptional<Player, "team_name" | "player_id" | "jersey_number" | "height" | "weight" | "position">;
-  export type PlayerUpdate = Partial<Player> & { id: string };
+  export type PlayerUpdate = Partial<Player>;

@@ -27,9 +27,21 @@ export const getPlayerById = createServerFn({ method: "GET" }).validator(z.objec
 });
 
 
-export const updatePlayer = createServerFn().validator(PlayerSchema).handler(async ({ data }) => {
+export const updatePlayer = createServerFn(
+  {
+    method: "POST",
+  }
+).validator(PlayerSchema).handler(async ({ data }) => {
   try {
-    const player = await playerService.update(data);
+    const player = await playerService.update({
+      player_id: data.id!,
+      name: data.name,
+      jersey_number: data.jersey_number,
+      height: data.height,
+      weight: data.weight,
+      position: data.position,
+      team_id: data.team_id,
+    });
     return player;
   } catch (error) {
     console.error("Error updating player:", error);
@@ -47,7 +59,9 @@ export const deletePlayer = createServerFn().validator(z.string()).handler(async
   }
 });
 
-export const createPlayer = createServerFn().validator(PlayerSchema).handler(async ({ data }) => {
+export const createPlayer = createServerFn({
+  method: "POST",
+}).validator(PlayerSchema).handler(async ({ data }) => {
   try {
     const player = await playerService.create(data);
     return player;

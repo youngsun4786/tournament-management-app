@@ -45,7 +45,7 @@ export class PlayerService implements IPlayerService {
             height: data.height,
             weight: data.weight,
             position: data.position
-        }).eq("id", data.id).select().single<Player>();
+        }).eq("id", data.player_id).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to update player", {cause: error});
         }

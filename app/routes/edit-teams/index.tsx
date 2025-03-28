@@ -21,6 +21,17 @@ import { PlayerSchema } from "~/app/schemas/player.schema";
 import { requireCaptain } from "~/app/services/auth.service";
 import { Player } from "~/app/types/player";
 import { Layout } from "~/lib/components/layout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/lib/components/ui/alert-dialog";
 import { Button } from "~/lib/components/ui/button";
 import {
   Dialog,
@@ -114,6 +125,7 @@ function EditTeamsPage() {
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId!));
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
+      editForm.reset();
     },
     onError: (error) => {
       toast.error(`Failed to update player: ${error.message}`);
@@ -156,7 +168,7 @@ function EditTeamsPage() {
       position: "",
       height: "",
       weight: "",
-      team_id: teamId!,
+      team_id: teamId || "",
     },
   });
 
@@ -176,25 +188,40 @@ function EditTeamsPage() {
   };
 
   const handleEditPlayer = (data: PlayerFormValues) => {
-    if (!selectedPlayer) return;
-    data.jersey_number = Number(data.jersey_number);
-    updatePlayerMutation.mutate({
-      data: {
-        id: selectedPlayer.player_id,
-        team_id: teamId!,
-        name: data.name,
-        jersey_number: data.jersey_number,
-        position: data.position || undefined,
-        height: data.height || undefined,
-        weight: data.weight || undefined,
-      },
-    });
+    if (!selectedPlayer) {
+      console.error("No player selected for editing");
+      toast.error("No player selected for editing");
+      return;
+    }
+
+    try {
+      // Ensure jersey number is a number
+      const jerseyNumber =
+        typeof data.jersey_number === "string"
+          ? parseInt(data.jersey_number as string, 10)
+          : data.jersey_number;
+
+      const updateData = {
+        data: {
+          id: selectedPlayer.player_id,
+          team_id: teamId!, // This field is required in the schema but won't be used in the update
+          name: data.name,
+          jersey_number: jerseyNumber,
+          position: data.position || undefined,
+          height: data.height || undefined,
+          weight: data.weight || undefined,
+        },
+      };
+
+      updatePlayerMutation.mutate(updateData);
+    } catch (error) {
+      console.error("Error preparing data for update:", error);
+      toast.error("Failed to prepare data for update");
+    }
   };
 
   const handleDeletePlayer = (playerId: string) => {
-    if (confirm("Are you sure you want to remove this player?")) {
-      deletePlayerMutation.mutate({ data: playerId });
-    }
+    deletePlayerMutation.mutate({ data: playerId });
   };
 
   const openEditDialog = (player: Player) => {
@@ -205,6 +232,7 @@ function EditTeamsPage() {
       position: player.position || "",
       height: player.height || "",
       weight: player.weight || "",
+      team_id: teamId!,
     });
     setIsEditDialogOpen(true);
   };
@@ -437,17 +465,42 @@ function EditTeamsPage() {
                           >
                             Edit
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-600 hover:text-red-900"
-                            onClick={() => handleDeletePlayer(player.player_id)}
-                            disabled={deletePlayerMutation.isPending}
-                          >
-                            {deletePlayerMutation.isPending
-                              ? "Removing..."
-                              : "Remove"}
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-900"
+                              >
+                                Remove
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Remove Player
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to remove {player.name}{" "}
+                                  from the team? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() =>
+                                    handleDeletePlayer(player.player_id)
+                                  }
+                                  disabled={deletePlayerMutation.isPending}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  {deletePlayerMutation.isPending
+                                    ? "Removing..."
+                                    : "Remove Player"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </TableCell>
                       </TableRow>
                     ))
@@ -465,7 +518,15 @@ function EditTeamsPage() {
         </div>
 
         {/* Edit Player Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <Dialog
+          open={isEditDialogOpen}
+          onOpenChange={(open) => {
+            // Only allow closing if we're not in the middle of submitting
+            if (!updatePlayerMutation.isPending) {
+              setIsEditDialogOpen(open);
+            }
+          }}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Player</DialogTitle>
@@ -473,7 +534,14 @@ function EditTeamsPage() {
             </DialogHeader>
             <Form {...editForm}>
               <form
-                onSubmit={editForm.handleSubmit(handleEditPlayer)}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  console.log("Form submitted");
+                  editForm.handleSubmit((data) => {
+                    console.log("Form valid, submitting:", data);
+                    handleEditPlayer(data);
+                  })();
+                }}
                 className="space-y-4"
               >
                 <FormField
@@ -499,12 +567,12 @@ function EditTeamsPage() {
                         <Input
                           type="text"
                           placeholder="0"
-                          {...field}
+                          value={field.value}
                           onChange={(e) => {
                             const value = e.target.value;
                             // Only allow digits
                             if (value === "" || /^\d+$/.test(value)) {
-                              field.onChange(value === "" ? "" : Number(value));
+                              field.onChange(value === "" ? 0 : Number(value));
                             }
                           }}
                         />

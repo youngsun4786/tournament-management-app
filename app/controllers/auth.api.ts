@@ -108,7 +108,8 @@ export const updateUser = createServerFn({
     const { error } = await supabaseServer.auth.updateUser({
       data: { 
         firstName: data.firstName, 
-        lastName: data.lastName 
+        lastName: data.lastName,
+        teamId: data.teamId,
       },
     })
 

@@ -197,9 +197,9 @@ export const PlayerStatsModal = ({
   const columnTwoFields = [
     { name: "offensive_rebounds" as const, label: "Off. Rebounds" },
     { name: "defensive_rebounds" as const, label: "Def. Rebounds" },
+    { name: "assists" as const, label: "Assists" },
     { name: "steals" as const, label: "Steals" },
     { name: "blocks" as const, label: "Blocks" },
-    { name: "assists" as const, label: "Assists" },
     { name: "turnovers" as const, label: "Turnovers" },
   ];
 
