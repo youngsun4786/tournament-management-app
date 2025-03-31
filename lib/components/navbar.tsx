@@ -12,7 +12,6 @@ import { cn } from "../utils/cn";
 import { SignedIn } from "./auth/SignedIn";
 import { SignedOut } from "./auth/SignedOut";
 import { ButtonLink } from "./button-link";
-import { Button } from "./ui/button";
 import { UserMenu } from "./user-menu";
 
 const menuItems = [
@@ -161,19 +160,21 @@ export const Navbar = () => {
 
           {/* Contact Buttons */}
           <div className="flex items-center gap-4">
-            <Button
+            <ButtonLink
+              to="/contact-us"
               variant="ghost"
               size="sm"
               className="text-red-500 hover:text-red hover:bg-red-500/10"
             >
               Join Our Team
-            </Button>
-            <Button
+            </ButtonLink>
+            <ButtonLink
+              to="/contact-us"
               size="sm"
               className="bg-red-500 hover:bg-red-600 text-white"
             >
               Contact Us
-            </Button>
+            </ButtonLink>
             <SignedIn>
               <UserMenu />
             </SignedIn>

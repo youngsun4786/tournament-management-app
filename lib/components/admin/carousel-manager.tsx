@@ -1,33 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowDown,
-  ArrowUp,
-  ImagePlus,
-  Loader2,
-  Trash2,
-  Upload,
-} from "lucide-react";
+import { UploadImage } from "lib/components/upload-image";
+import { ImagePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { carouselService } from "~/app/container";
-import {
-  addCarouselImage,
-  deleteCarouselImage,
-  getCarouselImages,
-  updateCarouselImageOrder,
-} from "~/app/controllers/carousel.api";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "~/lib/components/ui/alert-dialog";
-import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
 import { Button } from "~/lib/components/ui/button";
 import {
   Card,
@@ -41,153 +15,122 @@ import { Input } from "~/lib/components/ui/input";
 import { Label } from "~/lib/components/ui/label";
 import { Textarea } from "~/lib/components/ui/textarea";
 
-interface CarouselImage {
+// Import the Image type if needed
+type Image = {
   id: string;
   imageUrl: string;
   displayOrder: number;
   description?: string;
   storage_path?: string;
   created_at: string;
-}
+};
 
 export function CarouselManager() {
   const [imageUrl, setImageUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // // Mutation to add an image
+  // const addImageMutation = useMutation({
+  //   mutationFn: (data: Parameters<typeof addCarouselImage>[0]) => {},
+  //   onSuccess: () => {
+  //     toast.success("Image added to carousel");
+  //     queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
+  //     setImageUrl("");
+  //     setDescription("");
+  //     setFile(null);
+  //     setError(null);
+  //   },
+  //   onError: (err) => {
+  //     console.error("Error adding image:", err);
+  //     toast.error("Failed to add image to carousel");
+  //     setError("Failed to add image. Please try again later.");
+  //   },
+  // });
 
-  const queryClient = useQueryClient();
+  // // Mutation to delete an image
+  // const deleteImageMutation = useMutation({
+  //   mutationFn: (data: Parameters<typeof deleteCarouselImage>[0]) =>
+  //     deleteCarouselImage(data),
+  //   onSuccess: () => {
+  //     toast.success("Image removed from carousel");
+  //     queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
+  //   },
+  //   onError: (err) => {
+  //     console.error("Error deleting image:", err);
+  //     toast.error("Failed to delete image");
+  //   },
+  // });
 
-  // Query to fetch carousel images
-  const { data: images = [], isLoading } = useQuery({
-    queryKey: ["carouselImages"],
-    queryFn: () => getCarouselImages(),
-    // Add error handling for the query
-    onError: (err) => {
-      console.error("Error fetching carousel images:", err);
-      toast.error("Failed to load carousel images");
-    },
-  });
+  // // Mutation to update the order of images
+  // const updateOrderMutation = useMutation({
+  //   mutationFn: (data: Parameters<typeof updateCarouselImageOrder>[0]) =>
+  //     updateCarouselImageOrder(data),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
+  //   },
+  //   onError: (err) => {
+  //     console.error("Error updating image order:", err);
+  //     toast.error("Failed to update image order");
+  //   },
+  // });
 
-  // Mutation to add an image
-  const addImageMutation = useMutation({
-    mutationFn: (data: Parameters<typeof addCarouselImage>[0]) =>
-      addCarouselImage(data),
-    onSuccess: () => {
-      toast.success("Image added to carousel");
-      queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
-      setImageUrl("");
-      setDescription("");
-      setFile(null);
-      setError(null);
-    },
-    onError: (err) => {
-      console.error("Error adding image:", err);
-      toast.error("Failed to add image to carousel");
-      setError("Failed to add image. Please try again later.");
-    },
-  });
+  // // Function to move an image up or down in the order
+  // const moveImage = (id: string, direction: "up" | "down") => {
+  //   const currentIndex = images.findIndex((img) => img.id === id);
+  //   if (currentIndex === -1) return;
 
-  // Mutation to delete an image
-  const deleteImageMutation = useMutation({
-    mutationFn: (data: Parameters<typeof deleteCarouselImage>[0]) =>
-      deleteCarouselImage(data),
-    onSuccess: () => {
-      toast.success("Image removed from carousel");
-      queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
-    },
-    onError: (err) => {
-      console.error("Error deleting image:", err);
-      toast.error("Failed to delete image");
-    },
-  });
+  //   const newImages = [...images];
 
-  // Mutation to update the order of images
-  const updateOrderMutation = useMutation({
-    mutationFn: (data: Parameters<typeof updateCarouselImageOrder>[0]) =>
-      updateCarouselImageOrder(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
-    },
-    onError: (err) => {
-      console.error("Error updating image order:", err);
-      toast.error("Failed to update image order");
-    },
-  });
+  //   if (direction === "up" && currentIndex > 0) {
+  //     // Swap with the previous image
+  //     const temp = newImages[currentIndex].displayOrder;
+  //     newImages[currentIndex].displayOrder =
+  //       newImages[currentIndex - 1].displayOrder;
+  //     newImages[currentIndex - 1].displayOrder = temp;
+  //   } else if (direction === "down" && currentIndex < newImages.length - 1) {
+  //     // Swap with the next image
+  //     const temp = newImages[currentIndex].displayOrder;
+  //     newImages[currentIndex].displayOrder =
+  //       newImages[currentIndex + 1].displayOrder;
+  //     newImages[currentIndex + 1].displayOrder = temp;
+  //   } else {
+  //     return; // Can't move further in this direction
+  //   }
 
-  // Function to move an image up or down in the order
-  const moveImage = (id: string, direction: "up" | "down") => {
-    const currentIndex = images.findIndex((img) => img.id === id);
-    if (currentIndex === -1) return;
+  //   // Update the order in the database
+  //   updateOrderMutation.mutate({
+  //     images: newImages.map((img) => ({
+  //       id: img.id,
+  //       displayOrder: img.displayOrder,
+  //     })),
+  //   });
+  // };
 
-    const newImages = [...images];
-
-    if (direction === "up" && currentIndex > 0) {
-      // Swap with the previous image
-      const temp = newImages[currentIndex].displayOrder;
-      newImages[currentIndex].displayOrder =
-        newImages[currentIndex - 1].displayOrder;
-      newImages[currentIndex - 1].displayOrder = temp;
-    } else if (direction === "down" && currentIndex < newImages.length - 1) {
-      // Swap with the next image
-      const temp = newImages[currentIndex].displayOrder;
-      newImages[currentIndex].displayOrder =
-        newImages[currentIndex + 1].displayOrder;
-      newImages[currentIndex + 1].displayOrder = temp;
-    } else {
-      return; // Can't move further in this direction
-    }
-
-    // Update the order in the database
-    updateOrderMutation.mutate({
-      images: newImages.map((img) => ({
-        id: img.id,
-        displayOrder: img.displayOrder,
-      })),
-    });
-  };
-
-  // Handle file upload to Supabase storage
-  const handleFileUpload = async () => {
-    if (!file) return;
+  // Handle image upload via the UploadImage component
+  const handleImageUpload = async (imageData: Partial<Image>) => {
     setError(null);
 
     try {
-      setUploading(true);
+      // TODO: Implement actual file upload to storage and database
+      console.log("Image data received:", imageData);
 
-      try {
-        // Use the service to upload the file
-        const { url, path } = await carouselService.uploadImage(file);
+      // Example implementation:
+      // 1. Upload the image to your storage
+      // 2. Get the real URL
+      // 3. Save to your database
 
-        // Add the image to the carousel database with the storage path
-        await addImageMutation.mutateAsync({
-          imageUrl: url,
-          description,
-          storage_path: path,
-        });
+      // Simulate upload delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        toast.success("Image uploaded successfully");
-      } catch (uploadError: any) {
-        if (
-          uploadError?.message?.includes("Buffer") ||
-          uploadError?.name === "ReferenceError"
-        ) {
-          setError(
-            "Browser error: File upload functionality may be limited. Try using an image URL instead."
-          );
-          console.error("Browser compatibility error:", uploadError);
-          toast.error("Browser compatibility issue with file upload");
-        } else {
-          throw uploadError; // rethrow other errors
-        }
-      }
+      // Success handling
+      toast?.success("Image uploaded successfully");
+
+      return Promise.resolve();
     } catch (error: any) {
       console.error("Error uploading image:", error);
       setError(error?.message || "Failed to upload image");
-      toast.error("Failed to upload image");
-    } finally {
-      setUploading(false);
+      toast?.error("Failed to upload image");
+      return Promise.reject(error);
     }
   };
 
@@ -197,24 +140,24 @@ export function CarouselManager() {
     if (!imageUrl) return;
     setError(null);
 
-    addImageMutation.mutate({
-      imageUrl,
-      description,
-      // No storage_path for external images
-    });
+    // addImageMutation.mutate({
+    //   imageUrl,
+    //   description,
+    //   // No storage_path for external images
+    // });
   };
 
-  // Handle deleting an image
-  const handleDeleteImage = (id: string) => {
-    deleteImageMutation.mutate({ id });
-  };
+  // // Handle deleting an image
+  // const handleDeleteImage = (id: string) => {
+  //   deleteImageMutation.mutate({ id });
+  // };
 
   return (
     <Card className="w-full shadow-md">
       <CardHeader>
-        <CardTitle className="text-xl font-bold">Carousel Manager</CardTitle>
+        <CardTitle className="text-xl font-bold">Image Manager</CardTitle>
         <CardDescription>
-          Manage images displayed in the homepage carousel
+          Manage images displayed in the homepage
         </CardDescription>
       </CardHeader>
 
@@ -227,60 +170,8 @@ export function CarouselManager() {
 
         {/* Add new image section */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Upload image */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Upload New Image</CardTitle>
-              <CardDescription>
-                Upload an image from your device to Supabase Storage
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="file" className="block mb-2">
-                  Select Image
-                </Label>
-                <Input
-                  id="file"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="cursor-pointer"
-                />
-              </div>
-              <div>
-                <Label htmlFor="description" className="block mb-2">
-                  Description (optional)
-                </Label>
-                <Textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Enter image description"
-                  className="resize-none"
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                onClick={handleFileUpload}
-                disabled={!file || uploading}
-                className="w-full"
-              >
-                {uploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" /> Upload Image
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-
+          {/* Upload image - using the UploadImage component */}
+          <UploadImage isProfileImage={false} mediaType="image" />
           {/* Add from URL */}
           <Card>
             <CardHeader>
@@ -321,10 +212,10 @@ export function CarouselManager() {
             <CardFooter>
               <Button
                 onClick={handleSubmit}
-                disabled={!imageUrl || addImageMutation.isPending}
+                // disabled={!imageUrl || addImageMutation.isPending}
                 className="w-full"
               >
-                {addImageMutation.isPending ? (
+                {/* {addImageMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding...
                   </>
@@ -332,14 +223,15 @@ export function CarouselManager() {
                   <>
                     <ImagePlus className="mr-2 h-4 w-4" /> Add Image
                   </>
-                )}
+                )} */}
+                <ImagePlus className="mr-2 h-4 w-4" /> Add Image
               </Button>
             </CardFooter>
           </Card>
         </div>
 
         {/* Current images list */}
-        <div>
+        {/* <div>
           <h3 className="text-lg font-semibold mb-4">
             Current Carousel Images
           </h3>
@@ -438,7 +330,7 @@ export function CarouselManager() {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );

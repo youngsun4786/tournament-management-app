@@ -5,7 +5,7 @@ import { ArrowUpDown, ExternalLink, PlayCircle } from "lucide-react";
 import { Game } from "~/app/types/game";
 import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
-import { convert24to12 } from "~/lib/date";
+import { convert24to12 } from "~/lib/utils/date";
 import { ButtonLink } from "../button-link";
 
 export const columns: ColumnDef<Game>[] = [

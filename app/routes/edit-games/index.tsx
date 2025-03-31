@@ -1,4 +1,8 @@
-import { createFileRoute, redirect, useRouteContext } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  useRouteContext,
+} from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
 import { ArrowUpDown, Edit } from "lucide-react";
@@ -16,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/lib/components/ui/select";
-import { convert24to12 } from "~/lib/date";
+import { convert24to12 } from "~/lib/utils/date";
 
 export const Route = createFileRoute("/edit-games/")({
   component: RouteComponent,

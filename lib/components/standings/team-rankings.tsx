@@ -4,7 +4,6 @@ import { getTeamsBySeason } from "~/app/controllers/team.api";
 import { useGetSeasons } from "~/app/queries";
 import type { Game } from "~/app/types/game";
 import type { TeamWithSeason } from "~/app/types/team";
-import { calculateTeamStandings } from "~/lib/calculateTeamStandings";
 import {
   Table,
   TableBody,
@@ -13,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import { calculateTeamStandings } from "~/lib/utils/calculateTeamStandings";
 
 export const TeamRankings = () => {
   // Query to fetch active season
@@ -92,21 +92,11 @@ export const TeamRankings = () => {
         <Table className="table-fixed w-full">
           <TableHeader className="bg-gray-50 dark:bg-gray-700 text-xs">
             <TableRow>
-              <TableHead className="px-2 text-center w-[10%]">
-                Rank
-              </TableHead>
-              <TableHead className="px-2 text-left w-[40%]">
-                Team
-              </TableHead>
-              <TableHead className="px-2 text-center w-[15%]">
-                Win
-              </TableHead>
-              <TableHead className="px-2 text-center w-[15%]">
-                Lose
-              </TableHead>
-              <TableHead className="px-2 text-center w-[20%]">
-                PCT
-              </TableHead>
+              <TableHead className="px-2 text-center w-[10%]">Rank</TableHead>
+              <TableHead className="px-2 text-left w-[40%]">Team</TableHead>
+              <TableHead className="px-2 text-center w-[15%]">Win</TableHead>
+              <TableHead className="px-2 text-center w-[15%]">Lose</TableHead>
+              <TableHead className="px-2 text-center w-[20%]">PCT</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200 dark:divide-gray-600">

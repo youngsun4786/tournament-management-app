@@ -5,7 +5,6 @@ import { getTeamsBySeason } from "~/app/controllers/team.api";
 import { useGetSeasons } from "~/app/queries";
 import type { Game } from "~/app/types/game";
 import type { TeamWithSeason } from "~/app/types/team";
-import { calculateTeamStandings } from "~/lib/calculateTeamStandings";
 import {
   Select,
   SelectContent,
@@ -21,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import { calculateTeamStandings } from "~/lib/utils/calculateTeamStandings";
 
 export const ScoreBoard = () => {
   // Query to fetch seasons

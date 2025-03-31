@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDown } from "lucide-react";
 import {
   gameQueries,
+  mediaQueries,
   playerGameStatsQueries,
   teamGameStatsQueries,
 } from "~/app/queries";
@@ -33,19 +34,23 @@ export const Route = createFileRoute("/games/$gameId")({
       teamGameStatsQueries.detail(params.gameId)
     );
     await context.queryClient.ensureQueryData(gameQueries.list());
+    await context.queryClient.ensureQueryData(
+      mediaQueries.videosByGameId(params.gameId)
+    );
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { gameId } = Route.useParams();
-  const {
-    data: playerStats,
-    isLoading,
-    isError,
-  } = useSuspenseQuery(playerGameStatsQueries.detail(gameId));
+  const { data: playerStats, isLoading } = useSuspenseQuery(
+    playerGameStatsQueries.detail(gameId)
+  );
   const { data: games } = useSuspenseQuery(gameQueries.list());
   const gameInfo = games?.find((game) => game.id === gameId);
+  const { data: videos } = useSuspenseQuery(
+    mediaQueries.videosByGameId(gameId)
+  );
 
   if (!gameInfo) {
     return <div className="container mx-auto p-4">Game not found</div>;
@@ -204,17 +209,17 @@ function RouteComponent() {
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
                     W
                   </div>
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
-                    L
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
                     W
                   </div>
                   <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
                     L
+                  </div>
+                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
+                    L
+                  </div>
+                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
+                    W
                   </div>
                 </div>
               </div> */}
@@ -309,22 +314,78 @@ function RouteComponent() {
 
         {/* Game Video Section */}
         <div id="video-section" className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Game Recap</h2>
-          <Card>
-            <CardContent className="p-0 aspect-video">
-              <div className="w-full h-full flex items-center justify-center bg-slate-100 dark:bg-slate-800">
-                {/* Replace with actual video when available */}
-                <iframe
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="Game Video"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <h2 className="text-2xl font-bold mb-4">Game Recaps</h2>
+          {videos && videos.length > 0 ? (
+            <Card>
+              <Tabs defaultValue="1" className="w-full">
+                <CardHeader className="pb-0">
+                  <TabsList>
+                    {[1, 2, 3, 4].map((quarter) => {
+                      const hasVideos = videos.some(
+                        (video) => video.quarter === quarter
+                      );
+                      return (
+                        <TabsTrigger
+                          key={quarter}
+                          value={quarter.toString()}
+                          disabled={!hasVideos}
+                        >
+                          Quarter {quarter}
+                        </TabsTrigger>
+                      );
+                    })}
+                  </TabsList>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  {[1, 2, 3, 4].map((quarter) => {
+                    const quarterVideos = videos.filter(
+                      (video) => video.quarter === quarter
+                    );
+                    return (
+                      <TabsContent
+                        key={`quarter-${quarter}`}
+                        value={quarter.toString()}
+                        className="p-0"
+                      >
+                        {quarterVideos.length > 0 ? (
+                          <div className="grid gap-4">
+                            {quarterVideos.map((video) => (
+                              <div
+                                key={`video-${video.video_id}`}
+                                className="aspect-video w-full"
+                              >
+                                <iframe
+                                  className="w-full h-full"
+                                  src={video.youtube_url.replace(
+                                    "watch?v=",
+                                    "embed/"
+                                  )}
+                                  title={`Quarter ${quarter} Video`}
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 text-muted-foreground">
+                            No videos available for Quarter {quarter}
+                          </div>
+                        )}
+                      </TabsContent>
+                    );
+                  })}
+                </CardContent>
+              </Tabs>
+            </Card>
+          ) : (
+            <Card className="w-full">
+              <CardContent className="p-8 text-center text-muted-foreground">
+                No game videos available yet
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

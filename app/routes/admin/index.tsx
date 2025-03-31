@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { requireAdmin } from "~/app/services/auth.service";
 import { ButtonLink } from "~/lib/components/button-link";
-// import { CarouselManager } from "~/lib/components/admin/carousel-manager";
+import { CarouselManager } from "~/lib/components/admin/carousel-manager";
 import { Layout } from "~/lib/components/layout";
 
 export const Route = createFileRoute("/admin/")({
@@ -32,7 +32,7 @@ function AdminPage() {
               <h2 className="font-bold text-xl mb-3 text-rose-600 dark:text-rose-400">
                 Game Results Management
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Manage game results and player stats
               </p>
               <div className="mt-auto pt-2">
@@ -45,28 +45,12 @@ function AdminPage() {
                 </ButtonLink>
               </div>
             </div>
-
-            {/* <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <h2 className="font-bold text-xl mb-3 text-rose-600 dark:text-rose-400">
-                Team Management
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Manage teams and their members
-              </p>
-              <div className="mt-auto pt-2">
-                <ButtonLink
-                  variant="outline"
-                  to="/edit-teams"
-                  className="text-sm font-medium text-rose-600 dark:text-rose-400 hover:underline hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900"
-                >
-                  Open →
-                </ButtonLink>
-              </div>
-            </div> */}
           </div>
 
           {/* Carousel Manager */}
-          <div className="w-full">{/* <CarouselManager /> */}</div>
+          <div className="w-full">
+            <CarouselManager />
+          </div>
         </div>
       </div>
     </Layout>

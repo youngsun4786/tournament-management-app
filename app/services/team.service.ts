@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { eq } from "drizzle-orm/sql";
+import { and, eq } from "drizzle-orm/sql";
 import { TeamWithSeason } from "~/app/types/team";
 import { db as drizzle_db } from "~/db";
 import { teams } from "~/db/schema";
@@ -31,6 +31,7 @@ export class TeamService implements ITeamService {
         }
 
         const formattedTeams = teamsData.map((team) => ({
+
             ...team,
             season: {
                 id: team.season!.id,
@@ -70,7 +71,7 @@ export class TeamService implements ITeamService {
 
     async getTeamsBySeasonId(seasonId: string): Promise<TeamWithSeason[]> {
         const teamsData = await this.drizzle_db.query.teams.findMany({
-            where: eq(teams.season_id, seasonId),
+            where: and(eq(teams.season_id, seasonId), eq(teams.is_active, true)),
             with: {
                 season: true,
             },

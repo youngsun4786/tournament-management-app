@@ -13,6 +13,7 @@ import {
 import { getPlayerById, getPlayers, getPlayersByTeamId } from "~/app/controllers/player.api";
 import { getTeamStats, getTeamStatsByGameId, getTeamStatsByTeamId } from "~/app/controllers/team-game-stats.api";
 import { getTeam, getTeamByName, getTeams } from "~/app/controllers/team.api";
+import { getVideosByGameId } from "./controllers/media.api";
 import { getSeasons } from "./controllers/season.api";
 
 export const useGetGames = () => {
@@ -184,6 +185,15 @@ export const teamGameStatsQueries = {
     queryOptions({
       queryKey: [...teamGameStatsQueries.all, "teamStats", teamId],
       queryFn: () => getTeamStatsByTeamId({ data: { teamId: teamId } }),
+    }),
+}
+
+export const mediaQueries = {
+  all: ["media"],
+  videosByGameId: (gameId: string) =>
+    queryOptions({
+      queryKey: [...mediaQueries.all, "videosByGameId", gameId],
+      queryFn: ({signal}) => getVideosByGameId({signal, data: { game_id: gameId } }),
     }),
 }
 

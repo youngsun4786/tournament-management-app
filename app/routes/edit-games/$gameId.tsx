@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { requireScoreKeeper } from "~/app/services/auth.service";
 import { FinalScoreForm } from "~/lib/components/games/final-score-form";
+import { UploadVideoForm } from "~/lib/components/games/upload-video-form";
 import { PlayerStatsManager } from "~/lib/components/stats/player-stats-manager";
 
 export const Route = createFileRoute("/edit-games/$gameId")({
@@ -37,10 +38,9 @@ function RouteComponent() {
         <div className="flex flex-col gap-4 pb-10">
           <PlayerStatsManager gameId={gameId} />
         </div>
-        <div className="flex flex-col justify-center items-center gap-4">
-          <FinalScoreForm
-            game={gameInfo}
-          />
+        <div className="flex flex-row justify-center items-center gap-4">
+          <FinalScoreForm game={gameInfo} />
+          <UploadVideoForm game={gameInfo} />
         </div>
       </div>
     </div>

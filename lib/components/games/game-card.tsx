@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Heart } from "lucide-react";
 import { Game } from "~/app/types/game";
 import { Card, CardContent } from "~/lib/components/ui/card";
-import { convert24to12 } from "~/lib/date";
+import { convert24to12 } from "~/lib/utils/date";
 import { ButtonLink } from "../button-link";
 
 interface GameCardProps {

@@ -1,7 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { or } from "drizzle-orm/sql";
 import type { Game, GameInsert, GameUpdate } from "~/app/types/game";
 import { db as drizzle_db } from "~/db";
-import { or } from "drizzle-orm/sql";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 
 export interface IGameService {
@@ -70,7 +70,8 @@ export class GameService implements IGameService {
             with: {
                 team_home_team_id: true,
                 team_away_team_id: true,
-            }
+            },
+            orderBy: (games, { asc }) => [asc(games.game_date), asc(games.start_time)]
         });
 
         // Transform the result to match the SQL query structure
@@ -118,13 +119,11 @@ export class GameService implements IGameService {
     }
 
     async updateScore(data: GameUpdate): Promise<Game> {
-        console.log("data", data);
         const {data: updated, error} = await this.supabase.from("games").update({
             home_team_score: data.home_team_score,
             away_team_score: data.away_team_score,
             is_completed: data.is_completed,
         }).eq("id", data.id).select().single<Game>();
-        console.log("updated", updated);
         if (!updated || error) {
             throw new Error("Failed to update game score", {cause: error});
         }

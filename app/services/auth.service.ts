@@ -1,6 +1,6 @@
 import { redirect } from "@tanstack/react-router";
-import { UserRoleType } from "../schemas/auth.schema";
 import { getUserRole } from "~/app/controllers/auth.api";
+import { UserRoleType } from "../schemas/auth.schema";
 // Define the type for route loader context
 export type RouteLoaderContext = {
   context: {

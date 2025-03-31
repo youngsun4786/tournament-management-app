@@ -175,7 +175,7 @@ export const SignUpForm = () => {
               {(field) => (
                 <>
                   <Select
-                    defaultValue={field.state.value}
+                    defaultValue={field.state.value || ""}
                     onValueChange={(value) => {
                       if (value) {
                         field.handleChange(value);

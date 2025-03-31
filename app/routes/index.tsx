@@ -29,21 +29,6 @@ export const Route = createFileRoute("/")({
       // Try to get carousel images from API
       const carouselImages: string[] = DEFAULT_CAROUSEL_IMAGES;
 
-      // try {
-      //   // Dynamically import the API to avoid Buffer reference issues during SSR
-      //   const { getCarouselImages } = await import(
-      //     "~/app/controllers/carousel.api"
-      //   );
-      //   const images = await getCarouselImages();
-
-      //   if (images && images.length > 0) {
-      //     carouselImages = images.map((img) => img.imageUrl);
-      //   }
-      // } catch (error) {
-      //   console.error("Error loading carousel images:", error);
-      //   // Use default images on error
-      // }
-
       return {
         carouselImages,
       } as IndexPageLoaderData;
@@ -219,20 +204,6 @@ function Index() {
                   <img
                     src="sponsors/sponsor_enning_blinds.png"
                     alt="sponsor 1"
-                    className="h-24 object-contain"
-                  />
-                </div>
-                <div>
-                  <img
-                    src="sponsors/sponsor_gong_law.png"
-                    alt="sponsor 2"
-                    className="h-24 object-contain"
-                  />
-                </div>
-                <div>
-                  <img
-                    src="sponsors/sponsor_obsidian.png"
-                    alt="sponsor 3"
                     className="h-24 object-contain"
                   />
                 </div>

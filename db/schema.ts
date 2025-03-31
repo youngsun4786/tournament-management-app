@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { bigint, boolean, date, foreignKey, integer, numeric, pgEnum, pgPolicy, pgSchema, pgTable, smallint, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { bigint, boolean, check, date, foreignKey, integer, numeric, pgEnum, pgPolicy, pgSchema, pgTable, smallint, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm/relations";
 
 export const app_role = pgEnum("app_role", ['admin', 'score-keeper', 'player', 'captain'])
@@ -20,6 +20,27 @@ const Users = pgTable("user", {
         .notNull()
         .references(() => SupabaseAuthUsers.id, { onDelete: "cascade" }),
 })
+
+export const videos = pgTable("videos", {
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	id: bigint({ mode: "number" }).generatedByDefaultAsIdentity({ name: "videos_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	game_id: uuid().notNull(),
+	quarter: integer().notNull(),
+	description: text(),
+	youtube_url: text().notNull(),
+	created_at: timestamp({ mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+			columns: [table.game_id],
+			foreignColumns: [games.id],
+			name: "videos_game_id_fkey"
+		}).onDelete("cascade"),
+	pgPolicy("Enable read access for all users", { as: "permissive", for: "select", to: ["public"], using: sql`true` }),
+	pgPolicy("Enable video updates for admins and score-keepers", { as: "permissive", for: "update", to: ["authenticated"] }),
+	pgPolicy("Enable video inserts for admins and score-keepers", { as: "permissive", for: "insert", to: ["authenticated"] }),
+	pgPolicy("Enable video deletes for admins and score-keepers", { as: "permissive", for: "delete", to: ["public"] }),
+	check("videos_quarter_check", sql`(quarter >= 1) AND (quarter <= 4)`),
+]);
 
 export const games = pgTable("games", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
@@ -54,6 +75,7 @@ export const teams = pgTable("teams", {
 	season_id: uuid(),
 	wins: smallint().default(sql`'0'`).notNull(),
 	losses: smallint().default(sql`'0'`).notNull(),
+	is_active: boolean().default(false).notNull(),
 }, (table) => [
 	foreignKey({
 			columns: [table.season_id],
@@ -62,6 +84,7 @@ export const teams = pgTable("teams", {
 		}),
 	unique("teams_name_key").on(table.name),
 	pgPolicy("Enable read access for all users", { as: "permissive", for: "select", to: ["public"], using: sql`true` }),
+	check("teams_is_active_check", sql`is_active = ANY (ARRAY[true, false])`),
 ]);
 
 export const seasons = pgTable("seasons", {
@@ -216,6 +239,14 @@ export const user_roles = pgTable("user_roles", {
 		}).onDelete("cascade"),
 	unique("user_roles_user_id_role_key").on(table.user_id, table.role),
 ]);
+
+
+export const videosRelations = relations(videos, ({one}) => ({
+	game: one(games, {
+		fields: [videos.game_id],
+		references: [games.id]
+	}),
+}));
 
 export const gamesRelations = relations(games, ({one, many}) => ({
 	team_away_team_id: one(teams, {

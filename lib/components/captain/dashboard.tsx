@@ -20,7 +20,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/lib/components/ui/tabs";
-import { formatDate } from "~/lib/date";
+import { formatDate } from "~/lib/utils/date";
 import { PlayerStatsEntry } from "./player-stats-entry";
 import { TeamPlayersList } from "./team-players-list";
 
