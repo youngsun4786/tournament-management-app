@@ -352,19 +352,25 @@ function RouteComponent() {
                             {quarterVideos.map((video) => (
                               <div
                                 key={`video-${video.video_id}`}
-                                className="aspect-video w-full"
+                                className="flex flex-col gap-3"
                               >
-                                <iframe
-                                  className="w-full h-full"
-                                  src={video.youtube_url.replace(
-                                    "watch?v=",
-                                    "embed/"
-                                  )}
-                                  title={`Quarter ${quarter} Video`}
-                                  frameBorder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                                />
+                                <div className="aspect-video w-full max-w-4xl mx-auto">
+                                  <iframe
+                                    className="w-full h-full border-none rounded-lg shadow-md"
+                                    src={video.youtube_url.replace(
+                                      "watch?v=",
+                                      "embed/"
+                                    )}
+                                    title={`Quarter ${quarter} Video`}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                  />
+                                </div>
+                                {video.description && (
+                                  <p className="text-sm bg-muted/30 p-3 rounded-md max-w-2xl mx-auto w-full">
+                                    {video.description}
+                                  </p>
+                                )}
                               </div>
                             ))}
                           </div>

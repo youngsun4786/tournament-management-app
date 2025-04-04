@@ -1,15 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
 import { Player } from "~/app/types/player";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "~/lib/components/ui/dropdown-menu";
-import { Button } from "../ui/button";
 
 export const columns: ColumnDef<Player>[] = [
   {
@@ -73,33 +64,6 @@ export const columns: ColumnDef<Player>[] = [
     cell: ({ row }) => {
       const height = row.getValue("height") as string | null;
       return <div>{height ? `${height}cm` : "-"}</div>;
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const player = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-            //   onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Edit player
-            </DropdownMenuItem>
-            <DropdownMenuItem>Delete player</DropdownMenuItem>
-            <DropdownMenuItem>View player details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
     },
   },
 ];
