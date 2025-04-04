@@ -367,7 +367,7 @@ function RouteComponent() {
                                   />
                                 </div>
                                 {video.description && (
-                                  <p className="text-sm bg-muted/30 p-3 rounded-md max-w-2xl mx-auto w-full">
+                                  <p className="text-sm p-3 bg-gray-200 rounded-md max-w-4xl mx-auto w-full">
                                     {video.description}
                                   </p>
                                 )}

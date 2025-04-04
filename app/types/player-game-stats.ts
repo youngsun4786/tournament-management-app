@@ -32,7 +32,7 @@ export type PlayerGameStats = {
 }
 
 export type PlayerGameStatsTotal = {
-    player: Omit<Player, "player_id" | "height" | "weight"> ;
+    player: Omit<Player, | "height" | "weight"> ;
     total_points: number;
     total_rebounds: number;
     total_assists: number;
@@ -60,7 +60,7 @@ export type PlayerGameStatsTotal = {
 }
 
 export type PlayerGameStatsAverage = {
-    player: Omit<Player, "player_id" | "height" | "weight"> ;
+    player: Omit<Player, | "height" | "weight"> ;
     points_per_game: number;
     rebounds_per_game: number;
     assists_per_game: number;
@@ -88,7 +88,7 @@ export type PlayerGameStatsAverage = {
 }
 
 export type PlayerGameStatsWithPlayer = PlayerGameStats & {
-    player: Omit<Player, "player_id" | "height" | "weight"> ;
+    player: Omit<Player, "height" | "weight"> ;
 }
 
 export type PlayerGameStatsInsert = MakeOptional<PlayerGameStats, 

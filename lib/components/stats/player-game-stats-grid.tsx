@@ -1,4 +1,5 @@
 import { useSuspenseQueries } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { playerGameStatsQueries } from "~/app/queries";
 import type { Player } from "~/app/types/player";
@@ -13,16 +14,16 @@ import { PlayerGameStatsModal } from "./player-game-stats-modal";
 
 // Define a type that matches what the API is actually returning
 type PlayerStatsAverageResponse = Omit<PlayerGameStatsAverage, "player"> & {
-  player: Partial<Omit<Player, "player_id" | "height" | "weight">> | null;
+  player: Partial<Omit<Player, "height" | "weight">> | null;
 };
 
 type PlayerStatsTotalResponse = Omit<PlayerGameStatsTotal, "player"> & {
-  player: Partial<Omit<Player, "player_id" | "height" | "weight">> | null;
+  player: Partial<Omit<Player, "height" | "weight">> | null;
 };
 
 // Define a type with common properties for both response types
 type PlayerStatsCommon = {
-  player: Partial<Omit<Player, "player_id" | "height" | "weight">> | null;
+  player: Partial<Omit<Player, "height" | "weight">> | null;
   [key: string]: unknown;
 };
 
@@ -185,9 +186,15 @@ export const PlayerGameStatsGrid = () => {
             >
               <div className="flex items-center">
                 <span className="text-sm mr-2 font-medium">{index + 1}.</span>
-                <span className="font-medium">
-                  {stat.player?.name || "Unknown Player"}
-                </span>
+                <Link
+                  className="hover:underline"
+                  to="/players/$playerId"
+                  params={{ playerId: stat.player?.player_id || "" }}
+                >
+                  <span className="font-medium">
+                    {stat.player?.name || "Unknown Player"}
+                  </span>
+                </Link>
                 <span className="text-xs text-gray-500 ml-2">
                   {stat.player?.team_name &&
                     `(${stat.player.team_name.substring(0, 3).toUpperCase()})`}

@@ -11,7 +11,7 @@ export interface IPlayerGameStatsService {
     getAll(): Promise<PlayerGameStatsWithPlayer[]>;
     create(data: PlayerGameStatsInsert): Promise<PlayerGameStats>;
     update(data: PlayerGameStatsUpdate & { id: string }): Promise<PlayerGameStats>;
-    delete(id: string): Promise<PlayerGameStats>;
+    delete(id: string): Promise<void>;
 }
 
 export class PlayerGameStatsService implements IPlayerGameStatsService {
@@ -65,11 +65,12 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
             plus_minus: stat.plus_minus,
             updated_at: stat.updated_at?.toString(),
             player: {
+                player_id: stat.player!.id,
                 name: stat.player!.name,
                 jersey_number: stat.player!.jersey_number,
                 position: stat.player!.position,
                 team_name: stat.player!.team!.name,
-            } as Omit<Player, "player_id" | "height" | "weight">,
+            } as Omit<Player, "height" | "weight">,
         }));
 
         return statsWithPlayer;
@@ -117,12 +118,13 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
             plus_minus: stat.plus_minus,
             updated_at: stat.updated_at?.toString(),
             player: {
+                player_id: stat.player!.id,
                 team_id: stat.player!.team!.id,
                 name: stat.player!.name,
                 jersey_number: stat.player!.jersey_number,
                 position: stat.player!.position,
                 team_name: stat.player!.team!.name,
-            } as Omit<Player, "player_id" | "height" | "weight">,
+            } as Omit<Player, "height" | "weight">,
         }));
 
         return statsWithPlayer;
@@ -177,7 +179,7 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
                 jersey_number: stats.player!.jersey_number,
                 position: stats.player!.position,
                 team_name: stats.player!.team!.name,
-            } as Omit<Player, "player_id" | "height" | "weight">,
+            } as Omit<Player, "height" | "weight">,
         };
     }
 
@@ -226,7 +228,7 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
                 jersey_number: stat.player!.jersey_number,
                 position: stat.player!.position,
                 team_name: stat.player!.team!.name,
-            } as Omit<Player, "player_id" | "height" | "weight">,
+            } as Omit<Player, "height" | "weight">,
         }));
 
         return statsWithPlayer;
@@ -242,7 +244,11 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
             throw new  Error('Failed to create player game stats');
         }
 
-        return created;
+        return {
+            ...created,
+            pgs_id: created.id,
+            updated_at: created.updated_at?.toString()
+        };
     }
 
     async update(data: Partial<PlayerGameStats> & { id: string }): Promise<PlayerGameStats> {
@@ -258,7 +264,11 @@ export class PlayerGameStatsService implements IPlayerGameStatsService {
             throw new Error('Failed to update player game stats');
         }
 
-        return updated;
+        return {
+            ...updated,
+            pgs_id: updated.id,
+            updated_at: updated.updated_at?.toString()
+        };
     }
 
 

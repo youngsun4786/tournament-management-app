@@ -269,7 +269,6 @@ export const getAveragePlayerStatsByPlayerId = createServerFn({
                 totals.plus_minus += stat.plus_minus || 0;
             
         }); 
-
         // If no games played, return zeroes
         if (totals.games === 0) {
             return {
