@@ -69,6 +69,14 @@ export function DataTable<TData, TValue>({
       globalFilter: searchValue,
     },
     onGlobalFilterChange: setSearchValue,
+    globalFilterFn: (row, columnId, filterValue) => {
+      const searchTerm = filterValue.toLowerCase();
+      // Search in player name
+      const playerName = String(row.getValue("name") || "").toLowerCase();
+      // Search in team name
+      const teamName = String(row.getValue("team_name") || "").toLowerCase();
+      return playerName.includes(searchTerm) || teamName.includes(searchTerm);
+    },
   });
 
   // Calculate total pages
@@ -92,7 +100,7 @@ export function DataTable<TData, TValue>({
             defaultValue="All Teams"
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="KBL" />
+              <SelectValue placeholder="CCBC" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All Teams">All Teams</SelectItem>
@@ -134,7 +142,16 @@ export function DataTable<TData, TValue>({
               onChange={(e) => setSearchValue(e.target.value)}
               className="flex-1"
             />
-            <Button className="bg-gray-900">
+            <Button
+              className="bg-gray-900"
+              onClick={() => {
+                // Re-focus the search input after search
+                const searchInput = document.querySelector(
+                  'input[placeholder="Search by player or team name..."]'
+                ) as HTMLInputElement;
+                searchInput?.focus();
+              }}
+            >
               <Search className="h-4 w-4" />
               <span className="ml-2">Search</span>
             </Button>

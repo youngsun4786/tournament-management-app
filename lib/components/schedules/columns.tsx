@@ -237,20 +237,24 @@ export const columns: ColumnDef<Game>[] = [
           <ButtonLink
             variant="outline"
             to="/games/$gameId"
+            search={{section: ""}}
             params={{ gameId: game.id }}
             className="w-24 flex gap-1 items-center justify-center"
           >
             <ExternalLink className="h-3 w-3" />
             <span>Details</span>
           </ButtonLink>
-          <Button
+          <ButtonLink
             variant="outline"
             size="sm"
+            to="/games/$gameId"
+            search={{ section: "video-section" }}
+            params={{ gameId: game.id }}
             className="w-24 flex gap-1 items-center justify-center"
           >
             <PlayCircle className="h-3 w-3" />
             <span>Highlight</span>
-          </Button>
+          </ButtonLink>
         </div>
       );
     },

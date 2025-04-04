@@ -4,7 +4,7 @@ import { Player } from "~/app/types/player";
 
 export const columns: ColumnDef<Player>[] = [
   {
-    accessorFn: (player) => player.player_id,
+    accessorFn: (player) => player.name,
     accessorKey: "name",
     header: "Players",
     cell: ({ row }) => {

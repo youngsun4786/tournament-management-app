@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDown } from "lucide-react";
+import { useEffect } from "react";
 import {
   gameQueries,
   mediaQueries,
@@ -26,6 +27,11 @@ import {
 } from "~/lib/components/ui/tabs";
 
 export const Route = createFileRoute("/games/$gameId")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      section: search.section as string | undefined,
+    };
+  },
   loader: async ({ params, context }) => {
     await context.queryClient.ensureQueryData(
       playerGameStatsQueries.detail(params.gameId)
@@ -51,6 +57,17 @@ function RouteComponent() {
   const { data: videos } = useSuspenseQuery(
     mediaQueries.videosByGameId(gameId)
   );
+  const { section } = Route.useSearch();
+
+  // Scroll to video section if section=video-section is in the URL
+  useEffect(() => {
+    if (section === "video-section") {
+      const videoSection = document.getElementById("video-section");
+      if (videoSection) {
+        videoSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [section]);
 
   if (!gameInfo) {
     return <div className="container mx-auto p-4">Game not found</div>;
