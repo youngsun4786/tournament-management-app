@@ -39,7 +39,10 @@ export const Route = createRootRouteWithContext<{
         title: "Calgary Chinese Basketball Club",
       },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "ccbc_logo.png" },
+    ],
   }),
   beforeLoad: async ({ context }) => {
     const teams = await context.queryClient.ensureQueryData(teamQueries.list());
