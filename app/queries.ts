@@ -62,7 +62,7 @@ export const teamQueries = {
     }),
   getTeamById: (teamId: string) =>
     queryOptions({
-      queryKey: [...teamQueries.all, "detail", teamId],
+      queryKey: [...teamQueries.all, "getTeamById", teamId],
       queryFn: () => getTeam({ data: { teamId: teamId } }),
     }),
 }

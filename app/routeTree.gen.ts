@@ -26,7 +26,6 @@ import { Route as PlayersIndexImport } from './routes/players/index'
 import { Route as OrganizersIndexImport } from './routes/organizers/index'
 import { Route as EditTeamsIndexImport } from './routes/edit-teams/index'
 import { Route as EditGamesIndexImport } from './routes/edit-games/index'
-import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as ContactUsIndexImport } from './routes/contact-us/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as TeamsTeamNameImport } from './routes/teams/$teamName'
@@ -123,12 +122,6 @@ const EditTeamsIndexRoute = EditTeamsIndexImport.update({
 const EditGamesIndexRoute = EditGamesIndexImport.update({
   id: '/edit-games/',
   path: '/edit-games/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -263,13 +256,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactUsIndexImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard/': {
-      id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof rootRoute
-    }
     '/edit-games/': {
       id: '/edit-games/'
       path: '/edit-games'
@@ -345,7 +331,6 @@ export interface FileRoutesByFullPath {
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/admin': typeof AdminIndexRoute
   '/contact-us': typeof ContactUsIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/edit-games': typeof EditGamesIndexRoute
   '/edit-teams': typeof EditTeamsIndexRoute
   '/organizers': typeof OrganizersIndexRoute
@@ -370,7 +355,6 @@ export interface FileRoutesByTo {
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/admin': typeof AdminIndexRoute
   '/contact-us': typeof ContactUsIndexRoute
-  '/dashboard': typeof DashboardIndexRoute
   '/edit-games': typeof EditGamesIndexRoute
   '/edit-teams': typeof EditTeamsIndexRoute
   '/organizers': typeof OrganizersIndexRoute
@@ -396,7 +380,6 @@ export interface FileRoutesById {
   '/teams/$teamName': typeof TeamsTeamNameRoute
   '/admin/': typeof AdminIndexRoute
   '/contact-us/': typeof ContactUsIndexRoute
-  '/dashboard/': typeof DashboardIndexRoute
   '/edit-games/': typeof EditGamesIndexRoute
   '/edit-teams/': typeof EditTeamsIndexRoute
   '/organizers/': typeof OrganizersIndexRoute
@@ -423,7 +406,6 @@ export interface FileRouteTypes {
     | '/teams/$teamName'
     | '/admin'
     | '/contact-us'
-    | '/dashboard'
     | '/edit-games'
     | '/edit-teams'
     | '/organizers'
@@ -447,7 +429,6 @@ export interface FileRouteTypes {
     | '/teams/$teamName'
     | '/admin'
     | '/contact-us'
-    | '/dashboard'
     | '/edit-games'
     | '/edit-teams'
     | '/organizers'
@@ -471,7 +452,6 @@ export interface FileRouteTypes {
     | '/teams/$teamName'
     | '/admin/'
     | '/contact-us/'
-    | '/dashboard/'
     | '/edit-games/'
     | '/edit-teams/'
     | '/organizers/'
@@ -497,7 +477,6 @@ export interface RootRouteChildren {
   TeamsTeamNameRoute: typeof TeamsTeamNameRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ContactUsIndexRoute: typeof ContactUsIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   EditGamesIndexRoute: typeof EditGamesIndexRoute
   EditTeamsIndexRoute: typeof EditTeamsIndexRoute
   OrganizersIndexRoute: typeof OrganizersIndexRoute
@@ -522,7 +501,6 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsTeamNameRoute: TeamsTeamNameRoute,
   AdminIndexRoute: AdminIndexRoute,
   ContactUsIndexRoute: ContactUsIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   EditGamesIndexRoute: EditGamesIndexRoute,
   EditTeamsIndexRoute: EditTeamsIndexRoute,
   OrganizersIndexRoute: OrganizersIndexRoute,
@@ -556,7 +534,6 @@ export const routeTree = rootRoute
         "/teams/$teamName",
         "/admin/",
         "/contact-us/",
-        "/dashboard/",
         "/edit-games/",
         "/edit-teams/",
         "/organizers/",
@@ -605,9 +582,6 @@ export const routeTree = rootRoute
     },
     "/contact-us/": {
       "filePath": "contact-us/index.tsx"
-    },
-    "/dashboard/": {
-      "filePath": "dashboard/index.tsx"
     },
     "/edit-games/": {
       "filePath": "edit-games/index.tsx"

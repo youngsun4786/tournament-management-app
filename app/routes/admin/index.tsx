@@ -1,18 +1,18 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { requireAdmin } from "~/app/services/auth.service";
 import { ButtonLink } from "~/lib/components/button-link";
 import { CarouselManager } from "~/lib/components/admin/carousel-manager";
 import { Layout } from "~/lib/components/layout";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
-  beforeLoad: async (loaderContext) => {
-      if (!loaderContext.context.authState.isAuthenticated) {
-        throw redirect({ to: "/" });
-      }
-    // Check authentication and admin role in one function
-    const userRole = await requireAdmin(loaderContext);
-    return { userRole };
+  beforeLoad: async ({ context }) => {
+    if (!context.authState.isAuthenticated) {
+      throw redirect({ to: "/" });
+    }
+
+    if (context.authState.user.role !== "admin") {
+      throw redirect({ to: "/" });
+    }
   },
 });
 

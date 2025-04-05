@@ -45,7 +45,7 @@ export const getTeamByName = createServerFn({ method: "GET" })
 .handler(async ({ data }) => {
     const { name } = data;
     const { data: team, error } = await supabaseServer.from("teams").select("*").eq("name", name).single();
-
+    
     if (error) {
         error.message = "Failed to fetch team";
         throw error;
@@ -53,6 +53,7 @@ export const getTeamByName = createServerFn({ method: "GET" })
 
     // If no team found, return null
     if (!team) {
+        console.log("no team found");
         return null;
     }
 

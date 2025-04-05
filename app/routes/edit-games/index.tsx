@@ -7,7 +7,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
 import { ArrowUpDown, Edit } from "lucide-react";
 import { useState } from "react";
-import { requireScoreKeeper } from "~/app/services/auth.service";
 import { Game } from "~/app/types/game";
 import { ButtonLink } from "~/lib/components/button-link";
 import { DataTable } from "~/lib/components/schedules/data-table";
@@ -24,12 +23,17 @@ import { convert24to12 } from "~/lib/utils/date";
 
 export const Route = createFileRoute("/edit-games/")({
   component: RouteComponent,
-  beforeLoad: async (loaderContext) => {
-    if (!loaderContext.context.authState.isAuthenticated) {
+  beforeLoad: async ({ context }) => {
+    if (!context.authState.isAuthenticated) {
       throw redirect({ to: "/" });
     }
-    const userRole = await requireScoreKeeper(loaderContext);
-    return { userRole };
+
+    if (
+      context.authState.user.role !== "admin" &&
+      context.authState.user.role !== "score-keeper"
+    ) {
+      throw redirect({ to: "/" });
+    }
   },
 });
 

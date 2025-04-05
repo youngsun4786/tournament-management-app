@@ -1,19 +1,13 @@
 import { UploadImage } from "lib/components/upload-image";
-import { ImagePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "~/lib/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/lib/components/ui/card";
-import { Input } from "~/lib/components/ui/input";
-import { Label } from "~/lib/components/ui/label";
-import { Textarea } from "~/lib/components/ui/textarea";
 
 // Import the Image type if needed
 type Image = {
@@ -172,62 +166,6 @@ export function CarouselManager() {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Upload image - using the UploadImage component */}
           <UploadImage isProfileImage={false} mediaType="image" />
-          {/* Add from URL */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Add from URL</CardTitle>
-              <CardDescription>
-                Use an external image URL (not stored in Supabase)
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="imageUrl" className="block mb-2">
-                    Image URL
-                  </Label>
-                  <Input
-                    id="imageUrl"
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="urlDescription" className="block mb-2">
-                    Description (optional)
-                  </Label>
-                  <Textarea
-                    id="urlDescription"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter image description"
-                    className="resize-none"
-                  />
-                </div>
-              </form>
-            </CardContent>
-            <CardFooter>
-              <Button
-                onClick={handleSubmit}
-                // disabled={!imageUrl || addImageMutation.isPending}
-                className="w-full"
-              >
-                {/* {addImageMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding...
-                  </>
-                ) : (
-                  <>
-                    <ImagePlus className="mr-2 h-4 w-4" /> Add Image
-                  </>
-                )} */}
-                <ImagePlus className="mr-2 h-4 w-4" /> Add Image
-              </Button>
-            </CardFooter>
-          </Card>
         </div>
 
         {/* Current images list */}

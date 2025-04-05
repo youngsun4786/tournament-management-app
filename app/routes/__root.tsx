@@ -1,4 +1,4 @@
-import { type QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
@@ -53,7 +53,7 @@ export const Route = createRootRouteWithContext<{
     return {
       teams,
       games,
-      authState,
+      authState
     };
   },
   component: RootComponent,

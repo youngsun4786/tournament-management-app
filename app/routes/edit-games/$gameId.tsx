@@ -3,19 +3,23 @@ import {
   redirect,
   useRouteContext,
 } from "@tanstack/react-router";
-import { requireScoreKeeper } from "~/app/services/auth.service";
 import { FinalScoreForm } from "~/lib/components/games/final-score-form";
 import { UploadVideoForm } from "~/lib/components/games/upload-video-form";
 import { PlayerStatsManager } from "~/lib/components/stats/player-stats-manager";
 
 export const Route = createFileRoute("/edit-games/$gameId")({
   component: RouteComponent,
-  beforeLoad: async (loaderContext) => {
-    if (!loaderContext.context.authState.isAuthenticated) {
+  beforeLoad: async ({ context }) => {
+    if (!context.authState.isAuthenticated) {
       throw redirect({ to: "/" });
     }
-    const userRole = await requireScoreKeeper(loaderContext);
-    return { userRole };
+
+    if (
+      context.authState.user.role !== "admin" &&
+      context.authState.user.role !== "score-keeper"
+    ) {
+      throw redirect({ to: "/" });
+    }
   },
 });
 

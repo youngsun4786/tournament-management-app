@@ -18,7 +18,6 @@ import {
   useGetTeamById,
 } from "~/app/queries";
 import { PlayerSchema } from "~/app/schemas/player.schema";
-import { requireCaptain } from "~/app/services/auth.service";
 import { Player } from "~/app/types/player";
 import { Layout } from "~/lib/components/layout";
 import {
@@ -69,15 +68,17 @@ import {
 
 export const Route = createFileRoute("/edit-teams/")({
   component: EditTeamsPage,
-  loader: async (loaderContext) => {
-    if (!loaderContext.context.authState.isAuthenticated) {
+  beforeLoad: async ({ context }) => {
+    if (!context.authState.isAuthenticated) {
       throw redirect({ to: "/" });
     }
-    // check authentication and captain role in one function
-    const userRole = await requireCaptain(loaderContext);
-    return {
-      userRole,
-    };
+
+    if (
+      context.authState.user.role !== "captain" &&
+      context.authState.user.role !== "admin"
+    ) {
+      throw redirect({ to: "/" });
+    }
   },
 });
 

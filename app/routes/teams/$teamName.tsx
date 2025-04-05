@@ -1,4 +1,4 @@
-import { useSuspenseQueries, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQueries } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   gameQueries,
@@ -77,10 +77,7 @@ interface StatLeader {
 }
 
 function RouteComponent() {
-  const { teamName } = Route.useParams();
-
-  // use useSuspenseQueries here
-  const { data: team } = useSuspenseQuery(teamQueries.detail(teamName));
+  const { team } = Route.useLoaderData();
   const [
     playerQuery,
     teamStatsQuery,
