@@ -7,67 +7,67 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import {
-  createPlayer,
-  deletePlayer,
-  updatePlayer,
+    createPlayer,
+    deletePlayer,
+    updatePlayer,
 } from "~/app/controllers/player.api";
+import { getTeam } from "~/app/controllers/team.api";
 import {
-  playerQueries,
-  useAuthenticatedUser,
-  useGetPlayersByTeamId,
-  useGetTeamById,
+    playerQueries,
+    useAuthenticatedUser,
+    useGetPlayersByTeamId,
 } from "~/app/queries";
 import { PlayerSchema } from "~/app/schemas/player.schema";
 import { Player } from "~/app/types/player";
 import { Layout } from "~/lib/components/layout";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "~/lib/components/ui/alert-dialog";
 import { Button } from "~/lib/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "~/lib/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "~/lib/components/ui/form";
 import { Input } from "~/lib/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "~/lib/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "~/lib/components/ui/table";
 
-export const Route = createFileRoute("/edit-teams/")({
-  component: EditTeamsPage,
+export const Route = createFileRoute("/edit-teams/$teamId")({
+  component: EditTeamByIdPage,
   beforeLoad: async ({ context }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({ to: "/" });
@@ -80,36 +80,37 @@ export const Route = createFileRoute("/edit-teams/")({
       throw redirect({ to: "/" });
     }
   },
+  loader: async ({ params }) => {
+    const team = await getTeam({ data: { teamId: params.teamId } });
+    return {
+        team,
+        teamId: params.teamId,
+    };
+  },
 });
 
 type PlayerFormValues = z.infer<typeof PlayerSchema>;
 
-function EditTeamsPage() {
-  const {
-    data: { user },
-  } = useAuthenticatedUser();
-  const teamId = user.meta.teamId;
+function EditTeamByIdPage() {
+  const { teamId, team } = Route.useLoaderData();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const queryClient = useQueryClient();
-
-  // Get team information
-  const { data: team, isLoading: isTeamLoading } = useGetTeamById(
-    teamId! as string
-  );
+  const {
+    data: { user },
+  } = useAuthenticatedUser();
 
   // Get players for this team
-  const { data: players, isLoading: isPlayersLoading } = useGetPlayersByTeamId(
-    teamId! as string
-  );
+  const { data: players, isLoading: isPlayersLoading } =
+    useGetPlayersByTeamId(teamId);
 
   // Create player mutation
   const createPlayerMutation = useMutation({
     mutationFn: createPlayer,
     onSuccess: () => {
       toast.success("Player added successfully");
-      queryClient.invalidateQueries(playerQueries.teamPlayers(teamId!));
+      queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
       setIsCreateDialogOpen(false);
       createForm.reset();
     },
@@ -123,7 +124,7 @@ function EditTeamsPage() {
     mutationFn: updatePlayer,
     onSuccess: () => {
       toast.success("Player updated successfully");
-      queryClient.invalidateQueries(playerQueries.teamPlayers(teamId!));
+      queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
       editForm.reset();
@@ -138,7 +139,7 @@ function EditTeamsPage() {
     mutationFn: deletePlayer,
     onSuccess: () => {
       toast.success("Player removed successfully");
-      queryClient.invalidateQueries(playerQueries.teamPlayers(teamId!));
+      queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
     },
@@ -156,7 +157,7 @@ function EditTeamsPage() {
       position: "",
       height: "",
       weight: "",
-      team_id: teamId!,
+      team_id: teamId,
     },
   });
 
@@ -169,12 +170,11 @@ function EditTeamsPage() {
       position: "",
       height: "",
       weight: "",
-      team_id: teamId || "",
+      team_id: teamId,
     },
   });
 
   const handleCreatePlayer = (data: PlayerFormValues) => {
-    if (!teamId) return;
     data.jersey_number = Number(data.jersey_number);
     createPlayerMutation.mutate({
       data: {
@@ -205,7 +205,7 @@ function EditTeamsPage() {
       const updateData = {
         data: {
           id: selectedPlayer.player_id,
-          team_id: teamId!, // This field is required in the schema but won't be used in the update
+          team_id: teamId, // This field is required in the schema but won't be used in the update
           name: data.name,
           jersey_number: jerseyNumber,
           position: data.position || undefined,
@@ -233,25 +233,12 @@ function EditTeamsPage() {
       position: player.position || "",
       height: player.height || "",
       weight: player.weight || "",
-      team_id: teamId!,
+      team_id: teamId,
     });
     setIsEditDialogOpen(true);
   };
 
-  if (!teamId) {
-    return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center p-4">
-          <h1 className="text-3xl font-bold mb-4">Team Management</h1>
-          <p className="text-gray-600 mb-8">
-            You are not assigned to any team. Please contact an administrator.
-          </p>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (isTeamLoading || isPlayersLoading) {
+  if (isPlayersLoading) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center p-4">
@@ -282,10 +269,12 @@ function EditTeamsPage() {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-bold">{team?.name || "My Team"}</h1>
-              <p className="text-gray-500 dark:text-gray-400">
-                Captain: {user.meta.firstName} {user.meta.lastName}
-              </p>
+              <h1 className="text-3xl font-bold">{team?.name || "Team"}</h1>
+              {user.role === "captain" && (
+                <p className="text-gray-500 dark:text-gray-400">
+                  Captain: {user.meta.firstName} {user.meta.lastName}
+                </p>
+              )}
             </div>
           </div>
 
@@ -455,14 +444,8 @@ function EditTeamsPage() {
                         </TableCell>
                         <TableCell>{player.name}</TableCell>
                         <TableCell>{player.position || "-"}</TableCell>
-                        <TableCell>
-                          {player.height || "-"}{" "}
-                          {player.height ? "cm" : ""}{" "}
-                        </TableCell>
-                        <TableCell>
-                          {player.weight || "-"}{" "}
-                          {player.weight ? "kg" : ""}{" "}
-                        </TableCell>
+                        <TableCell>{player.height || "-"} {player.height ? "cm" : ""} </TableCell>
+                        <TableCell>{player.weight || "-"} {player.weight ? "kg" : ""} </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
@@ -543,9 +526,7 @@ function EditTeamsPage() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  console.log("Form submitted");
                   editForm.handleSubmit((data) => {
-                    console.log("Form valid, submitting:", data);
                     handleEditPlayer(data);
                   })();
                 }}

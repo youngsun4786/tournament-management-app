@@ -31,6 +31,7 @@ import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as TeamsTeamNameImport } from './routes/teams/$teamName'
 import { Route as PlayersPlayerIdImport } from './routes/players/$playerId'
 import { Route as GamesGameIdImport } from './routes/games/$gameId'
+import { Route as EditTeamsTeamIdImport } from './routes/edit-teams/$teamId'
 import { Route as EditGamesGameIdImport } from './routes/edit-games/$gameId'
 
 // Create/Update Routes
@@ -155,6 +156,12 @@ const GamesGameIdRoute = GamesGameIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const EditTeamsTeamIdRoute = EditTeamsTeamIdImport.update({
+  id: '/edit-teams/$teamId',
+  path: '/edit-teams/$teamId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const EditGamesGameIdRoute = EditGamesGameIdImport.update({
   id: '/edit-games/$gameId',
   path: '/edit-games/$gameId',
@@ -219,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/edit-games/$gameId'
       fullPath: '/edit-games/$gameId'
       preLoaderRoute: typeof EditGamesGameIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/edit-teams/$teamId': {
+      id: '/edit-teams/$teamId'
+      path: '/edit-teams/$teamId'
+      fullPath: '/edit-teams/$teamId'
+      preLoaderRoute: typeof EditTeamsTeamIdImport
       parentRoute: typeof rootRoute
     }
     '/games/$gameId': {
@@ -326,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/edit-games/$gameId': typeof EditGamesGameIdRoute
+  '/edit-teams/$teamId': typeof EditTeamsTeamIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
@@ -350,6 +365,7 @@ export interface FileRoutesByTo {
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/edit-games/$gameId': typeof EditGamesGameIdRoute
+  '/edit-teams/$teamId': typeof EditTeamsTeamIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
@@ -375,6 +391,7 @@ export interface FileRoutesById {
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/edit-games/$gameId': typeof EditGamesGameIdRoute
+  '/edit-teams/$teamId': typeof EditTeamsTeamIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
   '/teams/$teamName': typeof TeamsTeamNameRoute
@@ -401,6 +418,7 @@ export interface FileRouteTypes {
     | '/unauthenticated'
     | '/unauthorized'
     | '/edit-games/$gameId'
+    | '/edit-teams/$teamId'
     | '/games/$gameId'
     | '/players/$playerId'
     | '/teams/$teamName'
@@ -424,6 +442,7 @@ export interface FileRouteTypes {
     | '/unauthenticated'
     | '/unauthorized'
     | '/edit-games/$gameId'
+    | '/edit-teams/$teamId'
     | '/games/$gameId'
     | '/players/$playerId'
     | '/teams/$teamName'
@@ -447,6 +466,7 @@ export interface FileRouteTypes {
     | '/unauthenticated'
     | '/unauthorized'
     | '/edit-games/$gameId'
+    | '/edit-teams/$teamId'
     | '/games/$gameId'
     | '/players/$playerId'
     | '/teams/$teamName'
@@ -472,6 +492,7 @@ export interface RootRouteChildren {
   UnauthenticatedRoute: typeof UnauthenticatedRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   EditGamesGameIdRoute: typeof EditGamesGameIdRoute
+  EditTeamsTeamIdRoute: typeof EditTeamsTeamIdRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
   PlayersPlayerIdRoute: typeof PlayersPlayerIdRoute
   TeamsTeamNameRoute: typeof TeamsTeamNameRoute
@@ -496,6 +517,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthenticatedRoute: UnauthenticatedRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   EditGamesGameIdRoute: EditGamesGameIdRoute,
+  EditTeamsTeamIdRoute: EditTeamsTeamIdRoute,
   GamesGameIdRoute: GamesGameIdRoute,
   PlayersPlayerIdRoute: PlayersPlayerIdRoute,
   TeamsTeamNameRoute: TeamsTeamNameRoute,
@@ -529,6 +551,7 @@ export const routeTree = rootRoute
         "/unauthenticated",
         "/unauthorized",
         "/edit-games/$gameId",
+        "/edit-teams/$teamId",
         "/games/$gameId",
         "/players/$playerId",
         "/teams/$teamName",
@@ -567,6 +590,9 @@ export const routeTree = rootRoute
     },
     "/edit-games/$gameId": {
       "filePath": "edit-games/$gameId.tsx"
+    },
+    "/edit-teams/$teamId": {
+      "filePath": "edit-teams/$teamId.tsx"
     },
     "/games/$gameId": {
       "filePath": "games/$gameId.tsx"

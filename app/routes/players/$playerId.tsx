@@ -146,7 +146,7 @@ function RouteComponent() {
     <div className="container max-w-7xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
       {/* Player Header Section */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-md mb-8">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6">
+        <div className="bg-gradient-to-br from-rose-400 to-red-600 p-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <div className="relative">
               {/* Player image placeholder */}
@@ -364,13 +364,7 @@ function RouteComponent() {
 }
 
 // Stat Card Component
-const StatCard = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) => (
+const StatCard = ({ label, value }: { label: string; value: string }) => (
   <div className="text-center py-4">
     <div className="text-2xl font-bold text-gray-800 mb-1">{value}</div>
     <div className="flex items-center justify-center gap-1 text-sm text-gray-500">
@@ -420,4 +414,3 @@ const ShootingStatCard = ({
     </div>
   );
 };
-

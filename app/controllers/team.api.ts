@@ -14,7 +14,7 @@ export const getTeams = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const getTeamsBySeason = createServerFn({ method: "GET" })
-.validator(z.object({ seasonId: z.string() }))
+.validator(z.object({ seasonId: z.string().uuid() }))
 .handler(async ({ data }) => {
     const { seasonId } = data;
     try {
@@ -27,9 +27,10 @@ export const getTeamsBySeason = createServerFn({ method: "GET" })
 });
 
 export const getTeam = createServerFn({ method: "GET" })
-.validator(z.object({ teamId: z.string() }))
+.validator(z.object({ teamId: z.string().uuid() }))
 .handler(async ({ data }) => {
     const { teamId } = data;
+    console.log("team id in the server", teamId);
     try {
         const team = await teamService.getTeamById(teamId);
         return team;
