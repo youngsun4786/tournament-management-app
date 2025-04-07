@@ -1,8 +1,8 @@
-import { getBrowserClient } from "~/lib/utils/supabase-client";
 import { v4 as uuidv4 } from "uuid";
 import imageCompression from "browser-image-compression";
+import { supabaseServer } from "~/lib/utils/supabase-server";
 export function getStorageClient() {
-  const { storage } = getBrowserClient();
+  const { storage } = supabaseServer;
     return storage;
 }
 

@@ -23,10 +23,12 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { convertBlobUrlToFile } from "~/lib/utils";
+import { uploadImage } from "~/supabase/storage/client";
 
 type UploadImageProps = {
   isProfileImage: boolean;
   mediaType: "image" | "video";
+  handleUpload: (data: z.infer<typeof formSchema>) => void;
 };
 
 const formSchema = z.object({
@@ -40,6 +42,7 @@ const formSchema = z.object({
 export function UploadImage({
   isProfileImage = false,
   mediaType,
+  handleUpload,
 }: UploadImageProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,7 +80,17 @@ export function UploadImage({
     const files: File[] = [];
     for (const url of imageUrls) {
       const imageFile = await convertBlobUrlToFile(url);
+      const { imageUrl, error } = await uploadImage({
+        file: imageFile,
+        bucket: data.bucket,
+        folder: data.folder,
+      });
+      if (error) {
+        toast.error("Failed to upload image");
+        return;
+      }
       files.push(imageFile);
+      console.log(imageUrl);
     }
     const uploadData = {
       data: {
@@ -88,6 +101,13 @@ export function UploadImage({
         mediaType: mediaType,
       },
     };
+    // handleUpload({
+    //   file: files,
+    //   description: data.description,
+    //   bucket: data.bucket,
+    //   folder: data.folder,
+    //   mediaType: mediaType,
+    // });
     console.log(uploadData);
     setImageUrls([]);
     setUploading(false);

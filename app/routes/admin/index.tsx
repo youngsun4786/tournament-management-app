@@ -1,11 +1,10 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useGetTeams } from "~/app/queries";
 import { CarouselManager } from "~/lib/components/admin/carousel-manager";
 import { ButtonLink } from "~/lib/components/button-link";
 import { Layout } from "~/lib/components/layout";
-import { Button } from "~/lib/components/ui/button";
 import {
   Card,
   CardContent,
@@ -34,7 +33,6 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminPage() {
-  const navigate = useNavigate();
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const { data: teams, isLoading: isTeamsLoading } = useGetTeams();
 
@@ -47,7 +45,6 @@ function AdminPage() {
       toast.error("Please select a team first");
       return;
     }
-    navigate({ to: `/edit-teams/${selectedTeamId}` });
   };
 
   return (
@@ -113,13 +110,16 @@ function AdminPage() {
                           ))}
                       </SelectContent>
                     </Select>
-                    <Button
+                    <ButtonLink
+                      variant="outline"
+                      to="/edit-teams/$teamId"
                       onClick={handleManageTeam}
+                      params={{ teamId: selectedTeamId }}
                       disabled={!selectedTeamId}
                       className="bg-rose-600 hover:bg-rose-700 text-white"
                     >
                       Manage Team
-                    </Button>
+                    </ButtonLink>
                   </div>
                 </div>
               </CardContent>

@@ -17,12 +17,21 @@ export const signUp = createServerFn(
   .validator(SignUpSchema)
   .handler(async ({ data }) => {
     const admin_emails = process.env.ADMIN_EMAILS!;
+    const captain_emails = process.env.CAPTAIN_EMAILS!;
+    console.log("data: ",  data);
+
     const authorized_admin_emails = admin_emails.split(',')
       .map(email => email.trim().toLowerCase()) || [];
+    const authorized_captain_emails = captain_emails.split(',')
+      .map(email => email.trim().toLowerCase()) || [];
 
-    let roleToUse = data.role;
+    const roleToUse = data.role;
     if (data.role === 'admin' && !authorized_admin_emails.includes(data.email.toLowerCase())) {
-      roleToUse = 'player';
+      throw new Error("You are not authorized to create an admin account");
+    }
+
+    if (data.role === 'captain' && !authorized_captain_emails.includes(data.email.toLowerCase())) {
+      throw new Error("You are not authorized to create a captain account");
     }
 
     const { error } =

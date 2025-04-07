@@ -35,7 +35,12 @@ export const SignUpSchema = z.object({
   role: z.custom<UserRoleType>((value) => Object.values(UserRole).includes(value as UserRoleType), {
     message: "Please select a valid role",
   }),
-  teamId: z.string().uuid().nullable(),
+  teamId: z.string()
+    .refine(val => val === "" || /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val), {
+      message: "Invalid uuid",
+    })
+    .transform(val => val === "" ? null : val)
+    .nullable()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
