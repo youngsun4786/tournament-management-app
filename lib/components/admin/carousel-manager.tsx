@@ -15,7 +15,8 @@ type Image = {
   imageUrl: string;
   displayOrder: number;
   description?: string;
-  storage_path?: string;
+  bucket: string;
+  folder: string;
   created_at: string;
 };
 
@@ -165,7 +166,7 @@ export function CarouselManager() {
         {/* Add new image section */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Upload image - using the UploadImage component */}
-          <UploadImage isProfileImage={false} mediaType="image" />
+          <UploadImage isProfileImage={false} handleUpload={handleImageUpload} />
         </div>
 
         {/* Current images list */}

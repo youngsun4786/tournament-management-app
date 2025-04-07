@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Media, MediaInsert, MediaUpdate, Video, VideoInsert } from "~/app/types/media";
+import { Media, MediaInsert, MediaUpdate, Video, VideoInsert, ImageInsert } from "~/app/types/media";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 
 export interface IMediaService {
@@ -8,7 +8,7 @@ export interface IMediaService {
   updateMedia(id: string, params: MediaUpdate): Promise<Media>;
   addVideo(data: VideoInsert): Promise<Video>;
   getVideos(gameId: string): Promise<Video[]>;
-  uploadImage(file: File, folderPath: string): Promise<{ url: string, path: string }>;
+  uploadImage(data: ImageInsert): Promise<{ url: string, error: string }>;
 }
 
 export class MediaService implements IMediaService {
@@ -106,30 +106,30 @@ export class MediaService implements IMediaService {
   }
 
   // Upload an image to storage and return its URL
-  async uploadImage(file: File, folderPath: string = 'carousel'): Promise<{ url: string, path: string }> {
-    // Ensure this method is only called in the browser
+  async uploadImage(data: ImageInsert): Promise<{ url: string, error: string }> {
+    // // Ensure this method is only called in the browser
 
-    // Generate a unique file name to avoid collisions
-    const fileName = `${folderPath}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    // // Generate a unique file name to avoid collisions
+    // const fileName = `${folderPath}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
     
-    // Upload the file to storage
-    const { data, error } = await this.supabase.storage
-      .from('media-images')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
+    // // Upload the file to storage
+    // const { data, error } = await this.supabase.storage
+    //   .from('media-images')
+    //   .upload(fileName, file, {
+    //     cacheControl: '3600',
+    //     upsert: false,
+    //   });
     
-    if (error) throw error;
+    // if (error) throw error;
     
-    // Get the public URL for the uploaded file
-    const { data: publicUrlData } = this.supabase.storage
-      .from('media-images')
-      .getPublicUrl(data.path);
+    // // Get the public URL for the uploaded file
+    // const { data: publicUrlData } = this.supabase.storage
+    //   .from('media-images')
+    //   .getPublicUrl(data.path);
     
-    return {
-      url: publicUrlData.publicUrl,
-      path: data.path
-    };
+    // return {
+    //   url: publicUrlData.publicUrl,
+    //   path: data.path
+    // };
   }
 } 

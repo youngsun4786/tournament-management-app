@@ -21,6 +21,26 @@ export const addVideo = createServerFn({
     return video;
 });
 
+export const addImage = createServerFn({
+  method: "POST",
+}).validator(
+    z.object({
+        files: z.array(z.instanceof(File)),
+        description: z.string().optional(),
+        bucket: z.string(),
+        folder: z.string(),
+    })
+).handler(async ({ data }) => {
+    // const image = await mediaService.uploadImage({
+    //     files: data.files,
+    //     description: data.description || undefined,
+    //     bucket: data.bucket,
+    //     folder: data.folder,
+    // });
+    // return image;
+});
+
+
 export const getVideosByGameId = createServerFn({
     method: "GET",
 }).validator(
