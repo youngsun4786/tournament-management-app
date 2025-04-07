@@ -13,14 +13,8 @@ const UserRole = {
 export type UserRoleType = typeof UserRole[keyof typeof UserRole];
 
 export const UserMetaSchema = z.object({
-  firstName: z.string().min(3, {
-    message: "First name must be at least 3 characters",
-  }).max(20),
-  lastName: z.string().min(3,
-    {
-      message: "Last name must be at least 3 characters",
-    }
-  ).max(20),
+  firstName: z.string().max(20),
+  lastName: z.string().max(20),
   teamId: z.string().uuid().nullable(),
 })
 
