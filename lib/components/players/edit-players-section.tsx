@@ -170,7 +170,7 @@ export const EditPlayersSection = ({
       setIsUploading(true);
       // Create preview URL
       const objectUrl = URL.createObjectURL(file);
-      setNewAvatarUrl(objectUrl);
+      setPreviewUrl(objectUrl);
       setNewAvatarFile(await convertBlobUrlToFile(objectUrl));
       toast.success("Click 'Upload Photo' to upload player's profile image.");
     } catch (error) {
@@ -185,6 +185,7 @@ export const EditPlayersSection = ({
   const clearAvatar = useCallback(() => {
     setNewAvatarFile(null);
     setNewAvatarUrl(null);
+    setPreviewUrl(null);
     fileInputRef.current!.value = "";
   }, []);
 
@@ -285,12 +286,12 @@ export const EditPlayersSection = ({
         folder: "players",
       });
 
-      if (uploadResult.error || !uploadResult.imageUrl) {
+      if (uploadResult.error || !uploadResult.image_url) {
         toast.error(
           `Failed to upload player's profile image: ${uploadResult.error ?? "ERROR"}`
         );
-      } else if (uploadResult.imageUrl) {
-        setNewAvatarUrl(uploadResult.imageUrl);
+      } else if (uploadResult.image_url) {
+        setNewAvatarUrl(uploadResult.image_url);
         toast.success(
           "Image uploaded successfully. Click 'Save Changes' to update player's profile."
         );
@@ -629,8 +630,7 @@ export const EditPlayersSection = ({
           if (!updatePlayerMutation.isPending) {
             setIsEditDialogOpen(open);
             if (!open) {
-              setNewAvatarFile(null);
-              setNewAvatarUrl(null);
+              clearAvatar();
             }
           }
         }}
