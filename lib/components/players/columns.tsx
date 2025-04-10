@@ -11,10 +11,20 @@ export const columns: ColumnDef<Player>[] = [
       const player = row.original;
       return (
         <div className="ml-4 flex items-center gap-2">
-          {/* Player avatar/image placeholder */}
-          <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-            {player.name.charAt(0)}
-          </div>
+          {/* Player avatar */}
+          {player.player_url ? (
+            <img
+              src={`${player.player_url}`}
+              alt={`${player.name}'s avatar`}
+              className="h-8 w-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-xs text-gray-600 font-medium">
+                {player.name.charAt(0)}
+              </span>
+            </div>
+          )}
           <Link
             to={"/players/$playerId"}
             params={{ playerId: player.player_id }}

@@ -21,25 +21,27 @@ export const addVideo = createServerFn({
     return video;
 });
 
-export const addImage = createServerFn({
+export const addImages = createServerFn({
   method: "POST",
-}).validator(
-    z.object({
-        files: z.array(z.instanceof(File)),
-        description: z.string().optional(),
-        bucket: z.string(),
-        folder: z.string(),
-    })
-).handler(async ({ data }) => {
-    // const image = await mediaService.uploadImage({
-    //     files: data.files,
-    //     description: data.description || undefined,
-    //     bucket: data.bucket,
-    //     folder: data.folder,
-    // });
-    // return image;
-});
+}).validator(z.object({
+    imageUrls: z.array(z.string()),
+    imageIds: z.array(z.string()),
+    description: z.string().optional(),
+    folder: z.enum(["avatars", "gallery", "players", "games", "users"]).optional(),
+})).handler(async ({ data }) => {
 
+    // use promise to add images
+    const images = await Promise.all(data.imageUrls.map(async (imageUrl, index) => {
+        return await mediaService.addImage({
+            image_url: imageUrl,
+            image_id: data.imageIds[index],
+            description: data.description,
+            folder: data.folder!,
+        });
+    }));
+
+    return images;
+});
 
 export const getVideosByGameId = createServerFn({
     method: "GET",
@@ -52,3 +54,11 @@ export const getVideosByGameId = createServerFn({
     return videos;
 });
 
+export const getSpecificImages = createServerFn({
+    method: "GET",
+}).validator(z.object({
+        folder: z.enum(["avatars", "gallery", "players", "games", "users"]),
+})).handler(async ({ data }) => {
+    const images = await mediaService.getSpecificImages(data.folder);
+    return images;
+});

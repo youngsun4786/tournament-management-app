@@ -26,7 +26,6 @@ export const getPlayerById = createServerFn({ method: "GET" }).validator(z.objec
   }
 });
 
-
 export const updatePlayer = createServerFn(
   {
     method: "POST",
@@ -34,13 +33,14 @@ export const updatePlayer = createServerFn(
 ).validator(PlayerSchema).handler(async ({ data }) => {
   try {
     const player = await playerService.update({
-      player_id: data.id!,
+      player_id: data.player_id!,
       name: data.name,
       jersey_number: data.jersey_number,
       height: data.height,
       weight: data.weight,
       position: data.position,
       team_id: data.team_id,
+      player_url: data.player_url
     });
     return player;
   } catch (error) {
@@ -49,9 +49,11 @@ export const updatePlayer = createServerFn(
   }
 });
 
-export const deletePlayer = createServerFn().validator(z.string()).handler(async ({ data }) => {
+export const deletePlayer = createServerFn({ method: "POST" }).validator(z.object({
+  playerId: z.string().uuid()
+})).handler(async ({ data }) => {
   try {
-    const player = await playerService.delete({playerId: data});
+    const player = await playerService.delete({playerId: data.playerId});
     return player;
   } catch (error) {
     console.error("Error deleting player:", error);

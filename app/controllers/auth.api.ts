@@ -1,12 +1,12 @@
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { supabaseServer } from "~/lib/utils/supabase-server";
 import {
-  AuthState,
-  SignInSchema,
-  SignUpSchema,
-  UserMetaSchema,
-  UserRoleType,
+    AuthState,
+    SignInSchema,
+    SignUpSchema,
+    UserRoleType
 } from "../schemas/auth.schema";
 
 export const signUp = createServerFn(
@@ -91,18 +91,20 @@ export const getUser = createServerFn().handler(async () => {
   const metadata = user.user_metadata;
   const { data: profileData } = await supabaseServer
     .from('profiles')
-    .select('team_id')
+    .select('team_id, avatar_url')
     .eq('id', user.id)
     .single();
   
   return {
     isAuthenticated: true,
     user: {
+      id: user.id,
       email: user.email,
       meta: { 
         firstName: metadata.firstName, 
         lastName: metadata.lastName,
         teamId: metadata?.role === "captain" ? profileData?.team_id as string : null,
+        avatarUrl: profileData?.avatar_url || null,
       },
       role: metadata.role as UserRoleType,
     },
@@ -112,7 +114,12 @@ export const getUser = createServerFn().handler(async () => {
 export const updateUser = createServerFn({
   method: 'POST',
 })
-  .validator(UserMetaSchema)
+  .validator(z.object({
+    firstName: z.string().max(20),
+    lastName: z.string().max(20),
+    teamId: z.string().uuid().nullable(),
+    avatarUrl: z.string().url().nullable().optional(),
+  }))
   .handler(async ({ data }) => {
     const { error } = await supabaseServer.auth.updateUser({
       data: { 
@@ -128,15 +135,27 @@ export const updateUser = createServerFn({
 
     // Also update the profile table
     const { data: userData } = await supabaseServer.auth.getUser()
-    
+
     if (userData.user) {
+      const updateData: {
+        first_name: string;
+        last_name: string;
+        updated_at: string;
+        avatar_url?: string; 
+      } = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Include avatar_url in the update if it's provided
+      if (data.avatarUrl) {
+        updateData.avatar_url = data.avatarUrl;
+      }
+
       const { error: profileError } = await supabaseServer
         .from('profiles')
-        .update({
-          first_name: data.firstName,
-          last_name: data.lastName,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', userData.user.id);
 
       if (profileError) {

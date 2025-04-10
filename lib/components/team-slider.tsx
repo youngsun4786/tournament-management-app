@@ -3,7 +3,9 @@ import { InfiniteSlider } from "~/lib/components/ui/infinite-slider";
 
 export default function TeamSlider() {
   const { teams: teamInfo } = useRouteContext({ from: "__root__" });
-  const teams = teamInfo!.filter((team) => (team.name !== "TBD" || team.name === "Edmonton Dragons"));
+  const teams = teamInfo!.filter(
+    (team) => team.name !== "TBD" && team.name !== "Edmonton Dragons"
+  );
 
   return (
     <InfiniteSlider gap={24} reverse className="w-full h-full bg-white">

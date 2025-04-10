@@ -206,6 +206,7 @@ export type Database = {
           id: string
           jersey_number: number | null
           name: string
+          player_url: string | null
           position: string | null
           team_id: string | null
           updated_at: string | null
@@ -217,6 +218,7 @@ export type Database = {
           id?: string
           jersey_number?: number | null
           name: string
+          player_url?: string | null
           position?: string | null
           team_id?: string | null
           updated_at?: string | null
@@ -228,6 +230,7 @@ export type Database = {
           id?: string
           jersey_number?: number | null
           name?: string
+          player_url?: string | null
           position?: string | null
           team_id?: string | null
           updated_at?: string | null
@@ -520,7 +523,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_avatar: {
+        Args: {
+          object_name: string
+        }
+        Returns: boolean
+      }
+      is_storage_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "score-keeper" | "player" | "captain"

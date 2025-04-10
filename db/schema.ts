@@ -151,6 +151,7 @@ export const players = pgTable("players", {
 	team_id: uuid(),
 	created_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
 	updated_at: timestamp({ withTimezone: true, mode: 'string' }).defaultNow(),
+	player_url: text(),
 }, (table) => [
 	foreignKey({
 			columns: [table.team_id],

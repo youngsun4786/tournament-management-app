@@ -149,10 +149,20 @@ function RouteComponent() {
         <div className="bg-gradient-to-br from-rose-400 to-red-600 p-6">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             <div className="relative">
-              {/* Player image placeholder */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-full h-32 w-32 flex items-center justify-center text-5xl font-bold text-white shadow-lg ring-4 ring-white/30">
-                {player.name.charAt(0)}
-              </div>
+              {/* Player image */}
+              {player.player_url ? (
+                <div className="h-32 w-32 rounded-full overflow-hidden ring-4 ring-white/30 shadow-lg">
+                  <img
+                    src={`${player.player_url}`}
+                    alt={`${player.name}'s avatar`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="bg-white/10 backdrop-blur-sm rounded-full h-32 w-32 flex items-center justify-center text-5xl font-bold text-white shadow-lg ring-4 ring-white/30">
+                  {player.name.charAt(0)}
+                </div>
+              )}
             </div>
 
             <div className="text-center md:text-left text-white">
@@ -291,74 +301,6 @@ function RouteComponent() {
         isLoading={isLoadingPlayerGameStats}
         isPlayerProfile={true}
       />
-      {/* <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-bold text-gray-800">Recent Games</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50">
-                <TableHead>Date</TableHead>
-                <TableHead>Min</TableHead>
-                <TableHead>PTS</TableHead>
-                <TableHead>REB</TableHead>
-                <TableHead>AST</TableHead>
-                <TableHead>STL</TableHead>
-                <TableHead>BLK</TableHead>
-                <TableHead>FG</TableHead>
-                <TableHead>3P</TableHead>
-                <TableHead>FT</TableHead>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {recentGames.length > 0 ? (
-                recentGames.map((game, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <TableCell>
-                      {game.updated_at
-                        ? new Date(game.updated_at).toLocaleDateString()
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>{game.minutes_played || 0}</TableCell>
-                    <TableCell className="font-medium">
-                      {game.points || 0}
-                    </TableCell>
-                    <TableCell>{game.total_rebounds || 0}</TableCell>
-                    <TableCell>{game.assists || 0}</TableCell>
-                    <TableCell>{game.steals || 0}</TableCell>
-                    <TableCell>{game.blocks || 0}</TableCell>
-                    <TableCell>
-                      {game.field_goals_made || 0}/
-                      {game.field_goals_attempted || 0}
-                    </TableCell>
-                    <TableCell>
-                      {game.three_pointers_made || 0}/
-                      {game.three_pointers_attempted || 0}
-                    </TableCell>
-                    <TableCell>
-                      {game.free_throws_made || 0}/
-                      {game.free_throws_attempted || 0}
-                    </TableCell>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={10}
-                    className="px-6 py-8 text-center text-sm text-gray-500"
-                  >
-                    No recent games found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div> */}
     </div>
   );
 }

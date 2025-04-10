@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const PlayerSchema = z.object({
-    id: z.string().uuid().optional(),
+    player_id: z.string().uuid().optional(),
     team_name: z.string().optional(),
     team_id: z.string().uuid(),
     name: z.string().min(1, "Name is required"),
@@ -9,6 +9,7 @@ export const PlayerSchema = z.object({
     height: z.string().optional(),
     weight: z.string().optional(),
     position: z.string().optional(),
+    player_url: z.string().url().optional(),
     created_at: z.string().datetime().optional(),
     updated_at: z.string().datetime().optional(),
 })

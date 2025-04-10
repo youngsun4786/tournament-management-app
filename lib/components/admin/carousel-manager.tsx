@@ -1,6 +1,24 @@
-import { UploadImage } from "lib/components/upload-image";
+import {
+  UploadImage,
+  UploadImageFormSchema,
+} from "lib/components/upload-image";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { addImages } from "~/app/controllers/media.api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/lib/components/ui/alert-dialog";
+import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
+import { Button } from "~/lib/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,149 +26,95 @@ import {
   CardHeader,
   CardTitle,
 } from "~/lib/components/ui/card";
-
-// Import the Image type if needed
-type Image = {
-  id: string;
-  imageUrl: string;
-  displayOrder: number;
-  description?: string;
-  bucket: string;
-  folder: string;
-  created_at: string;
-};
+import { uploadImageToStorage } from "~/supabase/storage/client";
 
 export function CarouselManager() {
-  const [imageUrl, setImageUrl] = useState("");
-  const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
-  // // Mutation to add an image
-  // const addImageMutation = useMutation({
-  //   mutationFn: (data: Parameters<typeof addCarouselImage>[0]) => {},
-  //   onSuccess: () => {
-  //     toast.success("Image added to carousel");
-  //     queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
-  //     setImageUrl("");
-  //     setDescription("");
-  //     setFile(null);
-  //     setError(null);
-  //   },
-  //   onError: (err) => {
-  //     console.error("Error adding image:", err);
-  //     toast.error("Failed to add image to carousel");
-  //     setError("Failed to add image. Please try again later.");
-  //   },
-  // });
-
-  // // Mutation to delete an image
-  // const deleteImageMutation = useMutation({
-  //   mutationFn: (data: Parameters<typeof deleteCarouselImage>[0]) =>
-  //     deleteCarouselImage(data),
-  //   onSuccess: () => {
-  //     toast.success("Image removed from carousel");
-  //     queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
-  //   },
-  //   onError: (err) => {
-  //     console.error("Error deleting image:", err);
-  //     toast.error("Failed to delete image");
-  //   },
-  // });
-
-  // // Mutation to update the order of images
-  // const updateOrderMutation = useMutation({
-  //   mutationFn: (data: Parameters<typeof updateCarouselImageOrder>[0]) =>
-  //     updateCarouselImageOrder(data),
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["carouselImages"] });
-  //   },
-  //   onError: (err) => {
-  //     console.error("Error updating image order:", err);
-  //     toast.error("Failed to update image order");
-  //   },
-  // });
-
-  // // Function to move an image up or down in the order
-  // const moveImage = (id: string, direction: "up" | "down") => {
-  //   const currentIndex = images.findIndex((img) => img.id === id);
-  //   if (currentIndex === -1) return;
-
-  //   const newImages = [...images];
-
-  //   if (direction === "up" && currentIndex > 0) {
-  //     // Swap with the previous image
-  //     const temp = newImages[currentIndex].displayOrder;
-  //     newImages[currentIndex].displayOrder =
-  //       newImages[currentIndex - 1].displayOrder;
-  //     newImages[currentIndex - 1].displayOrder = temp;
-  //   } else if (direction === "down" && currentIndex < newImages.length - 1) {
-  //     // Swap with the next image
-  //     const temp = newImages[currentIndex].displayOrder;
-  //     newImages[currentIndex].displayOrder =
-  //       newImages[currentIndex + 1].displayOrder;
-  //     newImages[currentIndex + 1].displayOrder = temp;
-  //   } else {
-  //     return; // Can't move further in this direction
-  //   }
-
-  //   // Update the order in the database
-  //   updateOrderMutation.mutate({
-  //     images: newImages.map((img) => ({
-  //       id: img.id,
-  //       displayOrder: img.displayOrder,
-  //     })),
-  //   });
-  // };
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Handle image upload via the UploadImage component
-  const handleImageUpload = async (imageData: Partial<Image>) => {
+  const handleImageUpload = async (imageData: UploadImageFormSchema) => {
     setError(null);
 
     try {
-      // TODO: Implement actual file upload to storage and database
-      console.log("Image data received:", imageData);
+      const uploadedUrls: string[] = [];
+      const imageIds: string[] = [];
 
-      // Example implementation:
-      // 1. Upload the image to your storage
-      // 2. Get the real URL
-      // 3. Save to your database
+      for (const imageFile of imageData.files) {
+        const uploadResult = await uploadImageToStorage({
+          file: imageFile,
+          bucket: imageData.bucket,
+          folder: imageData.folder,
+        });
 
-      // Simulate upload delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+        if (uploadResult.error) {
+          toast.error(uploadResult.error);
+          return;
+        }
 
-      // Success handling
-      toast?.success("Image uploaded successfully");
+        if (uploadResult.image_url) {
+          uploadedUrls.push(uploadResult.image_url);
+          imageIds.push(uploadResult.image_id);
+        } 
+      }
+
+      if (
+        imageData.files &&
+        imageData.files.length > 0 &&
+        uploadedUrls.length > 0
+      ) {
+        // Store the images in the database using the addImage API
+        await addImages({
+          data: {
+            imageUrls: uploadedUrls,
+            imageIds: imageIds,
+            description: imageData.description || undefined,
+            folder: imageData.folder,
+          },
+        });
+
+        toast.success("Images uploaded and saved successfully");
+      }
+
+      setPreviewUrls([]);
 
       return Promise.resolve();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error uploading image:", error);
-      setError(error?.message || "Failed to upload image");
-      toast?.error("Failed to upload image");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to upload image";
+      setError(errorMessage);
+      toast.error("Failed to upload image");
       return Promise.reject(error);
     }
   };
 
-  // Handle image submission from URL
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!imageUrl) return;
-    setError(null);
+  const navigateCarousel = (direction: "next" | "prev") => {
+    if (previewUrls.length === 0) return;
 
-    // addImageMutation.mutate({
-    //   imageUrl,
-    //   description,
-    //   // No storage_path for external images
-    // });
+    if (direction === "next") {
+      setCurrentImageIndex((prev) =>
+        prev === previewUrls.length - 1 ? 0 : prev + 1
+      );
+    } else {
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? previewUrls.length - 1 : prev - 1
+      );
+    }
   };
 
-  // // Handle deleting an image
-  // const handleDeleteImage = (id: string) => {
-  //   deleteImageMutation.mutate({ id });
-  // };
+  const removeImage = (index: number) => {
+    // In a real implementation, you would also delete from storage/database
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+    if (currentImageIndex >= index && currentImageIndex > 0) {
+      setCurrentImageIndex((prev) => prev - 1);
+    }
+  };
 
   return (
     <Card className="w-full shadow-md">
       <CardHeader>
-        <CardTitle className="text-xl font-bold">Image Manager</CardTitle>
         <CardDescription>
           Manage images displayed in the homepage
         </CardDescription>
@@ -164,112 +128,117 @@ export function CarouselManager() {
         )}
 
         {/* Add new image section */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Upload image - using the UploadImage component */}
-          <UploadImage isProfileImage={false} handleUpload={handleImageUpload} />
-        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Upload image component */}
+          <UploadImage
+            folderType="gallery"
+            handleUpload={handleImageUpload}
+            setPreviewUrls={setPreviewUrls}
+          />
 
-        {/* Current images list */}
-        {/* <div>
-          <h3 className="text-lg font-semibold mb-4">
-            Current Carousel Images
-          </h3>
-
-          {isLoading ? (
-            <div className="flex justify-center p-8">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : images.length === 0 ? (
-            <div className="text-center p-8 border rounded-lg bg-muted">
-              <p className="text-muted-foreground">
-                No images added to the carousel yet
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {images.map((image) => (
-                <Card key={image.id} className="overflow-hidden">
-                  <AspectRatio ratio={16 / 9}>
+          {/* Image carousel preview */}
+          <Card className="overflow-hidden col-span-2">
+            <CardHeader>
+              <CardTitle className="text-lg">Preview</CardTitle>
+              <CardDescription>
+                Preview how images will appear in the carousel
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {previewUrls.length > 0 ? (
+                <div className="relative">
+                  <AspectRatio
+                    ratio={16 / 9}
+                    className="bg-muted overflow-hidden rounded-md"
+                  >
                     <img
-                      src={image.imageUrl}
-                      alt={image.description || "Carousel image"}
+                      src={previewUrls[currentImageIndex]}
+                      alt={`Carousel Images-${currentImageIndex + 1}`}
                       className="object-cover w-full h-full"
                     />
                   </AspectRatio>
-                  <CardContent className="p-4">
-                    {image.description && (
-                      <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                        {image.description}
-                      </p>
-                    )}
-                    <div className="flex items-center mb-2 text-xs text-muted-foreground">
-                      <span
-                        className={image.storage_path ? "text-green-500" : ""}
+
+                  {previewUrls.length > 1 && (
+                    <div className="absolute inset-0 flex justify-between items-center">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 rounded-full bg-black/30 text-white hover:bg-black/50 backdrop-blur-sm"
+                        onClick={() => navigateCarousel("prev")}
                       >
-                        {image.storage_path
-                          ? "Stored in Supabase"
-                          : "External URL"}
-                      </span>
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 rounded-full bg-black/30 text-white hover:bg-black/50 backdrop-blur-sm"
+                        onClick={() => navigateCarousel("next")}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <div className="flex justify-between items-center mt-2">
-                      <div className="flex space-x-2">
+                  )}
+
+                  <div className="absolute bottom-2 right-2">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="outline"
-                          onClick={() => moveImage(image.id, "up")}
-                          disabled={
-                            images.indexOf(image) === 0 ||
-                            updateOrderMutation.isPending
-                          }
+                          className="h-8 w-8 p-0"
                         >
-                          <ArrowUp className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => moveImage(image.id, "down")}
-                          disabled={
-                            images.indexOf(image) === images.length - 1 ||
-                            updateOrderMutation.isPending
-                          }
-                        >
-                          <ArrowDown className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Image</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to remove this image from
-                              the carousel?{" "}
-                              {image.storage_path &&
-                                "The image will also be deleted from Supabase Storage."}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteImage(image.id)}
-                              className="bg-red-500 hover:bg-red-600"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Image</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to remove this image?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => removeImage(currentImageIndex)}
+                            className="bg-red-500 hover:bg-red-600"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+
+                  {previewUrls.length > 1 && (
+                    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+                      {previewUrls.map((_, index) => (
+                        <button
+                          key={index}
+                          className={`h-2 w-2 rounded-full ${
+                            index === currentImageIndex
+                              ? "bg-white"
+                              : "bg-white/50"
+                          }`}
+                          onClick={() => setCurrentImageIndex(index)}
+                        />
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div> */}
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center border rounded-md p-8 h-[200px] bg-muted">
+                  <p className="text-muted-foreground">
+                    No images uploaded yet
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Images you upload will appear here
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </CardContent>
     </Card>
   );

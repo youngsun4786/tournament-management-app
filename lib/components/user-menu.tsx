@@ -35,14 +35,20 @@ export function UserMenu() {
     navigate({ to: "/" });
   };
 
+  const handleProfileClick = () => {
+    navigate({ to: "/profile" });
+    setOpen(false);
+  };
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src="/placeholder.svg?height=32&width=32"
-              alt="User avatar"
+              src={user.meta.avatarUrl || "/placeholder.svg?height=32&width=32"}
+              alt={`${user.meta.firstName} ${user.meta.lastName}`}
+              className="object-cover"
             />
             <AvatarFallback>
               <User className="h-4 w-4" />
@@ -62,13 +68,12 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <ItemLink
+        <DropdownMenuItem
           className="cursor-pointer"
-          to="/profile"
-          onClick={() => setOpen(false)}
+          onSelect={handleProfileClick}
         >
           Profile
-        </ItemLink>
+        </DropdownMenuItem>
         {user.role === "captain" && (
           <>
             <DropdownMenuSeparator />

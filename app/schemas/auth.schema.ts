@@ -16,6 +16,7 @@ export const UserMetaSchema = z.object({
   firstName: z.string().max(20),
   lastName: z.string().max(20),
   teamId: z.string().uuid().nullable(),
+  avatarUrl: z.string().url().nullable().optional(),
 })
 
 export type UserMeta = z.infer<typeof UserMetaSchema>
@@ -69,6 +70,7 @@ export type AuthState =
     }
 
 export type User = { 
+  id?: string;
   email?: string; 
   meta: UserMeta;
   role?: UserRoleType;

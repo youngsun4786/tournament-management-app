@@ -18,88 +18,89 @@ import {
 import { Input } from "lib/components/ui/input";
 import { Textarea } from "lib/components/ui/textarea";
 import { Loader2, Upload } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { convertBlobUrlToFile } from "~/lib/utils";
 
 type UploadImageProps = {
-  isProfileImage: boolean;
-  handleUpload: (data: z.infer<typeof formSchema>) => void;
+  folderType: "avatars" | "gallery" | "players" | "games" | "users";
+  handleUpload?: (data: z.infer<typeof formSchema>) => void;
+  setPreviewUrls?: (urls: string[]) => void;
 };
 
+export type UploadImageFormSchema = z.infer<typeof formSchema>;
+
 const formSchema = z.object({
-  file: z.array(z.instanceof(File)),
+  files: z.array(z.instanceof(File)),
   description: z.string().optional(),
   bucket: z.string(),
-  folder: z.string().optional(),
+  folder: z.enum(["avatars", "gallery", "players", "games", "users"]),
 });
 
-export function UploadImage({
-  isProfileImage = false,
-  handleUpload,
-}: UploadImageProps) {
+export function UploadImage({ folderType, handleUpload, setPreviewUrls }: UploadImageProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      file: [],
+      files: [],
       description: "",
       bucket: "media-images",
-      folder: isProfileImage ? "avatars" : "gallery",
+      folder: folderType,
     },
   });
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    // allow only one file to be uploaded if it is a profile image
-    if (isProfileImage && e.target.files && e.target.files.length > 1) {
-      toast.error("Please select one profile image");
-      return;
-    }
 
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
       const newImageUrls = filesArray.map((file) => URL.createObjectURL(file));
       setImageUrls((prev) => [...prev, ...newImageUrls]);
+      if (setPreviewUrls) {
+        setPreviewUrls(newImageUrls);
+      }
 
       // Update form value for file field
-      form.setValue("file", filesArray);
+      form.setValue("files", filesArray);
     }
   };
 
   const handleImageSubmit = async (data: z.infer<typeof formSchema>) => {
     setUploading(true);
-    const files: File[] = [];
-    for (const url of imageUrls) {
-      const imageFile = await convertBlobUrlToFile(url);
-      // const { imageUrl, error } = await uploadImage({
-      //   file: imageFile,
-      //   bucket: data.bucket,
-      //   folder: data.folder,
-      // });
-      files.push(imageFile);
+    try {
+      const files: File[] = [];
+      for (const url of imageUrls) {
+        const imageFile = await convertBlobUrlToFile(url);
+        files.push(imageFile);
+      }
+
+      // Pass data to parent component via handleUpload if provided
+      if (handleUpload) {
+        // Set the uploadedUrls as the file property to be used by the parent component
+        const formData = {
+          ...data,
+          files: files,
+        };
+        await handleUpload(formData);
+      }
+
+      // Clear form state
+      setImageUrls([]);
+      form.reset();
+      if (fileRef.current) {
+        fileRef.current.value = "";
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+      return null;
+    } finally {
+      setUploading(false);
     }
-    const uploadData = {
-      data: {
-        file: files,
-        description: data.description,
-        bucket: data.bucket,
-        folder: data.folder,
-      },
-    };
-    // handleUpload({
-    //   file: files,
-    //   description: data.description,
-    //   bucket: data.bucket,
-    //   folder: data.folder,
-    //   mediaType: mediaType,
-    // });
-    console.log(uploadData);
-    setImageUrls([]);
-    setUploading(false);
   };
 
   return (
@@ -118,26 +119,26 @@ export function UploadImage({
           >
             <FormField
               control={form.control}
-              name="file"
-              render={({ field: { onChange, value, ...fieldProps } }) => (
+              name="files"
+              render={() => (
                 <FormItem>
                   <FormLabel>Select Image</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
                       accept="image/*"
-                      multiple={!isProfileImage}
+                      multiple={folderType !== "avatars"}
                       onChange={handleImageChange}
                       className="cursor-pointer"
                       disabled={uploading}
-                      {...fieldProps}
+                      ref={fileRef}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {!isProfileImage && (
+            {folderType !== "avatars" && (
               <FormField
                 control={form.control}
                 name="description"
@@ -157,7 +158,11 @@ export function UploadImage({
                 )}
               />
             )}
-            <Button type="submit" disabled={uploading} className="w-full mt-2">
+            <Button
+              type="submit"
+              disabled={uploading || imageUrls.length === 0}
+              className="w-full mt-2"
+            >
               {uploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

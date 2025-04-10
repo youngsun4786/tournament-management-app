@@ -2,11 +2,12 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
+import { Image } from "~/app/types/media";
 import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
 import { cn } from "~/lib/utils/cn";
 
 interface ImageCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
-  images: string[];
+  images: Image[];
   autoplayInterval?: number;
   aspectRatio?: number;
 }
@@ -73,7 +74,7 @@ export function ImageCarousel({
               )}
             >
               <img
-                src={src}
+                src={src.image_url}
                 alt={`Slide ${index + 1}`}
                 className="h-full w-full object-cover"
               />

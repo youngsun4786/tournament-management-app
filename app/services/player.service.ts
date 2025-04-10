@@ -30,7 +30,8 @@ export class PlayerService implements IPlayerService {
             height: data.height,
             weight: data.weight,
             position: data.position,
-            team_id: data.team_id
+            team_id: data.team_id,
+            player_url: data.player_url
         }).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to create player", {cause: error});
@@ -44,7 +45,8 @@ export class PlayerService implements IPlayerService {
             jersey_number: data.jersey_number,
             height: data.height,
             weight: data.weight,
-            position: data.position
+            position: data.position,
+            player_url: data.player_url
         }).eq("id", data.player_id).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to update player", {cause: error});
@@ -52,8 +54,8 @@ export class PlayerService implements IPlayerService {
         return player;
     }
 
-    async delete({ playerId }: { playerId: Player["player_id"]}): Promise<Player> {
-        const {data: player, error} = await this.supabase.from("players").delete().eq("id", playerId).select().single<Player>();
+    async delete(data: {playerId : Player["player_id"];}): Promise<Player> {
+        const {data: player, error} = await this.supabase.from("players").delete().eq("id", data.playerId).select().single<Player>();
         if (!player || error) {
             throw new Error("Failed to delete player", {cause: error});
         }
@@ -61,7 +63,7 @@ export class PlayerService implements IPlayerService {
     }
 
     async getPlayers(): Promise<Player[]> {
-          // Query all players with their related teams
+        // Query all players with their related teams
         const players = await this.drizzle_db.query.players.findMany({
             with: {
             team: true
@@ -72,14 +74,15 @@ export class PlayerService implements IPlayerService {
         // Transform the result to match the SQL query structure
         const playersWithTeams = players.map(player => {
             return {
-            player_id: player.id,
-            team_id: player.team!.id,
-            team_name: player.team!.name,
-            name: player.name,
-            jersey_number: player.jersey_number,
-            height: player.height,
-            weight: player.weight,
-            position: player.position
+                player_id: player.id,
+                team_id: player.team!.id,
+                team_name: player.team!.name,
+                name: player.name,
+                jersey_number: player.jersey_number,
+                height: player.height,
+                weight: player.weight,
+                position: player.position,
+                player_url: player.player_url
             };
         });
 
@@ -114,7 +117,8 @@ export class PlayerService implements IPlayerService {
                 jersey_number: player.jersey_number,
                 height: player.height,
                 weight: player.weight,
-                position: player.position
+                position: player.position,
+                player_url: player.player_url
             };
         });
 

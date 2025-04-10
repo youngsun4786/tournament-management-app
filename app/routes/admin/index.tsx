@@ -35,6 +35,7 @@ export const Route = createFileRoute("/admin/")({
 function AdminPage() {
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
   const { data: teams, isLoading: isTeamsLoading } = useGetTeams();
+  const teamInfo = teams?.filter((team) => team.name !== "TBD");
 
   const handleTeamSelect = (teamId: string) => {
     setSelectedTeamId(teamId);
@@ -102,8 +103,8 @@ function AdminPage() {
                         <SelectValue placeholder="Select a team" />
                       </SelectTrigger>
                       <SelectContent>
-                        {teams &&
-                          teams.map((team) => (
+                        {teamInfo &&
+                          teamInfo.map((team) => (
                             <SelectItem key={team.id} value={team.id}>
                               {team.name}
                             </SelectItem>

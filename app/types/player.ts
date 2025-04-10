@@ -9,7 +9,8 @@ export type Player = {
     height: string | null;
     weight: string | null;
     position: string | null;
+    player_url: string | null;
   };
 
-  export type PlayerInsert = MakeOptional<Player, "team_name" | "player_id" | "jersey_number" | "height" | "weight" | "position">;
+  export type PlayerInsert = MakeOptional<Player, "team_name" | "player_id" | "jersey_number" | "height" | "weight" | "position" | "player_url">;
   export type PlayerUpdate = Partial<Player>;
