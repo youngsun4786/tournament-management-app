@@ -1,3 +1,4 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   UploadImage,
   UploadImageFormSchema,
@@ -6,6 +7,7 @@ import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { addImages } from "~/app/controllers/media.api";
+import { mediaQueries } from "~/app/queries";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +34,19 @@ export function CarouselManager() {
   const [error, setError] = useState<string | null>(null);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const queryClient = useQueryClient();
+
+  const addGalleryMutation = useMutation({
+    mutationFn: (data: Parameters<typeof addImages>[0]) => {
+      return addImages(data);
+    },
+    onSuccess: () => {
+      toast.success("Images uploaded and saved successfully");
+      queryClient.resetQueries(mediaQueries.specificImages("gallery"));
+      // Clear preview images
+      setPreviewUrls([]);
+    },
+  });
 
   // Handle image upload via the UploadImage component
   const handleImageUpload = async (imageData: UploadImageFormSchema) => {
@@ -56,7 +71,7 @@ export function CarouselManager() {
         if (uploadResult.image_url) {
           uploadedUrls.push(uploadResult.image_url);
           imageIds.push(uploadResult.image_id);
-        } 
+        }
       }
 
       if (
@@ -65,7 +80,8 @@ export function CarouselManager() {
         uploadedUrls.length > 0
       ) {
         // Store the images in the database using the addImage API
-        await addImages({
+
+        await addGalleryMutation.mutate({
           data: {
             imageUrls: uploadedUrls,
             imageIds: imageIds,
@@ -73,11 +89,8 @@ export function CarouselManager() {
             folder: imageData.folder,
           },
         });
-
-        toast.success("Images uploaded and saved successfully");
       }
-
-      setPreviewUrls([]);
+      console.log("Added images", uploadedUrls);
 
       return Promise.resolve();
     } catch (error) {

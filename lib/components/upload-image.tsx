@@ -108,7 +108,7 @@ export function UploadImage({ folderType, handleUpload, setPreviewUrls }: Upload
       <CardHeader>
         <CardTitle className="text-lg">Upload New Image</CardTitle>
         <CardDescription>
-          Upload an image from your device to the gallery
+          Upload images to the gallery
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -160,7 +160,7 @@ export function UploadImage({ folderType, handleUpload, setPreviewUrls }: Upload
             )}
             <Button
               type="submit"
-              disabled={uploading || imageUrls.length === 0}
+              disabled={uploading}
               className="w-full mt-2"
             >
               {uploading ? (

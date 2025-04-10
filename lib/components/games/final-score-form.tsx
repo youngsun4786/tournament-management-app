@@ -44,7 +44,7 @@ export const FinalScoreForm = ({ game }: FinalScoreFormProps) => {
     },
     onSuccess: () => {
       toast.success("Game score updated successfully");
-      queryClient.invalidateQueries(gameQueries.detail(game.id));
+      queryClient.resetQueries(gameQueries.detail(game.id));
     },
   });
 

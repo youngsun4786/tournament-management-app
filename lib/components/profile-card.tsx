@@ -92,14 +92,14 @@ export function ProfileCard() {
         folder: "users",
       });
 
-      if (uploadResult.error || !uploadResult.imageUrl) {
+      if (uploadResult.error || !uploadResult.image_url) {
         toast.error(`Failed to upload image: ${uploadResult.error ?? "ERROR"}`);
         return;
       }
 
-      if (uploadResult.imageUrl) {
+      if (uploadResult.image_url) {
         // Store the URL but don't update the database yet
-        setNewAvatarUrl(uploadResult.imageUrl);
+        setNewAvatarUrl(uploadResult.image_url);
         toast.success(
           "Image uploaded successfully. Click 'Save Changes' to update your profile."
         );

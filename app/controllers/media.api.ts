@@ -55,7 +55,6 @@ export const getVideosByGameId = createServerFn({
 });
 
 export const getSpecificImages = createServerFn({
-    method: "GET",
 }).validator(z.object({
         folder: z.enum(["avatars", "gallery", "players", "games", "users"]),
 })).handler(async ({ data }) => {
