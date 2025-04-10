@@ -26,26 +26,6 @@ import * as XLSX from "xlsx";
 import { z } from "zod";
 import { PlayerGameStatsSchema } from "~/app/schemas/player-game-stats.schema";
 
-// Define the Excel row structure
-interface ExcelPlayerStatsRow {
-  player_name?: string;
-  jersey_number?: string | number;
-  minutes_played?: string | number;
-  two_pointers_made?: string | number;
-  two_pointers_attempted?: string | number;
-  three_pointers_made?: string | number;
-  three_pointers_attempted?: string | number;
-  free_throws_made?: string | number;
-  free_throws_attempted?: string | number;
-  offensive_rebounds?: string | number;
-  defensive_rebounds?: string | number;
-  assists?: string | number;
-  steals?: string | number;
-  blocks?: string | number;
-  turnovers?: string | number;
-  personal_fouls?: string | number;
-  plus_minus?: string | number;
-}
 interface PlayerStatsManagerProps {
   gameId: string;
 }
@@ -167,9 +147,6 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
       // Process each row
       for (const row of data) {
         try {
-
-          console.log(row);
-
           // Try to find player ID - could be by name or jersey number
           let playerId: string | null = null;
           // Check if there's a player name column
@@ -318,45 +295,51 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
               </p>
 
               <div className="flex flex-col items-center mt-6 space-y-4">
-                <p className="text-sm text-gray-600">
-                  Upload an Excel file to add multiple player statistics at once
-                </p>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleFileChange}
+                />
 
                 {uploadError && (
-                  <Alert variant="destructive" className="max-w-md">
+                  <Alert variant="destructive" className="max-w-md mb-4">
                     <AlertDescription>{uploadError}</AlertDescription>
                   </Alert>
                 )}
 
-                <div className="flex flex-col items-center gap-2">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept=".xlsx,.xls,.csv"
-                    onChange={handleFileChange}
-                  />
-                  <Button
-                    onClick={handleFileSelect}
-                    variant="outline"
-                    className="w-48"
-                    disabled={isUploading}
-                  >
+                <div
+                  onClick={!isUploading ? handleFileSelect : undefined}
+                  className={`border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center p-10 w-full max-w-xl ${!isUploading ? "cursor-pointer hover:border-gray-400 transition-colors" : "opacity-70"}`}
+                >
+                  <div className="flex flex-col items-center gap-4">
                     {isUploading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
+                      <Loader2 className="h-12 w-12 text-gray-400 animate-spin" />
                     ) : (
-                      <>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload Excel File
-                      </>
+                      <Upload className="h-12 w-12 text-gray-400" />
                     )}
-                  </Button>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Excel columns should match the player stats form fields
-                  </p>
+                    <div className="text-center">
+                      {isUploading ? (
+                        <p className="text-lg font-medium">
+                          Processing files...
+                        </p>
+                      ) : (
+                        <>
+                          <p className="text-lg font-medium">Upload 2 files</p>
+                          <p className="text-sm text-gray-500">
+                            <span className="text-blue-600 font-medium">
+                              select files
+                            </span>{" "}
+                            to upload
+                          </p>
+                          <p className="text-xs text-gray-400 mt-2">
+                            Maximum file size: 10 MB
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
