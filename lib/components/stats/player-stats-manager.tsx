@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2, Plus, Upload } from "lucide-react";
+import { Loader2, Plus, Trash, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { getPlayersByGameId } from "~/app/controllers/game-players.api";
 import {
   createPlayerGameStats,
+  deletePlayerGameStats,
   getPlayerGameStatsByGameId,
 } from "~/app/controllers/player-game-stats.api";
 import type { PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
@@ -25,6 +26,16 @@ import { PlayerStatsModal } from "./player-stats-modal";
 import * as XLSX from "xlsx";
 import { z } from "zod";
 import { PlayerGameStatsSchema } from "~/app/schemas/player-game-stats.schema";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/lib/components/ui/alert-dialog";
 
 interface PlayerStatsManagerProps {
   gameId: string;
@@ -34,6 +45,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -55,6 +67,16 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
       return await createPlayerGameStats({ data });
     },
     onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const deleteStatsMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await deletePlayerGameStats({ data: { id } });
+    },
+    onSuccess: () => {
+      toast.success("All player stats removed successfully");
       refetch();
     },
   });
@@ -97,6 +119,30 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
 
   const handleAddStats = () => {
     setIsAddModalOpen(true);
+  };
+
+  const handleOpenDeleteDialog = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteStats = async () => {
+    try {
+      if (!playerStats || playerStats.length === 0) {
+        toast.error("No player stats to delete");
+        return;
+      }
+
+      const promises = playerStats.map((stat) => {
+        return deleteStatsMutation.mutateAsync(stat.pgs_id);
+      });
+
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Error deleting player stats:", error);
+      toast.error("Failed to delete player stats");
+    } finally {
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const handleFileSelect = () => {
@@ -278,11 +324,48 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Player Statistics</h2>
-        <Button onClick={handleAddStats} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Player Stats
-        </Button>
+        <div className="flex items-center gap-4">
+          {playerStats && playerStats.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleOpenDeleteDialog}
+              className="flex items-center gap-2"
+            >
+              <Trash className="h-4 w-4" />
+              Remove Stats
+            </Button>
+          )}
+          <Button onClick={handleAddStats} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Player Stats
+          </Button>
+        </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will remove all player statistics for this game. This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteStats}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete All Stats
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {isLoading ? (
         <div className="text-center py-10">Loading player statistics...</div>
