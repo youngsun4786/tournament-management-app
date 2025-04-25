@@ -18,8 +18,8 @@ export function createRouter() {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: "always",
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        refetchOnWindowFocus: false,
+        staleTime: 60 * 60 * 1000, // 1 hour
       },
     },
     mutationCache: new MutationCache({
