@@ -200,7 +200,6 @@ export const mediaQueries = {
       queryKey: [...mediaQueries.all, "specificImages", folder],
       queryFn: () => getSpecificImages({ data: { folder: folder as "avatars" | "gallery" | "players" | "games" | "users" } }),
       staleTime: 60 * 60 * 1000, // 1 hour,
-      gcTime: 24 * 60 * 60 * 1000, // 1 hour
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,

@@ -15,13 +15,12 @@ interface ImageCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
 export function ImageCarousel({
   images,
   className,
-  autoplayInterval = 4000,
   aspectRatio = 16 / 9,
   ...props
 }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [isHovering, setIsHovering] = React.useState(false);
-  const autoplayTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  // const [isHovering, setIsHovering] = React.useState(false);
+  // const autoplayTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) =>
@@ -35,28 +34,28 @@ export function ImageCarousel({
     );
   }, [images.length]);
 
-  // Setup autoplay
-  React.useEffect(() => {
-    if (!isHovering && autoplayInterval > 0) {
-      autoplayTimerRef.current = setInterval(goToNext, autoplayInterval);
-    }
+  // // Setup autoplay
+  // React.useEffect(() => {
+  //   if (!isHovering && autoplayInterval > 0) {
+  //     autoplayTimerRef.current = setInterval(goToNext, autoplayInterval);
+  //   }
 
-    return () => {
-      if (autoplayTimerRef.current) {
-        clearInterval(autoplayTimerRef.current);
-      }
-    };
-  }, [goToNext, isHovering, autoplayInterval]);
+  //   return () => {
+  //     if (autoplayTimerRef.current) {
+  //       clearInterval(autoplayTimerRef.current);
+  //     }
+  //   };
+  // }, [goToNext, isHovering, autoplayInterval]);
 
   // Pause autoplay on hover
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
+  // const handleMouseEnter = () => setIsHovering(true);
+  // const handleMouseLeave = () => setIsHovering(false);
 
   return (
     <div
       className={cn("relative w-full overflow-hidden", className)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      // onMouseEnter={handleMouseEnter}
+      // onMouseLeave={handleMouseLeave}
       {...props}
     >
       <AspectRatio ratio={aspectRatio} className="bg-muted">

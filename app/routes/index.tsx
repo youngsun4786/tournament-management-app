@@ -1,4 +1,4 @@
-import { createFileRoute, useRouteContext } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import { TeamRankings } from "~/lib/components/standings/team-rankings";
 import TeamSlider from "~/lib/components/team-slider";
@@ -9,8 +9,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { galleryImages } = useRouteContext({ from: "__root__" });
-
   return (
     <div>
       <div className="container mx-auto p-4">
@@ -31,7 +29,7 @@ function Index() {
             {/* Main Image Section */}
             <div className="mb-8">
               <ImageCarousel
-                images={galleryImages}
+                images={[]}
                 autoplayInterval={4000}
                 aspectRatio={16 / 9}
                 className="bg-gray-100 dark:bg-gray-800 overflow-hidden rounded-lg shadow-md"
