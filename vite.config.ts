@@ -4,18 +4,22 @@ import viteReact from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import tsConfigPaths from 'vite-tsconfig-paths';
 import { devtools } from '@tanstack/devtools-vite';
+import netlify from '@netlify/vite-plugin-tanstack-start';
 
-export default defineConfig(() => ({
+
+const config = defineConfig({
   plugins: [
     devtools(),
-    tsConfigPaths(
+  tsConfigPaths(
       {
         projects: ["./tsconfig.json"],
       }
     ),
     tanstackStart(),
-    viteReact(),
+    netlify(),
+    viteReact(), 
     tailwindcss(),
   ],
 })
-);
+
+export default config;
