@@ -1,10 +1,8 @@
-"use client";
-
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
-import { Image } from "~/app/types/media";
 import { AspectRatio } from "~/lib/components/ui/aspect-ratio";
 import { cn } from "~/lib/utils/cn";
+import { Image } from "~/src/types/media";
 
 interface ImageCarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   images: Image[];
@@ -16,6 +14,7 @@ export function ImageCarousel({
   images,
   className,
   aspectRatio = 16 / 9,
+  autoplayInterval,
   ...props
 }: ImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);

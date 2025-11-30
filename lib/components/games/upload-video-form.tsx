@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { addVideo } from "~/app/controllers/media.api";
-import { mediaQueries } from "~/app/queries";
-import { Game } from "~/app/types/game";
+import { addVideo } from "~/src/controllers/media.api";
+import { mediaQueries } from "~/src/queries";
+import { Game } from "~/src/types/game";
 import { Button } from "~/lib/components/ui/button";
 import {
   Card,
@@ -119,7 +119,7 @@ export function UploadVideoForm({ game }: UploadVideoFormProps) {
                   <FormLabel>Quarter</FormLabel>
                   <Select
                     onValueChange={(value) => field.onChange(Number(value))}
-                    defaultValue={field.value.toString()}
+                    defaultValue={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>

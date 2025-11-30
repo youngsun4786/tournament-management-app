@@ -13,10 +13,10 @@ import {
   createPlayer,
   deletePlayer,
   updatePlayer,
-} from "~/app/controllers/player.api";
-import { playerQueries } from "~/app/queries";
-import { Player } from "~/app/types/player";
-import { Team } from "~/app/types/team";
+} from "~/src/controllers/player.api";
+import { playerQueries } from "~/src/queries";
+import { Player } from "~/src/types/player";
+import { Team } from "~/src/types/team";
 import {
   AlertDialog,
   AlertDialogAction,

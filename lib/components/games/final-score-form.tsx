@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { updateGameScore } from "~/app/controllers/game.api";
-import { gameQueries } from "~/app/queries";
-import { Game } from "~/app/types/game";
+import { updateGameScore } from "~/src/controllers/game.api";
+import { gameQueries } from "~/src/queries";
+import { Game } from "~/src/types/game";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 import { SwitchField } from "../form/switch-field";

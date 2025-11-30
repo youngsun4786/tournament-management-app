@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { useAuthentication } from "~/app/queries";
+import { useAuthentication } from "~/src/queries";
 
 const SignedInContent = ({ children }: { children: React.ReactNode }) => {
   const { data } = useAuthentication();

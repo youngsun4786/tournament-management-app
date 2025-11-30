@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { UserRoleType } from "~/app/schemas/auth.schema";
+import { UserRoleType } from "~/src/schemas/auth.schema";
 import { useAuth } from "~/lib/hooks/useAuth";
 
 export const Nav = () => {

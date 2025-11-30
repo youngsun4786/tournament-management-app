@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { UserRoleType } from "~/app/schemas/auth.schema";
+import { UserRoleType } from "~/src/schemas/auth.schema";
 import { useAuth } from "~/lib/hooks/useAuth";
 
 type RoleGuardProps = {

@@ -1,8 +1,8 @@
 import { format } from "date-fns";
 import { Heart } from "lucide-react";
-import { Game } from "~/app/types/game";
 import { Card, CardContent } from "~/lib/components/ui/card";
 import { convert24to12 } from "~/lib/utils/date";
+import { Game } from "~/src/types/game";
 import { ButtonLink } from "../button-link";
 
 interface GameCardProps {
@@ -86,7 +86,12 @@ export function GameCard({ game }: GameCardProps) {
               variant="outline"
               className="text-xs"
               to="/games/$gameId"
-              params={{ gameId: game.id }}
+              params={{
+                gameId: game.id,
+              }}
+              search={{
+                section: "game-details",
+              }}
             >
               game details
             </ButtonLink>

@@ -2,9 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { getPlayersByGameId } from "~/app/controllers/game-players.api";
-import { createPlayerGameStats } from "~/app/controllers/player-game-stats.api";
-import { PlayerGameStatsSchema } from "~/app/schemas/player-game-stats.schema";
+import { getPlayersByGameId } from "~/src/controllers/game-players.api";
+import { createPlayerGameStats } from "~/src/controllers/player-game-stats.api";
+import { PlayerGameStatsSchema } from "~/src/schemas/player-game-stats.schema";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 import {

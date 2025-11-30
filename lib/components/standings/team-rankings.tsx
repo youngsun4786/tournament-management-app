@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getGamesForTeams } from "~/app/controllers/game.api";
-import { getTeamsBySeason } from "~/app/controllers/team.api";
-import { useGetSeasons } from "~/app/queries";
-import type { Game } from "~/app/types/game";
-import type { TeamWithSeason } from "~/app/types/team";
+import { getGamesForTeams } from "~/src/controllers/game.api";
+import { getTeamsBySeason } from "~/src/controllers/team.api";
+import { useGetSeasons } from "~/src/queries";
+import type { Game } from "~/src/types/game";
+import type { TeamWithSeason } from "~/src/types/team";
 import {
   Table,
   TableBody,

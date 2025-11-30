@@ -2,13 +2,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Plus, Trash, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { getPlayersByGameId } from "~/app/controllers/game-players.api";
+import { getPlayersByGameId } from "~/src/controllers/game-players.api";
 import {
   createPlayerGameStats,
   deletePlayerGameStats,
   getPlayerGameStatsByGameId,
-} from "~/app/controllers/player-game-stats.api";
-import type { PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
+} from "~/src/controllers/player-game-stats.api";
+import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ import { PlayerStatsModal } from "./player-stats-modal";
 // Import Excel processing library
 import * as XLSX from "xlsx";
 import { z } from "zod";
-import { PlayerGameStatsSchema } from "~/app/schemas/player-game-stats.schema";
+import { PlayerGameStatsSchema } from "~/src/schemas/player-game-stats.schema";
 import {
   AlertDialog,
   AlertDialogAction,

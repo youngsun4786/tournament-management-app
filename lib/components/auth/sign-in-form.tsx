@@ -1,14 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { signIn } from "~/app/controllers/auth.api";
-import { SignInSchema } from "~/app/schemas/auth.schema";
+import { signIn } from "~/src/controllers/auth.api";
+import { SignInSchema } from "~/src/schemas/auth.schema";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 
 export const SignInForm = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const router = useRouter();
   const signInMutation = useMutation({
     mutationFn: (data: Parameters<typeof signIn>[0]) => signIn(data),
@@ -21,8 +20,8 @@ export const SignInForm = () => {
 
   const form = useAppForm({
     defaultValues: {
-      email: import.meta.env.VITE_DEFAULT_USER_EMAIL ?? "",
-      password: import.meta.env.VITE_DEFAULT_USER_PASSWORD ?? "",
+      email: process.env.VITE_DEFAULT_USER_EMAIL ?? "",
+      password: process.env.VITE_DEFAULT_USER_PASSWORD ?? "",
     } as SignInSchema,
     onSubmit: async ({ value }) => {
       await signInMutation.mutateAsync({ data: value });

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { Player } from "~/app/types/player";
+import type { Player } from "~/src/types/player";
 import type {
   PlayerGameStatsAverage,
   PlayerGameStatsTotal,
-} from "~/app/types/player-game-stats";
+} from "~/src/types/player-game-stats";
 import {
   Dialog,
   DialogContent,

@@ -5,9 +5,9 @@ import { z } from "zod";
 import {
   createPlayerGameStats,
   updatePlayerGameStats,
-} from "~/app/controllers/player-game-stats.api";
-import { PlayerGameStatsSchema } from "~/app/schemas/player-game-stats.schema";
-import type { PlayerGameStats } from "~/app/types/player-game-stats";
+} from "~/src/controllers/player-game-stats.api";
+import { PlayerGameStatsSchema } from "~/src/schemas/player-game-stats.schema";
+import type { PlayerGameStats } from "~/src/types/player-game-stats";
 import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

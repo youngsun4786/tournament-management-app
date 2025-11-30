@@ -1,7 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
+import { getCookies, setCookie } from '@tanstack/react-start/server';
 import { config } from 'dotenv';
-import { parseCookies, setCookie } from "vinxi/http";
-import { Database } from "../database.types";
 
 config({ path: '.env' });
 
@@ -27,14 +26,14 @@ config({ path: '.env' });
  * ```
  */
 export function getSupabaseServerClient() {
-  return createServerClient<Database>(
+  return createServerClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_ANON_KEY!,
     {
       cookies: {
         // @ts-ignore Wait till Supabase overload works
         getAll() {
-          return Object.entries(parseCookies()).map(([name, value]) => ({
+          return Object.entries(getCookies()).map(([name, value]) => ({
             name,
             value,
           }));
@@ -78,4 +77,4 @@ export async function getSafeSession() {
   return { session, user, error: null };
 }
 
-export const supabaseServer = getSupabaseServerClient();
+

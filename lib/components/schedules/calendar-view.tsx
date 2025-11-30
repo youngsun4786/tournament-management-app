@@ -6,8 +6,8 @@ import {
   parseISO,
   startOfMonth,
 } from "date-fns";
-import { Game } from "~/app/types/game";
 import { cn } from "~/lib/utils/cn";
+import { Game } from "~/src/types/game";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
 import { ScrollArea } from "../ui/scroll-area";
@@ -27,10 +27,10 @@ export function CalendarView({ games, currentDate }: CalendarViewProps) {
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   // Add empty cells for the days before the first day of the month
-  const calendarCells = Array.from(
-    { length: firstDayOfMonth },
-    () => null
-  ).concat(days);
+  const calendarCells: (number | null)[] = [
+    ...Array.from({ length: firstDayOfMonth }, () => null),
+    ...days,
+  ];
 
   // Group games by date
   const gamesByDate = games.reduce(

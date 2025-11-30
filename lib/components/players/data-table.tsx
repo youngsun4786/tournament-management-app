@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
       globalFilter: searchValue,
     },
     onGlobalFilterChange: setSearchValue,
-    globalFilterFn: (row, columnId, filterValue) => {
+    globalFilterFn: (row, filterValue) => {
       const searchTerm = filterValue.toLowerCase();
       // Search in player name
       const playerName = String(row.getValue("name") || "").toLowerCase();

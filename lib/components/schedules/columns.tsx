@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
 import { ArrowUpDown, ExternalLink, PlayCircle } from "lucide-react";
-import { Game } from "~/app/types/game";
+import { Game } from "~/src/types/game";
 import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
 import { convert24to12 } from "~/lib/utils/date";

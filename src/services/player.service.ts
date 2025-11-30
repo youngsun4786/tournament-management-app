@@ -1,0 +1,128 @@
+import { eq } from "drizzle-orm";
+import { db as drizzle_db } from "~/db";
+import { players } from "~/db/schema";
+import { getSupabaseServerClient } from "~/lib/utils/supabase-server";
+import { Player, PlayerInsert, PlayerUpdate } from "~/src/types/player";
+
+export interface IPlayerService {
+    create(data: PlayerInsert): Promise<Player>;
+    update(data: PlayerUpdate): Promise<Player>;
+    delete(data: {playerId : Player["player_id"];}): Promise<Player>;
+    getPlayers(): Promise<Player[]>;
+    getPlayerById(playerId: string): Promise<Player>;
+    getPlayersByTeamId(teamId: string): Promise<Player[]>;
+}
+
+export class PlayerService implements IPlayerService {
+    private drizzle_db: typeof drizzle_db;
+
+    private get supabase() {
+        return getSupabaseServerClient();
+    }
+
+    constructor() {
+        this.drizzle_db = drizzle_db;
+    }
+
+    async create(data: PlayerInsert): Promise<Player> {
+        const {data: player, error} = await this.supabase.from("players").insert({
+            name: data.name,
+            jersey_number: data.jersey_number,
+            height: data.height,
+            weight: data.weight,
+            position: data.position,
+            team_id: data.team_id,
+            player_url: data.player_url
+        }).select().single<Player>();
+        if (!player || error) {
+            throw new Error("Failed to create player", {cause: error});
+        }
+        return player;
+    }
+
+    async update(data: PlayerUpdate): Promise<Player> {
+        const {data: player, error} = await this.supabase.from("players").update({
+            name: data.name,
+            jersey_number: data.jersey_number,
+            height: data.height,
+            weight: data.weight,
+            position: data.position,
+            player_url: data.player_url
+        }).eq("id", data.player_id).select().single<Player>();
+        if (!player || error) {
+            throw new Error("Failed to update player", {cause: error});
+        }
+        return player;
+    }
+
+    async delete(data: {playerId : Player["player_id"];}): Promise<Player> {
+        const {data: player, error} = await this.supabase.from("players").delete().eq("id", data.playerId).select().single<Player>();
+        if (!player || error) {
+            throw new Error("Failed to delete player", {cause: error});
+        }
+        return player;
+    }
+
+    async getPlayers(): Promise<Player[]> {
+        // Query all players with their related teams
+        const players = await this.drizzle_db.query.players.findMany({
+            with: {
+            team: true
+            },
+            orderBy: (players, { asc }) => [asc(players.jersey_number)]
+        });
+
+        // Transform the result to match the SQL query structure
+        const playersWithTeams = players.map(player => {
+            return {
+                player_id: player.id,
+                team_id: player.team!.id,
+                team_name: player.team!.name,
+                name: player.name,
+                jersey_number: player.jersey_number,
+                height: player.height,
+                weight: player.weight,
+                position: player.position,
+                player_url: player.player_url
+            };
+        });
+
+        return playersWithTeams;
+    }
+
+    async getPlayerById(playerId: string): Promise<Player> {
+        const {data: player, error} = await this.supabase.from("players").select("*").eq("id", playerId).single<Player>();
+        if (!player || error) {
+            throw new Error("Failed to get player by ID", {cause: error});
+        }
+        return player;
+    }
+
+    async getPlayersByTeamId(teamId: string): Promise<Player[]> {
+        // Query players by team ID with their related team info
+        const teamPlayers = await this.drizzle_db.query.players.findMany({
+            where: eq(players.team_id, teamId),
+            with: {
+                team: true
+            },
+            orderBy: (players, { asc }) => [asc(players.jersey_number)]
+        });
+
+        // Transform the result to match the expected structure
+        const playersWithTeams = teamPlayers.map(player => {
+            return {
+                player_id: player.id,
+                team_id: player.team!.id,
+                team_name: player.team!.name,
+                name: player.name,
+                jersey_number: player.jersey_number,
+                height: player.height,
+                weight: player.weight,
+                position: player.position,
+                player_url: player.player_url
+            };
+        });
+
+        return playersWithTeams;
+    }
+}

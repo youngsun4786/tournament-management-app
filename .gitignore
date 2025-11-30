@@ -131,9 +131,24 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-.vinxi
 .netlify
 .vscode
 .idea
 .output
-.cursor
+
+
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+count.txt
+.env
+.nitro
+.tanstack
+.output
+.vinxi
+todos.json
+.agent
+# Local Netlify folder
+.netlify

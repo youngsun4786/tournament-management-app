@@ -1,5 +1,5 @@
-import { Game } from "~/app/types/game";
-import { TeamWithSeason } from "~/app/types/team";
+import { Game } from "~/src/types/game";
+import { TeamWithSeason } from "~/src/types/team";
 
 export type TeamStanding = {
     id: string;

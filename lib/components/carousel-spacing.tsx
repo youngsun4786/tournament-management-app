@@ -1,5 +1,5 @@
 import { useRouteContext } from "@tanstack/react-router";
-import type { Game } from "~/app/types/game";
+import type { Game } from "~/src/types/game";
 import { GameCard } from "./games/game-card";
 import {
   Carousel,

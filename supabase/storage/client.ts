@@ -35,6 +35,6 @@ export async function uploadImageToStorage({ file, bucket, folder }: UploadImage
         return {image_url: "", image_id: "", error: "Failed to upload image"};
     }
 
-    const image_url  = `${import.meta.env.VITE_SUPABASE_URL!}/storage/v1/object/public/${bucket}/${data?.path}`;
+    const image_url  = `${process.env.VITE_SUPABASE_URL!}/storage/v1/object/public/${bucket}/${data?.path}`;
     return {image_url: image_url, image_id: data?.id, error: null};
 }

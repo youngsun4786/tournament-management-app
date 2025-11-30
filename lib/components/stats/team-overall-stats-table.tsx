@@ -1,6 +1,6 @@
 import React from "react";
-import { Game } from "~/app/types/game";
-import { TeamGameStatsWithTeam } from "~/app/types/team-game-stats";
+import { Game } from "~/src/types/game";
+import { TeamGameStatsWithTeam } from "~/src/types/team-game-stats";
 import {
   GlossaryItem,
   StatsGlossary,

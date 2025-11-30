@@ -6,8 +6,8 @@ import {
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { addImages } from "~/app/controllers/media.api";
-import { mediaQueries } from "~/app/queries";
+import { addImages } from "~/src/controllers/media.api";
+import { mediaQueries } from "~/src/queries";
 import {
   AlertDialog,
   AlertDialogAction,

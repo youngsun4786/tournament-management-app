@@ -3,8 +3,8 @@ import { createLink, useNavigate, useRouter } from "@tanstack/react-router";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { signOut } from "~/app/controllers/auth.api";
-import { useAuthenticatedUser } from "~/app/queries";
+import { signOut } from "~/src/controllers/auth.api";
+import { useAuthenticatedUser } from "~/src/queries";
 import {
   DropdownMenu,
   DropdownMenuContent,

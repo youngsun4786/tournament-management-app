@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { signOut, getUserRole } from "~/app/controllers/auth.api";
-import { useAuthentication } from "~/app/queries";
-import { UserRoleType } from "~/app/schemas/auth.schema";
+import { signOut, getUserRole } from "~/src/controllers/auth.api";
+import { useAuthentication } from "~/src/queries";
+import { UserRoleType } from "~/src/schemas/auth.schema";
 
 export function useAuth() {
   const { data: authState } = useAuthentication();

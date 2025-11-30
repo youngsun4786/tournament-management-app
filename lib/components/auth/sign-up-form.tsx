@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { signUp } from "~/app/controllers/auth.api";
-import { useGetTeams } from "~/app/queries";
-import { SignUpSchema, UserRoleType } from "~/app/schemas/auth.schema";
+import { signUp } from "~/src/controllers/auth.api";
+import { useGetTeams } from "~/src/queries";
+import { SignUpSchema, UserRoleType } from "~/src/schemas/auth.schema";
 import { Label } from "~/lib/components/ui/label";
 import {
   Select,

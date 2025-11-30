@@ -1,9 +1,9 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { teamGameStatsQueries } from "~/app/queries";
+import { teamGameStatsQueries } from "~/src/queries";
 import {
   TeamGameStats,
   TeamGameStatsWithTeam,
-} from "~/app/types/team-game-stats";
+} from "~/src/types/team-game-stats";
 import {
   GlossaryItem,
   StatsGlossary,

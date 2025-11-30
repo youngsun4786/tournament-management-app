@@ -2,8 +2,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deletePlayerGameStats } from "~/app/controllers/player-game-stats.api";
-import type { PlayerGameStats } from "~/app/types/player-game-stats";
+import { deletePlayerGameStats } from "~/src/controllers/player-game-stats.api";
+import type { PlayerGameStats } from "~/src/types/player-game-stats";
 import {
   AlertDialog,
   AlertDialogAction,

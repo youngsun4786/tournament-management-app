@@ -1,12 +1,12 @@
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { playerGameStatsQueries } from "~/app/queries";
-import type { Player } from "~/app/types/player";
+import { playerGameStatsQueries } from "~/src/queries";
+import type { Player } from "~/src/types/player";
 import type {
   PlayerGameStatsAverage,
   PlayerGameStatsTotal,
-} from "~/app/types/player-game-stats";
+} from "~/src/types/player-game-stats";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";

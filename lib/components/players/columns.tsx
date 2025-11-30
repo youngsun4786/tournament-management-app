@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { Player } from "~/app/types/player";
+import { Player } from "~/src/types/player";
 
 export const columns: ColumnDef<Player>[] = [
   {

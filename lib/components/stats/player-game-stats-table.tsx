@@ -1,4 +1,4 @@
-import { PlayerGameStatsWithPlayer } from "~/app/types/player-game-stats";
+import { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 import {
   Table,
   TableBody,
