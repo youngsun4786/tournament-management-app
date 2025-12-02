@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { Layout } from "~/lib/components/layout";
+import { EditPlayersSection } from "~/lib/components/players/edit-players-section";
 import {
   useAuthenticatedUser,
   useGetPlayersByTeamId,
   useGetTeamById,
 } from "~/src/queries";
-import { Layout } from "~/lib/components/layout";
-import { EditPlayersSection } from "~/lib/components/players/edit-players-section";
 
 export const Route = createFileRoute("/edit-teams/")({
   component: EditTeamsPage,
@@ -14,10 +14,7 @@ export const Route = createFileRoute("/edit-teams/")({
       throw redirect({ to: "/" });
     }
 
-    if (
-      context.authState.user.role !== "captain" &&
-      context.authState.user.role !== "admin"
-    ) {
+    if (!["admin", "captain"].includes(context.authState.user.role as string)) {
       throw redirect({ to: "/" });
     }
   },

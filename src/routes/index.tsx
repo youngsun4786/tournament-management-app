@@ -212,7 +212,7 @@ function LandingPage() {
   const pad = (num: number) => (num < 10 ? `0${num}` : num)
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden font-sans">
+    <div className="relative h-full w-full overflow-hidden font-sans">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -222,15 +222,6 @@ function LandingPage() {
         />
         <div className="absolute inset-0 bg-[#020617]/60 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent" />
-      </div>
-
-      {/* Logo */}
-      <div className="absolute top-6 left-6 z-20">
-        <img 
-          src="/ccbc_logo.png" 
-          alt="CCBC Logo" 
-          className="h-16 w-auto sm:h-20"
-        />
       </div>
 
       {/* Content Container */}

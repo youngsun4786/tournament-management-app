@@ -6,6 +6,7 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
+import { Navbar } from "lib/components/navbar";
 import { Toaster } from "lib/components/ui/sonner";
 import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
@@ -66,10 +67,12 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <RootDocument>
-      {/* <Navbar /> */}
-      {/* Place the actual root in this layout */}
-      <div className="dark:bg-black/95 dark:text-white h-screen">
-        <Outlet />
+      <div className="flex flex-col h-screen dark:bg-black/95 dark:text-white">
+        <Navbar />
+        {/* Place the actual root in this layout */}
+        <div className="flex-1 overflow-auto">
+          <Outlet />
+        </div>
       </div>
     </RootDocument>
   );

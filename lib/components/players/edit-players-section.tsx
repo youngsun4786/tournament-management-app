@@ -10,14 +10,6 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
-  createPlayer,
-  deletePlayer,
-  updatePlayer,
-} from "~/src/controllers/player.api";
-import { playerQueries } from "~/src/queries";
-import { Player } from "~/src/types/player";
-import { Team } from "~/src/types/team";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -53,7 +45,16 @@ import {
   TableRow,
 } from "~/lib/components/ui/table";
 import { convertBlobUrlToFile } from "~/lib/utils";
+import {
+  createPlayer,
+  deletePlayer,
+  updatePlayer,
+} from "~/src/controllers/player.api";
+import { playerQueries } from "~/src/queries";
+import { Player } from "~/src/types/player";
+import { Team } from "~/src/types/team";
 import { uploadImageToStorage } from "~/supabase/storage/client";
+import { Link } from "@tanstack/react-router";
 
 interface EditPlayersSectionProps {
   teamId: string;
@@ -544,7 +545,13 @@ export const EditPlayersSection = ({
                         : "-"}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
+                      <Link
+                        to={`/players/$playerId`}
+                        params={{
+                          playerId: player.player_id,
+                        }}
+                        className="flex items-center gap-2 hover:underline"
+                      >
                         <Avatar className="h-8 w-8">
                           <AvatarImage
                             src={player.player_url || "/placeholder.svg"}
@@ -555,7 +562,7 @@ export const EditPlayersSection = ({
                           </AvatarFallback>
                         </Avatar>
                         {player.name}
-                      </div>
+                      </Link>
                     </TableCell>
                     <TableCell>{player.position || "-"}</TableCell>
                     <TableCell>
