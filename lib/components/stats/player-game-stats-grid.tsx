@@ -116,11 +116,6 @@ export const PlayerGameStatsGrid = () => {
     );
   }
 
-  // Helper function to format decimal values
-  const formatDecimal = (value: number) => {
-    return value.toFixed(1);
-  };
-
   // Get top 5 players for each stat category
   const getTopPlayersAverage = (
     data: PlayerStatsAverageResponse[],

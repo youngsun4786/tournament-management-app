@@ -48,9 +48,14 @@ export const SignUpForm = () => {
     } as SignUpSchema,
     onSubmit: async ({ value }) => {
       console.log("value: ", value);
-      await signUpMutation.mutateAsync({
-        data: { ...value },
-      });
+      try {
+        await signUpMutation.mutateAsync({
+          data: { ...value },
+        });
+      } catch (error) {
+        // Error is handled in onError
+        console.error("Sign up error:", error);
+      }
     },
   });
 
@@ -70,10 +75,17 @@ export const SignUpForm = () => {
       </h1>
       <form
         className="flex flex-col w-full gap-2 space-y-2 space-x-2 md:space-x-0 my-4"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          form.handleSubmit();
+          await form.handleSubmit();
+          const fieldMeta = form.state.fieldMeta;
+          const hasErrors = Object.values(fieldMeta).some(
+            (meta) => meta.errors.length > 0
+          );
+          if (hasErrors) {
+            toast.error("Please check your input and try again.");
+          }
         }}
       >
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-2">

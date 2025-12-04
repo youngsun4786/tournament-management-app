@@ -3,10 +3,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getSupabaseServerClient } from "~/lib/utils/supabase-server";
 import {
-    AuthState,
-    SignInSchema,
-    SignUpSchema,
-    UserRoleType
+  AuthState,
+  SignInSchema,
+  SignUpSchema,
+  UserRoleType
 } from "../schemas/auth.schema";
 
 export const signUp = createServerFn(
@@ -72,13 +72,35 @@ export const signIn = createServerFn(
   .handler(async ({ data }) => {
     const supabase = getSupabaseServerClient();
     const email = `${data.username}@gmail.com`;
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: data.password,
     })
 
     if (error) {
       throw new Error(error.message);
+    }
+
+    if (signInData.user) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('team_id, avatar_url')
+        .eq('id', signInData.user.id)
+        .single();
+        
+      return {
+        user: {
+          id: signInData.user.id,
+          email: signInData.user.email,
+          meta: { 
+            firstName: signInData.user.user_metadata.firstName, 
+            lastName: signInData.user.user_metadata.lastName,
+            teamId: signInData.user.user_metadata?.role === "captain" ? profileData?.team_id as string : null,
+            avatarUrl: profileData?.avatar_url || null,
+          },
+          role: signInData.user.user_metadata.role as UserRoleType,
+        }
+      }
     }
   })
 

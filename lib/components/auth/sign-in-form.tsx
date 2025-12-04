@@ -11,10 +11,24 @@ export const SignInForm = () => {
   const router = useRouter();
   const signInMutation = useMutation({
     mutationFn: (data: Parameters<typeof signIn>[0]) => signIn(data),
-    onSuccess: () => {
+    onSuccess: async (data) => {
       toast.success("You have successfully signed in.");
-      queryClient.resetQueries();
-      router.invalidate();
+      await queryClient.resetQueries();
+      await router.invalidate();
+
+      if (data?.user) {
+        const role = data.user.role;
+        if (role === "captain") {
+          await router.navigate({ to: "/edit-teams" });
+        } else if (role === "admin") {
+          await router.navigate({ to: "/admin" });
+        } else {
+          await router.navigate({ to: "/" });
+        }
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -24,7 +38,12 @@ export const SignInForm = () => {
       password: process.env.VITE_DEFAULT_USER_PASSWORD ?? "",
     } as SignInSchema,
     onSubmit: async ({ value }) => {
-      await signInMutation.mutateAsync({ data: value });
+      try {
+        await signInMutation.mutateAsync({ data: value });
+      } catch (error) {
+        // Error is handled in onError
+        console.error("Sign in error:", error);
+      }
     },
   });
 
@@ -35,9 +54,17 @@ export const SignInForm = () => {
       </h1>
       <form
         className="flex flex-col gap-2 w-full space-y-2 space-x-2 md:space-x-0 my-4"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          form.handleSubmit();
+          e.stopPropagation();
+          await form.handleSubmit();
+          const fieldMeta = form.state.fieldMeta;
+          const hasErrors = Object.values(fieldMeta).some(
+            (meta) => meta.errors.length > 0
+          );
+          if (hasErrors) {
+            toast.error("Please check your input and try again.");
+          }
         }}
       >
         <form.AppField
