@@ -24,7 +24,7 @@ export type UserMeta = z.infer<typeof UserMetaSchema>
 export const SignUpSchema = z.object({
   firstName: UserMetaSchema.shape.firstName,
   lastName: UserMetaSchema.shape.lastName,  
-  email: z.string().email(),
+  username: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
   password: z.string().min(6),
   confirmPassword: z.string().min(6),
   role: z.custom<UserRoleType>((value) => Object.values(UserRole).includes(value as UserRoleType), {
@@ -54,7 +54,7 @@ export const SignUpSchema = z.object({
 export type SignUpSchema = z.infer<typeof SignUpSchema>
 
 export const SignInSchema = z.object({
-  email: z.string().email(),
+  username: z.string(),
   password: z.string(),
 })
 

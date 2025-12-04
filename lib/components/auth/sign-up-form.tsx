@@ -1,10 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { signUp } from "~/src/controllers/auth.api";
-import { useGetTeams } from "~/src/queries";
-import { SignUpSchema, UserRoleType } from "~/src/schemas/auth.schema";
 import { Label } from "~/lib/components/ui/label";
 import {
   Select,
@@ -14,19 +11,25 @@ import {
   SelectValue,
 } from "~/lib/components/ui/select";
 import { useAppForm } from "~/lib/form";
+import { signUp } from "~/src/controllers/auth.api";
+import { useGetTeams } from "~/src/queries";
+import { SignUpSchema, UserRoleType } from "~/src/schemas/auth.schema";
 import { FormField } from "../form/form-field";
 
 export const SignUpForm = () => {
   const router = useRouter();
+  const navigate = useNavigate();
   const [showTeamSelect, setShowTeamSelect] = useState(false);
   const { data: teamsData, isLoading, isError } = useGetTeams();
   const teams = teamsData?.filter((team) => team.name !== "TBD");
 
   const signUpMutation = useMutation({
     mutationFn: (data: Parameters<typeof signUp>[0]) => signUp(data),
-    onSuccess: () => {
-      router.invalidate();
-      toast.success("Confirmation email sent. Please check your email.");
+    onSuccess: async () => {
+      await router.invalidate();
+      toast.success("You have successfully signed up.");
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await navigate({ to: "/sign-in" });
     },
     onError: (error) => {
       toast.error(error.message);
@@ -37,7 +40,7 @@ export const SignUpForm = () => {
     defaultValues: {
       firstName: "",
       lastName: "",
-      email: "",
+      username: "",
       password: "",
       confirmPassword: "",
       role: "captain" as UserRoleType,
@@ -103,15 +106,15 @@ export const SignUpForm = () => {
           />
         </div>
         <form.AppField
-          name="email"
+          name="username"
           validators={{ onChangeAsyncDebounceMs: 500 }}
           children={(field) => (
             <FormField
-              id="Email"
-              label="Email"
+              id="Username"
+              label="Username"
               field={field}
-              type="email"
-              placeholder="myemail@gmail.com"
+              type="text"
+              placeholder="myusername"
               className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
             />
           )}

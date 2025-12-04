@@ -3,10 +3,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getSupabaseServerClient } from "~/lib/utils/supabase-server";
 import {
-  AuthState,
-  SignInSchema,
-  SignUpSchema,
-  UserRoleType
+    AuthState,
+    SignInSchema,
+    SignUpSchema,
+    UserRoleType
 } from "../schemas/auth.schema";
 
 export const signUp = createServerFn(
@@ -26,18 +26,20 @@ export const signUp = createServerFn(
       .map(email => email.trim().toLowerCase()) || [];
 
     const roleToUse = data.role;
-    if (data.role === 'admin' && !authorized_admin_emails.includes(data.email.toLowerCase())) {
+    const email = `${data.username}@gmail.com`;
+    
+    if (data.role === 'admin' && !authorized_admin_emails.includes(email.toLowerCase())) {
       throw new Error("You are not authorized to create an admin account");
     }
 
-    if (data.role === 'captain' && !authorized_captain_emails.includes(data.email.toLowerCase())) {
+    if (data.role === 'captain' && !authorized_captain_emails.includes(email.toLowerCase())) {
       throw new Error("You are not authorized to create a captain account");
     }
 
     const supabase = getSupabaseServerClient();
     const { error } =
       await supabase.auth.signUp({
-        email: data.email,
+        email: email,
         password: data.password,
         options: {
           data: {
@@ -69,8 +71,9 @@ export const signIn = createServerFn(
   .inputValidator(SignInSchema)
   .handler(async ({ data }) => {
     const supabase = getSupabaseServerClient();
+    const email = `${data.username}@gmail.com`;
     const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
+      email: email,
       password: data.password,
     })
 

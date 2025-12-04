@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { useAppForm } from "~/lib/form";
 import { signIn } from "~/src/controllers/auth.api";
 import { SignInSchema } from "~/src/schemas/auth.schema";
-import { useAppForm } from "~/lib/form";
 import { FormField } from "../form/form-field";
 
 export const SignInForm = () => {
@@ -20,7 +20,7 @@ export const SignInForm = () => {
 
   const form = useAppForm({
     defaultValues: {
-      email: process.env.VITE_DEFAULT_USER_EMAIL ?? "",
+      username: process.env.VITE_DEFAULT_USER_EMAIL ?? "",
       password: process.env.VITE_DEFAULT_USER_PASSWORD ?? "",
     } as SignInSchema,
     onSubmit: async ({ value }) => {
@@ -41,14 +41,14 @@ export const SignInForm = () => {
         }}
       >
         <form.AppField
-          name="email"
+          name="username"
           children={(field) => (
             <FormField
-              id="Email"
-              label="Email"
+              id="Username"
+              label="Username"
               field={field}
-              type="email"
-              placeholder="myemail@gmail.com"
+              type="text"
+              placeholder="myusername"
               className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
             />
           )}

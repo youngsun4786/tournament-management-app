@@ -49,9 +49,10 @@ const menuItems = [
 export const Navbar = () => {
   const { teams: teamInfo } = useRouteContext({ from: "__root__" });
   const teams = teamInfo!.filter((team) => team.name !== "TBD");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   return (
-    <nav className=" dark:bg-black/95 dark:text-white shadow-sm shadow-slate-200">
+    <nav className="dark:bg-black/95 dark:text-white shadow-sm shadow-slate-200 relative z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
@@ -67,7 +68,7 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* Main Navigation */}
+          {/* Desktop Navigation */}
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList className="gap-2">
               <NavigationMenuItem>
@@ -116,55 +117,11 @@ export const Navbar = () => {
                   </ButtonLink>
                 </NavigationMenuItem>
               ))}
-
-              {/* History - past games */}
-              {/* <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent dark:text-white dark:hover:bg-white/10">
-                  <History className="mr-2 h-4 w-4" />
-                  History
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4">
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">
-                            Season 2 Archive
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Complete records and highlights from our previous
-                            season.
-                          </p>
-                        </Link>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          href="/"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">
-                            Hall of Champions
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Celebrating our league's greatest achievements and
-                            players.
-                          </p>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem> */}
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Contact Buttons */}
-          <div className="flex items-center gap-4">
+          {/* Desktop Contact Buttons */}
+          <div className="hidden md:flex items-center gap-4">
             <ButtonLink
               to="/contact-us"
               variant="ghost"
@@ -194,8 +151,114 @@ export const Navbar = () => {
               </ButtonLink>
             </SignedOut>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center gap-4">
+             <SignedIn>
+              <UserMenu />
+            </SignedIn>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 text-gray-600 hover:text-red-500 focus:outline-none"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {isMobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-24 left-0 w-full bg-white dark:bg-black shadow-lg border-t border-gray-100 dark:border-gray-800 animate-in slide-in-from-top-5 duration-200">
+          <div className="flex flex-col p-4 space-y-4">
+             <div className="font-semibold text-lg px-4 py-2 border-b border-gray-100 dark:border-gray-800">
+              Menu
+            </div>
+            <div className="flex flex-col space-y-2">
+               <div className="px-4 py-2 font-medium text-gray-500 dark:text-gray-400">Teams</div>
+               <div className="grid grid-cols-2 gap-2 px-4">
+                  {teams.map((team) => (
+                    <Link
+                      key={team.name}
+                      to={`/teams/$teamName`}
+                      params={{ teamName: team.name }}
+                      className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                       <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                          <img
+                            src={`/team_logos/${team.logo_url}`}
+                            alt={`${team.name} logo`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      <span className="text-sm">{team.name}</span>
+                    </Link>
+                  ))}
+               </div>
+            </div>
+
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                to={item.href}
+                className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.title}
+              </Link>
+            ))}
+            
+            <div className="border-t border-gray-100 dark:border-gray-800 my-2 pt-2 flex flex-col gap-2">
+              <Link
+                to="/contact-us"
+                className="px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-md"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Join Our Team
+              </Link>
+              <Link
+                to="/contact-us"
+                className="px-4 py-2 bg-red-500 text-white rounded-md text-center hover:bg-red-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact Us
+              </Link>
+               <SignedOut>
+                <Link
+                  to="/sign-in"
+                  className="px-4 py-2 text-center border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              </SignedOut>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
