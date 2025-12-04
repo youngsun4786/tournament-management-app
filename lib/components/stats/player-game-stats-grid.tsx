@@ -27,6 +27,55 @@ type PlayerStatsCommon = {
   [key: string]: unknown;
 };
 
+// Create a stats section for a specific category
+const StatsCard = <T extends PlayerStatsCommon>({
+  title,
+  data,
+  valueProp,
+  valueFormatter = (value: number) => value.toFixed(1),
+}: {
+  title: string;
+  data: T[];
+  valueProp: keyof T;
+  valueFormatter?: (value: number) => string;
+}) => (
+  <Card className="h-full w-full">
+    <CardHeader className="pb-2">
+      <CardTitle className="text-md">{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-2">
+        {data.map((stat, index) => (
+          <div
+            key={`${stat.player?.name || "unknown"}-${index}`}
+            className="flex justify-between items-center py-1"
+          >
+            <div className="flex items-center">
+              <span className="text-sm mr-2 font-medium">{index + 1}.</span>
+              <Link
+                className="hover:underline"
+                to="/players/$playerId"
+                params={{ playerId: stat.player?.player_id || "" }}
+              >
+                <span className="font-medium">
+                  {stat.player?.name || "Unknown Player"}
+                </span>
+              </Link>
+              <span className="text-xs text-gray-500 ml-2">
+                {stat.player?.team_name &&
+                  `(${stat.player.team_name.substring(0, 3).toUpperCase()})`}
+              </span>
+            </div>
+            <div className="font-semibold">
+              {valueFormatter(stat[valueProp] as number)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export const PlayerGameStatsGrid = () => {
   const [activeTab, setActiveTab] = useState<string>("all_time");
 
@@ -159,55 +208,6 @@ export const PlayerGameStatsGrid = () => {
   const threePointersMadeLeaders = getTopPlayersTotal(
     playerStatsTotals,
     "total_three_pointers_made"
-  );
-
-  // Create a stats section for a specific category
-  const StatsCard = <T extends PlayerStatsCommon>({
-    title,
-    data,
-    valueProp,
-    valueFormatter = formatDecimal,
-  }: {
-    title: string;
-    data: T[];
-    valueProp: keyof T;
-    valueFormatter?: (value: number) => string;
-  }) => (
-    <Card className="h-full w-[350px]">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-md">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {data.map((stat, index) => (
-            <div
-              key={`${stat.player?.name || "unknown"}-${index}`}
-              className="flex justify-between items-center py-1"
-            >
-              <div className="flex items-center">
-                <span className="text-sm mr-2 font-medium">{index + 1}.</span>
-                <Link
-                  className="hover:underline"
-                  to="/players/$playerId"
-                  params={{ playerId: stat.player?.player_id || "" }}
-                >
-                  <span className="font-medium">
-                    {stat.player?.name || "Unknown Player"}
-                  </span>
-                </Link>
-                <span className="text-xs text-gray-500 ml-2">
-                  {stat.player?.team_name &&
-                    `(${stat.player.team_name.substring(0, 3).toUpperCase()})`}
-                </span>
-              </div>
-              <div className="font-semibold">
-                {valueFormatter(stat[valueProp] as number)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
   );
 
   // Define the grid layout for both tabs to ensure consistent sizing

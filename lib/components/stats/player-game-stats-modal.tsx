@@ -1,32 +1,32 @@
 import { useState } from "react";
-import type { Player } from "~/src/types/player";
-import type {
-  PlayerGameStatsAverage,
-  PlayerGameStatsTotal,
-} from "~/src/types/player-game-stats";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from "~/lib/components/ui/dialog";
 import { Input } from "~/lib/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "~/lib/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "~/lib/components/ui/table";
+import type { Player } from "~/src/types/player";
+import type {
+    PlayerGameStatsAverage,
+    PlayerGameStatsTotal,
+} from "~/src/types/player-game-stats";
 
 // Define a type that matches what the API is actually returning
 type PlayerStatsAverageResponse = Omit<PlayerGameStatsAverage, "player"> & {
@@ -230,7 +230,7 @@ export const PlayerGameStatsModal = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="min-w-7xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Advanced Player Stats</DialogTitle>
           <div className="flex flex-col sm:flex-row gap-4 mt-4 mb-2">
@@ -273,8 +273,8 @@ export const PlayerGameStatsModal = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortPerGameStats.map((stat) => (
-                    <TableRow key={`pg-${stat.player?.name}`}>
+                  {sortPerGameStats.map((stat, index) => (
+                    <TableRow key={`pg-${stat.player?.name || "unknown"}-${index}`}>
                       <TableCell className="font-medium">
                         {stat.player?.name || "Unknown"}
                       </TableCell>
@@ -362,8 +362,8 @@ export const PlayerGameStatsModal = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sortTotalStats.map((stat) => (
-                    <TableRow key={`total-${stat.player?.name}`}>
+                  {sortTotalStats.map((stat, index) => (
+                    <TableRow key={`total-${stat.player?.name || "unknown"}-${index}`}>
                       <TableCell className="font-medium">
                         {stat.player?.name || "Unknown"}
                       </TableCell>
