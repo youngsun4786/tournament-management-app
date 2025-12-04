@@ -25,8 +25,8 @@ function OrganizersPage() {
       name: "Xi He",
       title: "Co-president & Organizer",
       imageUrl: "/team_organizers/organizer2.png",
-      description: "[ Black Mamba ]",
-      logoUrl: "/team_logos/black-mamba.png",
+      description: "[ Team Aegis ]",
+      logoUrl: "/team_logos/team-aegis.png",
     },
   ];
 
