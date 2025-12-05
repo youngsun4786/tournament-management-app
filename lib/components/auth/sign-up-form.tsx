@@ -47,7 +47,6 @@ export const SignUpForm = () => {
       teamId: "",
     } as SignUpSchema,
     onSubmit: async ({ value }) => {
-      console.log("value: ", value);
       try {
         await signUpMutation.mutateAsync({
           data: { ...value },

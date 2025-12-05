@@ -18,7 +18,6 @@ export const signUp = createServerFn(
   .handler(async ({ data }) => {
     const admin_emails = process.env.ADMIN_EMAILS!;
     const captain_emails = process.env.CAPTAIN_EMAILS!;
-    console.log("data: ",  data);
 
     const authorized_admin_emails = admin_emails.split(',')
       .map(email => email.trim().toLowerCase()) || [];
@@ -57,7 +56,6 @@ export const signUp = createServerFn(
         case "weak_password":
           throw new Error("Your password is too weak")
         default:
-          console.log("error: ", error);
           throw new Error(error.message)
       }
     }
