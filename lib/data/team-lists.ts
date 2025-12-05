@@ -4,7 +4,7 @@ export const getTeams = createServerFn({
   method: 'GET',
 }).handler(async () => [
   { name: 'BBB', logo: '/team_logos/bbb.png' },
-  { name: 'Team Aegis', logo: '/team_logos/team-aegis.png' },
+  { name: 'Team Aegis', logo: '/team_logos/aegis.png' },
   { name: 'Calgary Brothers', logo: '/team_logos/calgary-brothers.png' },
   { name: 'Cash', logo: '/team_logos/cash.png' },
   { name: 'Pinoy Finest', logo: '/team_logos/pinoy-finest.png' },

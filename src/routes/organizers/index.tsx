@@ -26,7 +26,7 @@ function OrganizersPage() {
       title: "Co-president & Organizer",
       imageUrl: "/team_organizers/organizer2.png",
       description: "[ Team Aegis ]",
-      logoUrl: "/team_logos/team-aegis.png",
+      logoUrl: "/team_logos/aegis.png",
     },
   ];
 
