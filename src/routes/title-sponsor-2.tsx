@@ -16,12 +16,11 @@ function RouteComponent() {
           className="hover:opacity-80 transition-opacity"
         >
           <img
-            src="/main_title_sponsors/logo/gong-law.webp"
+            src="/main_title_sponsors/logo/gong-law.png"
             alt="Gong Law Logo"
             className="h-20 w-auto object-contain"
           />
         </a>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Gong Law</h1>
       </div>
       
       <hr className="border-gray-200 mb-8" />
