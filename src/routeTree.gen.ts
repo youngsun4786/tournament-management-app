@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as UnauthenticatedRouteImport } from './routes/unauthenticated'
+import { Route as TitleSponsor3RouteImport } from './routes/title-sponsor-3'
+import { Route as TitleSponsor2RouteImport } from './routes/title-sponsor-2'
+import { Route as TitleSponsor1RouteImport } from './routes/title-sponsor-1'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -40,6 +43,21 @@ const UnauthorizedRoute = UnauthorizedRouteImport.update({
 const UnauthenticatedRoute = UnauthenticatedRouteImport.update({
   id: '/unauthenticated',
   path: '/unauthenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TitleSponsor3Route = TitleSponsor3RouteImport.update({
+  id: '/title-sponsor-3',
+  path: '/title-sponsor-3',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TitleSponsor2Route = TitleSponsor2RouteImport.update({
+  id: '/title-sponsor-2',
+  path: '/title-sponsor-2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TitleSponsor1Route = TitleSponsor1RouteImport.update({
+  id: '/title-sponsor-1',
+  path: '/title-sponsor-1',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignUpRoute = SignUpRouteImport.update({
@@ -149,6 +167,9 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/title-sponsor-1': typeof TitleSponsor1Route
+  '/title-sponsor-2': typeof TitleSponsor2Route
+  '/title-sponsor-3': typeof TitleSponsor3Route
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/edit-games/$gameId': typeof EditGamesGameIdRoute
@@ -173,6 +194,9 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/title-sponsor-1': typeof TitleSponsor1Route
+  '/title-sponsor-2': typeof TitleSponsor2Route
+  '/title-sponsor-3': typeof TitleSponsor3Route
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/edit-games/$gameId': typeof EditGamesGameIdRoute
@@ -198,6 +222,9 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/title-sponsor-1': typeof TitleSponsor1Route
+  '/title-sponsor-2': typeof TitleSponsor2Route
+  '/title-sponsor-3': typeof TitleSponsor3Route
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/edit-games/$gameId': typeof EditGamesGameIdRoute
@@ -224,6 +251,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sign-in'
     | '/sign-up'
+    | '/title-sponsor-1'
+    | '/title-sponsor-2'
+    | '/title-sponsor-3'
     | '/unauthenticated'
     | '/unauthorized'
     | '/edit-games/$gameId'
@@ -248,6 +278,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sign-in'
     | '/sign-up'
+    | '/title-sponsor-1'
+    | '/title-sponsor-2'
+    | '/title-sponsor-3'
     | '/unauthenticated'
     | '/unauthorized'
     | '/edit-games/$gameId'
@@ -272,6 +305,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/sign-in'
     | '/sign-up'
+    | '/title-sponsor-1'
+    | '/title-sponsor-2'
+    | '/title-sponsor-3'
     | '/unauthenticated'
     | '/unauthorized'
     | '/edit-games/$gameId'
@@ -297,6 +333,9 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  TitleSponsor1Route: typeof TitleSponsor1Route
+  TitleSponsor2Route: typeof TitleSponsor2Route
+  TitleSponsor3Route: typeof TitleSponsor3Route
   UnauthenticatedRoute: typeof UnauthenticatedRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   EditGamesGameIdRoute: typeof EditGamesGameIdRoute
@@ -330,6 +369,27 @@ declare module '@tanstack/react-router' {
       path: '/unauthenticated'
       fullPath: '/unauthenticated'
       preLoaderRoute: typeof UnauthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/title-sponsor-3': {
+      id: '/title-sponsor-3'
+      path: '/title-sponsor-3'
+      fullPath: '/title-sponsor-3'
+      preLoaderRoute: typeof TitleSponsor3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/title-sponsor-2': {
+      id: '/title-sponsor-2'
+      path: '/title-sponsor-2'
+      fullPath: '/title-sponsor-2'
+      preLoaderRoute: typeof TitleSponsor2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/title-sponsor-1': {
+      id: '/title-sponsor-1'
+      path: '/title-sponsor-1'
+      fullPath: '/title-sponsor-1'
+      preLoaderRoute: typeof TitleSponsor1RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sign-up': {
@@ -481,6 +541,9 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  TitleSponsor1Route: TitleSponsor1Route,
+  TitleSponsor2Route: TitleSponsor2Route,
+  TitleSponsor3Route: TitleSponsor3Route,
   UnauthenticatedRoute: UnauthenticatedRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   EditGamesGameIdRoute: EditGamesGameIdRoute,

@@ -46,6 +46,12 @@ const menuItems = [
   // },
 ];
 
+const sponsors = [
+  { name: "Li Yueran Insurance ", href: "/title-sponsor-1" },
+  { name: "Gong Law", href: "/title-sponsor-2" },
+  { name: "Rundle Dental", href: "/title-sponsor-3" },
+];
+
 export const Navbar = () => {
   const { teams: teamInfo } = useRouteContext({ from: "__root__" });
   const teams = teamInfo!.filter((team) => team.name !== "TBD");
@@ -98,6 +104,31 @@ export const Navbar = () => {
                             </div>
                             <span className="text-sm font-medium">
                               {team.name}
+                            </span>
+                          </Link>
+                        </NavigationMenuItem>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent hover:bg-white/10 hover:text-red-500">
+                  <div className="flex items-center gap-1 hover:text-red-500">
+                    <span className="hover:text-red-500">Sponsors</span>
+                  </div>
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[300px] rounded-md shadow-lg bg-white dark:bg-slate-800">
+                    {sponsors.map((sponsor) => (
+                      <li key={sponsor.name}>
+                        <NavigationMenuItem asChild>
+                          <Link
+                            to={sponsor.href}
+                            className="flex items-center justify-center text-center p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
+                          >
+                            <span className="text-sm font-medium">
+                              {sponsor.name}
                             </span>
                           </Link>
                         </NavigationMenuItem>
@@ -215,6 +246,21 @@ export const Navbar = () => {
                           />
                         </div>
                       <span className="text-sm">{team.name}</span>
+                    </Link>
+                  ))}
+               </div>
+            </div>
+            <div className="flex flex-col space-y-2">
+               <div className="px-4 py-2 font-medium text-gray-500 dark:text-gray-400">Sponsors</div>
+               <div className="grid grid-cols-1 gap-2 px-4">
+                  {sponsors.map((sponsor) => (
+                    <Link
+                      key={sponsor.name}
+                      to={sponsor.href}
+                      className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="text-sm">{sponsor.name}</span>
                     </Link>
                   ))}
                </div>
