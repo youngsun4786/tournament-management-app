@@ -17,7 +17,7 @@ function RouteComponent() {
       {/* Bottom Section: 3 Columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Column 1-2: Text Block */}
-        <div className="text-center items-center justify-center prose max-w-none md:col-span-2">
+        <div className="flex flex-col justify-end items-center text-center prose max-w-none md:col-span-2">
           <p className="text-lg">
             Providing comprehensive insurance solutions tailored to your needs. With years of experience and a dedication to client satisfaction, Li Yueran Insurance Consultant is your trusted partner for securing your future.
           </p>

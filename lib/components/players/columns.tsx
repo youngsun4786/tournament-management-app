@@ -25,13 +25,17 @@ export const columns: ColumnDef<Player>[] = [
               </span>
             </div>
           )}
-          <Link
-            to={"/players/$playerId"}
-            params={{ playerId: player.player_id }}
-            className="hover:underline"
-          >
+{player.player_id ? (
+            <Link
+              to={"/players/$playerId"}
+              params={{ playerId: player.player_id }}
+              className="hover:underline"
+            >
+              <span className="font-medium">{player.name}</span>
+            </Link>
+          ) : (
             <span className="font-medium">{player.name}</span>
-          </Link>
+          )}
         </div>
       );
     },

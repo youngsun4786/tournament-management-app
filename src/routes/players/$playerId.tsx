@@ -11,9 +11,9 @@ import {
 } from "chart.js";
 import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
+import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
 import { playerGameStatsQueries, playerQueries } from "~/src/queries";
 import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
-import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
 
 // Register ChartJS components
 ChartJS.register(
@@ -28,13 +28,13 @@ ChartJS.register(
 export const Route = createFileRoute("/players/$playerId")({
   beforeLoad: async ({ params, context }) => {
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.playerGameStatsAverage(params.playerId)
+      playerGameStatsQueries.playerGameStatsAverage(params.playerId!)
+    );  
+    await context.queryClient.ensureQueryData(
+      playerGameStatsQueries.playerGameStatsByPlayerId(params.playerId!)
     );
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.playerGameStatsByPlayerId(params.playerId)
-    );
-    await context.queryClient.ensureQueryData(
-      playerQueries.detail(params.playerId)
+      playerQueries.detail(params.playerId!)
     );
   },
   component: RouteComponent,
@@ -134,10 +134,10 @@ function RouteComponent() {
     );
   }
 
-  if (!player || !playerGameStatsAverage.player) {
+  if (!player) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-gray-500 font-medium">Player data not found</div>
+        <div className="text-gray-500 font-medium">Player does not exist</div>
       </div>
     );
   }
@@ -147,39 +147,132 @@ function RouteComponent() {
       {/* Player Header Section */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-md mb-8">
         <div className="bg-gradient-to-br from-rose-400 to-red-600 p-6">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            <div className="relative">
-              {/* Player image */}
-              {player.player_url ? (
-                <div className="h-32 w-32 rounded-full overflow-hidden ring-4 ring-white/30 shadow-lg">
-                  <img
-                    src={`${player.player_url}`}
-                    alt={`${player.name}'s avatar`}
-                    className="w-full h-full object-cover"
-                  />
+          <div className="flex flex-col xl:flex-row gap-6">
+            <div className="py-4 shrink-0 flex flex-col md:flex-row gap-6">
+              <div className="px-2 relative">
+                {/* Player image */}
+                {player.player_url ? (
+                  <div className="h-72 w-48 rounded-xl overflow-hidden ring-4 ring-white/30 shadow-lg">
+                    <img
+                      src={`${player.player_url}`}
+                      alt={`${player.name}'s avatar`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl h-64 w-48 flex items-center justify-center text-7xl font-bold text-white shadow-lg ring-4 ring-white/30">
+                    {player.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+
+              <div className="py-4 text-center md:text-left text-white">
+                {/* Player info */}
+                <div className="flex flex-col md:flex-row items-center md:items-baseline gap-2 md:gap-4">
+                  <h1 className="text-4xl font-bold">{player.name}</h1>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl px-2 py-0.5 bg-white/20 rounded-md">
+                      #{player.jersey_number || "00"}
+                    </span>
+                    <span className="text-xl">{player.position || "POS"}</span>
+                  </div>
                 </div>
-              ) : (
-                <div className="bg-white/10 backdrop-blur-sm rounded-full h-32 w-32 flex items-center justify-center text-5xl font-bold text-white shadow-lg ring-4 ring-white/30">
-                  {player.name.charAt(0)}
-                </div>
-              )}
+
+                <h2 className="text-xl mt-1 opacity-90">{player.team_name}</h2>
+              </div>
             </div>
 
-            <div className="text-center md:text-left text-white">
-              {/* Player info */}
-              <div className="flex flex-col md:flex-row items-center md:items-baseline gap-2 md:gap-4">
-                <h1 className="text-4xl font-bold">{player.name}</h1>
-                <div className="flex items-center gap-3">
-                  <span className="text-xl px-2 py-0.5 bg-white/20 rounded-md">
-                    #{player.jersey_number || "00"}
-                  </span>
-                  <span className="text-xl">{player.position || "POS"}</span>
+            <div className="grow grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0">
+              <div className="bg-white p-4 rounded-xl shadow-sm flex flex-col justify-center h-full">
+                <h3 className="text-sm font-bold mb-2 text-gray-800">
+                  Performance Overview
+                </h3>
+                <div className="h-64 relative w-full flex items-center justify-center">
+                  <Radar
+                    data={radarData}
+                    options={{
+                      scales: {
+                        r: {
+                          min: 0,
+                          ticks: {
+                            stepSize: 5,
+                            backdropColor: "transparent",
+                          },
+                          angleLines: {
+                            color: "rgba(0, 0, 0, 0.1)",
+                          },
+                          grid: {
+                            color: "rgba(0, 0, 0, 0.1)",
+                          },
+                        },
+                      },
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                      },
+                    }}
+                  />
                 </div>
               </div>
 
-              <h2 className="text-xl mt-1 opacity-90">
-                {playerGameStatsAverage.player.team_name || "Team Unknown"}
-              </h2>
+              <div className="bg-white p-4 rounded-xl shadow-sm flex flex-col h-full">
+                <h3 className="text-sm font-bold mb-4 text-gray-800">
+                  Shooting Efficiency
+                </h3>
+                <div className="grid grid-cols-2 gap-4 flex-grow content-center">
+                  <ShootingStatCard
+                    label="FG"
+                    made={playerGameStatsAverage.field_goals_made_per_game.toFixed(
+                      1
+                    )}
+                    attempts={playerGameStatsAverage.field_goal_attempts_per_game.toFixed(
+                      1
+                    )}
+                    percentage={(
+                      playerGameStatsAverage.field_goal_percentage * 100
+                    ).toFixed(1)}
+                  />
+                  <ShootingStatCard
+                    label="3P"
+                    made={playerGameStatsAverage.three_pointers_made_per_game.toFixed(
+                      1
+                    )}
+                    attempts={playerGameStatsAverage.three_point_attempts_per_game.toFixed(
+                      1
+                    )}
+                    percentage={(
+                      playerGameStatsAverage.three_point_percentage * 100
+                    ).toFixed(1)}
+                  />
+                  <ShootingStatCard
+                    label="2P"
+                    made={playerGameStatsAverage.two_pointers_made_per_game.toFixed(
+                      1
+                    )}
+                    attempts={playerGameStatsAverage.two_point_attempts_per_game.toFixed(
+                      1
+                    )}
+                    percentage={(
+                      playerGameStatsAverage.two_point_percentage * 100
+                    ).toFixed(1)}
+                  />
+                  <ShootingStatCard
+                    label="FT"
+                    made={playerGameStatsAverage.free_throws_made_per_game.toFixed(
+                      1
+                    )}
+                    attempts={playerGameStatsAverage.free_throw_attempts_per_game.toFixed(
+                      1
+                    )}
+                    percentage={(
+                      playerGameStatsAverage.free_throw_percentage * 100
+                    ).toFixed(1)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -205,95 +298,7 @@ function RouteComponent() {
         </div>
       </div>
 
-      {/* Stats Charts and Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div className="bg-white p-6 rounded-2xl shadow-md">
-          <h2 className="text-xl font-bold mb-6 text-gray-800">
-            Performance Overview
-          </h2>
-          <div className="h-64">
-            <Radar
-              data={radarData}
-              options={{
-                scales: {
-                  r: {
-                    min: 0,
-                    ticks: {
-                      stepSize: 5,
-                      backdropColor: "transparent",
-                    },
-                    angleLines: {
-                      color: "rgba(0, 0, 0, 0.1)",
-                    },
-                    grid: {
-                      color: "rgba(0, 0, 0, 0.1)",
-                    },
-                  },
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-md">
-          <h2 className="text-xl font-bold mb-6 text-gray-800">
-            Shooting Efficiency
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            <ShootingStatCard
-              label="FG"
-              made={playerGameStatsAverage.field_goals_made_per_game.toFixed(1)}
-              attempts={playerGameStatsAverage.field_goal_attempts_per_game.toFixed(
-                1
-              )}
-              percentage={(
-                playerGameStatsAverage.field_goal_percentage * 100
-              ).toFixed(1)}
-            />
-            <ShootingStatCard
-              label="3P"
-              made={playerGameStatsAverage.three_pointers_made_per_game.toFixed(
-                1
-              )}
-              attempts={playerGameStatsAverage.three_point_attempts_per_game.toFixed(
-                1
-              )}
-              percentage={(
-                playerGameStatsAverage.three_point_percentage * 100
-              ).toFixed(1)}
-            />
-            <ShootingStatCard
-              label="2P"
-              made={playerGameStatsAverage.two_pointers_made_per_game.toFixed(
-                1
-              )}
-              attempts={playerGameStatsAverage.two_point_attempts_per_game.toFixed(
-                1
-              )}
-              percentage={(
-                playerGameStatsAverage.two_point_percentage * 100
-              ).toFixed(1)}
-            />
-            <ShootingStatCard
-              label="FT"
-              made={playerGameStatsAverage.free_throws_made_per_game.toFixed(1)}
-              attempts={playerGameStatsAverage.free_throw_attempts_per_game.toFixed(
-                1
-              )}
-              percentage={(
-                playerGameStatsAverage.free_throw_percentage * 100
-              ).toFixed(1)}
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Recent Games */}
       <PlayerGameStatsTable

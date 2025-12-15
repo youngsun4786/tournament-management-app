@@ -34,8 +34,8 @@ export const SignInForm = () => {
 
   const form = useAppForm({
     defaultValues: {
-      username: process.env.VITE_DEFAULT_USER_EMAIL ?? "",
-      password: process.env.VITE_DEFAULT_USER_PASSWORD ?? "",
+      username: import.meta.env.VITE_DEFAULT_USER_EMAIL ?? "",
+      password: import.meta.env.VITE_DEFAULT_USER_PASSWORD ?? "",
     } as SignInSchema,
     onSubmit: async ({ value }) => {
       try {

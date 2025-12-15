@@ -4,8 +4,8 @@ import { useState } from "react";
 import { playerGameStatsQueries } from "~/src/queries";
 import type { Player } from "~/src/types/player";
 import type {
-  PlayerGameStatsAverage,
-  PlayerGameStatsTotal,
+    PlayerGameStatsAverage,
+    PlayerGameStatsTotal,
 } from "~/src/types/player-game-stats";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -52,15 +52,21 @@ const StatsCard = <T extends PlayerStatsCommon>({
           >
             <div className="flex items-center">
               <span className="text-sm mr-2 font-medium">{index + 1}.</span>
-              <Link
-                className="hover:underline"
-                to="/players/$playerId"
-                params={{ playerId: stat.player?.player_id || "" }}
-              >
+{stat.player?.player_id ? (
+                <Link
+                  className="hover:underline"
+                  to="/players/$playerId"
+                  params={{ playerId: stat.player.player_id }}
+                >
+                  <span className="font-medium">
+                    {stat.player?.name || "Unknown Player"}
+                  </span>
+                </Link>
+              ) : (
                 <span className="font-medium">
                   {stat.player?.name || "Unknown Player"}
                 </span>
-              </Link>
+              )}
               <span className="text-xs text-gray-500 ml-2">
                 {stat.player?.team_name &&
                   `(${stat.player.team_name.substring(0, 3).toUpperCase()})`}

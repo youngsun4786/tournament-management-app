@@ -91,9 +91,9 @@ export class PlayerService implements IPlayerService {
     }
 
     async getPlayerById(playerId: string): Promise<Player> {
-        const {data: player, error} = await this.supabase.from("players").select("*").eq("id", playerId).single<Player>();
+        const {data: player, error} = await this.supabase.from("players").select().eq("id", playerId).single<Player>();
         if (!player || error) {
-            throw new Error("Failed to get player by ID", {cause: error});
+            throw new Error("Failed to get player", {cause: error});
         }
         return player;
     }

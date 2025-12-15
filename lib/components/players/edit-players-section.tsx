@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import {
   Loader2,
   PlusCircle,
@@ -54,7 +55,6 @@ import { playerQueries } from "~/src/queries";
 import { Player } from "~/src/types/player";
 import { Team } from "~/src/types/team";
 import { uploadImageToStorage } from "~/supabase/storage/client";
-import { Link } from "@tanstack/react-router";
 
 interface EditPlayersSectionProps {
   teamId: string;
@@ -93,6 +93,7 @@ export const EditPlayersSection = ({
     onSuccess: async () => {
       toast.success("Player added successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
+      queryClient.invalidateQueries(playerQueries.detail(selectedPlayer!.player_id));
       setIsCreateDialogOpen(false);
       setPreviewUrl(null);
       setNewAvatarUrl(null);
@@ -117,6 +118,7 @@ export const EditPlayersSection = ({
     onSuccess: async () => {
       toast.success("Player updated successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
+      queryClient.invalidateQueries(playerQueries.detail(selectedPlayer!.player_id));
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
       setPreviewUrl(null);
@@ -136,6 +138,7 @@ export const EditPlayersSection = ({
     onSuccess: () => {
       toast.success("Player removed successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
+      queryClient.invalidateQueries(playerQueries.detail(selectedPlayer!.player_id));
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
     },
@@ -305,6 +308,7 @@ export const EditPlayersSection = ({
     }
   };
 
+
   const AvatarUpload = () => {
     return (
       <>
@@ -359,7 +363,7 @@ export const EditPlayersSection = ({
             </span>
           )}
           <div className="flex items-center mt-2">
-            {newAvatarUrl && (
+            {newAvatarFile && (
               <Button
                 type="button"
                 variant="ghost"
@@ -373,7 +377,7 @@ export const EditPlayersSection = ({
               </Button>
             )}
 
-            {newAvatarUrl && (
+            {(newAvatarUrl || newAvatarFile) && (
               <Button
                 type="button"
                 variant="ghost"

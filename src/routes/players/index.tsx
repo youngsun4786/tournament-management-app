@@ -1,12 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { playerQueries } from "~/src/queries";
 import { columns } from "~/lib/components/players/columns";
 import { DataTable } from "~/lib/components/players/data-table";
+import { playerQueries } from "~/src/queries";
 
 export const Route = createFileRoute("/players/")({
   component: RouteComponent,
+  beforeLoad: async ({ context }) => {
+    await context.queryClient.ensureQueryData(playerQueries.list());
+  },
 });
 
 function RouteComponent() {

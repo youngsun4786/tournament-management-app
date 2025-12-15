@@ -6,6 +6,7 @@ import {
   useGetPlayersByTeamId,
   useGetTeamById,
 } from "~/src/queries";
+import { playerQueries, teamQueries } from "~/src/queries";
 
 export const Route = createFileRoute("/edit-teams/")({
   component: EditTeamsPage,
@@ -17,6 +18,10 @@ export const Route = createFileRoute("/edit-teams/")({
     if (!["admin", "captain"].includes(context.authState.user.role as string)) {
       throw redirect({ to: "/" });
     }
+    
+    const teamId = context.authState.user!.meta.teamId;
+    await context.queryClient.ensureQueryData(teamQueries.getTeamById(teamId!));
+    await context.queryClient.ensureQueryData(playerQueries.teamPlayers(teamId!));
   },
 });
 
