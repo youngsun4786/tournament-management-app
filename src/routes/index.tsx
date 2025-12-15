@@ -212,7 +212,7 @@ function LandingPage() {
   const pad = (num: number) => (num < 10 ? `0${num}` : num)
 
   return (
-    <div className="relative h-full w-full overflow-hidden font-sans">
+    <div className="relative min-h-full w-full font-sans">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -225,147 +225,162 @@ function LandingPage() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        {/* Badge */}
-        <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-sm">
-          <span className="mr-2 h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-          <span className="text-[10px] font-bold tracking-[0.2em] text-gray-300 uppercase">
-            Calgary Chinese Basketball Club Asian League Season 5
-          </span>
+      <div className="relative z-10 flex flex-col items-center w-full">
+        
+        {/* HERO SECTION - Centered Viewport Content */}
+        <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4 text-center py-10 w-full">
+            {/* Badge */}
+            <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-sm">
+            <span className="mr-2 h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+            <span className="text-[10px] font-bold tracking-[0.2em] text-gray-300 uppercase">
+                Calgary Chinese Basketball Club Asian League Season 5
+            </span>
+            </div>
+
+            {/* Main Heading */}
+            <div className="mb-2 flex flex-col items-center leading-none">
+            <h1 className="text-4xl font-black tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
+                COMING SOON
+            </h1>
+            
+            <div className="mt-4 flex items-start justify-center gap-2 sm:gap-4 md:gap-6">
+                {/* @ts-ignore */}
+                {timeLeft.days !== undefined ? (
+                <>
+                    {/* Days */}
+                    {/* Days */}
+                    <div className="flex flex-col items-center">
+                    <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
+                        {/* @ts-ignore */}
+                        {pad(timeLeft.days)}
+                    </span>
+                    <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
+                        Days
+                    </span>
+                    </div>
+
+                    {/* Separator */}
+                    <div className="pt-0 bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black text-transparent sm:text-6xl md:text-7xl lg:text-8xl leading-none flex items-center pb-2 sm:pb-4">:</div>
+
+                    {/* Hours */}
+                    <div className="flex flex-col items-center">
+                    <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
+                        {/* @ts-ignore */}
+                        {pad(timeLeft.hours)}
+                    </span>
+                    <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
+                        Hours
+                    </span>
+                    </div>
+
+                    {/* Separator */}
+                    <div className="pt-0 bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black text-transparent sm:text-6xl md:text-7xl lg:text-8xl leading-none flex items-center pb-2 sm:pb-4">:</div>
+
+                    {/* Minutes */}
+                    <div className="flex flex-col items-center">
+                    <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
+                        {/* @ts-ignore */}
+                        {pad(timeLeft.minutes)}
+                    </span>
+                    <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
+                        Minutes
+                    </span>
+                    </div>
+
+                    {/* Separator */}
+                    <div className="pt-0 bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black text-transparent sm:text-6xl md:text-7xl lg:text-8xl leading-none flex items-center pb-2 sm:pb-4">:</div>
+
+                    {/* Seconds */}
+                    <div className="flex flex-col items-center">
+                    <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
+                        {/* @ts-ignore */}
+                        {pad(timeLeft.seconds)}
+                    </span>
+                    <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
+                        Seconds
+                    </span>
+                    </div>
+                </>
+                ) : (
+                <span className="text-4xl font-bold text-white">SEASON STARTED</span>
+                )}
+            </div>
+            </div>
+
+
+            {/* Action Buttons Container */}
+            <div className="mt-8 flex w-1/2 md:w-full max-w-lg flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2 backdrop-blur-md md:flex-row md:p-2">
+            <Button 
+                onClick={() => {
+                setModalType('join')
+                setIsModalOpen(true)
+                }}
+                className="h-10 w-full bg-gradient-to-r from-orange-500 to-orange-600 text-xs font-bold tracking-wider text-white hover:from-orange-400 hover:to-orange-500 sm:flex-1"
+            >
+                MAKE OR JOIN TEAM
+            </Button>
+            
+            <Button 
+                variant="ghost" 
+                onClick={() => {
+                setModalType('sponsor')
+                setIsModalOpen(true)
+                }}
+                className="h-10 w-full border border-white/10 bg-white/5 text-xs font-bold tracking-wider text-white hover:bg-white/10 sm:flex-1"
+            >
+                SPONSOR LEAGUE
+            </Button>
+            </div>
+
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="border-white/10 bg-zinc-950/80 text-white backdrop-blur-xl sm:max-w-[500px] sm:rounded-2xl">
+                <DialogHeader>
+                <DialogTitle className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
+                    {modalType === 'join' ? 'MAKE OR JOIN A TEAM' : 'SPONSOR THE LEAGUE'}
+                </DialogTitle>
+                <DialogDescription className="text-base text-zinc-400">
+                    {modalType === 'join' 
+                    ? 'Enter your details below to get started with a team.' 
+                    : 'Interested in sponsoring? Let us know!'}
+                </DialogDescription>
+                </DialogHeader>
+                <ContactForm 
+                type={modalType} 
+                onSuccess={() => setIsModalOpen(false)} 
+                />
+            </DialogContent>
+            </Dialog>
+
+            {/* Team Logos Carousel */}
+            <div className="mt-8 w-full max-w-5xl overflow-hidden pause-on-hover">
+            <div className="flex w-max animate-marquee gap-16">
+                {[...teams, ...teams].map((team, index) => (
+                <div key={index} className="flex flex-col items-center gap-4">
+                    <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-white/10 bg-white/5 p-2 backdrop-blur-sm transition-transform hover:scale-110 sm:h-24 sm:w-24">
+                    <img
+                        src={team.logo}
+                        alt={team.name}
+                        className="h-full w-full object-contain"
+                    />
+                    </div>
+                    <span className="text-xs font-bold tracking-wider text-white uppercase sm:text-sm">
+                    {team.name}
+                    </span>
+                </div>
+                ))}
+            </div>
+            </div>
         </div>
 
-        {/* Main Heading */}
-        <div className="mb-2 flex flex-col items-center leading-none">
-          <h1 className="text-4xl font-black tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
-            COMING SOON
-          </h1>
-          
-          <div className="mt-4 flex items-start justify-center gap-2 sm:gap-4 md:gap-6">
-             {/* @ts-ignore */}
-            {timeLeft.days !== undefined ? (
-              <>
-                {/* Days */}
-                {/* Days */}
-                <div className="flex flex-col items-center">
-                  <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
-                     {/* @ts-ignore */}
-                    {pad(timeLeft.days)}
-                  </span>
-                  <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
-                    Days
-                  </span>
-                </div>
-
-                {/* Separator */}
-                <div className="pt-0 bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black text-transparent sm:text-6xl md:text-7xl lg:text-8xl leading-none flex items-center pb-2 sm:pb-4">:</div>
-
-                {/* Hours */}
-                <div className="flex flex-col items-center">
-                  <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
-                     {/* @ts-ignore */}
-                    {pad(timeLeft.hours)}
-                  </span>
-                  <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
-                    Hours
-                  </span>
-                </div>
-
-                {/* Separator */}
-                <div className="pt-0 bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black text-transparent sm:text-6xl md:text-7xl lg:text-8xl leading-none flex items-center pb-2 sm:pb-4">:</div>
-
-                {/* Minutes */}
-                <div className="flex flex-col items-center">
-                  <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
-                     {/* @ts-ignore */}
-                    {pad(timeLeft.minutes)}
-                  </span>
-                  <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
-                    Minutes
-                  </span>
-                </div>
-
-                {/* Separator */}
-                <div className="pt-0 bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black text-transparent sm:text-6xl md:text-7xl lg:text-8xl leading-none flex items-center pb-2 sm:pb-4">:</div>
-
-                {/* Seconds */}
-                <div className="flex flex-col items-center">
-                  <span className="bg-gradient-to-b from-orange-500 to-orange-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl tabular-nums leading-none">
-                     {/* @ts-ignore */}
-                    {pad(timeLeft.seconds)}
-                  </span>
-                  <span className="mt-2 text-xs font-bold tracking-widest text-white uppercase sm:text-sm">
-                    Seconds
-                  </span>
-                </div>
-              </>
-            ) : (
-              <span className="text-4xl font-bold text-white">SEASON STARTED</span>
-            )}
-          </div>
-        </div>
-
-
-        {/* Action Buttons Container */}
-        <div className="mt-8 flex w-1/2 md:w-full max-w-lg flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-2 backdrop-blur-md md:flex-row md:p-2">
-          <Button 
-            onClick={() => {
-              setModalType('join')
-              setIsModalOpen(true)
-            }}
-            className="h-10 w-full bg-gradient-to-r from-orange-500 to-orange-600 text-xs font-bold tracking-wider text-white hover:from-orange-400 hover:to-orange-500 sm:flex-1"
-          >
-            MAKE OR JOIN TEAM
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            onClick={() => {
-              setModalType('sponsor')
-              setIsModalOpen(true)
-            }}
-            className="h-10 w-full border border-white/10 bg-white/5 text-xs font-bold tracking-wider text-white hover:bg-white/10 sm:flex-1"
-          >
-            SPONSOR LEAGUE
-          </Button>
-        </div>
-
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="border-white/10 bg-zinc-950/80 text-white backdrop-blur-xl sm:max-w-[500px] sm:rounded-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
-                {modalType === 'join' ? 'MAKE OR JOIN A TEAM' : 'SPONSOR THE LEAGUE'}
-              </DialogTitle>
-              <DialogDescription className="text-base text-zinc-400">
-                {modalType === 'join' 
-                  ? 'Enter your details below to get started with a team.' 
-                  : 'Interested in sponsoring? Let us know!'}
-              </DialogDescription>
-            </DialogHeader>
-            <ContactForm 
-              type={modalType} 
-              onSuccess={() => setIsModalOpen(false)} 
-            />
-          </DialogContent>
-        </Dialog>
-
-        {/* Team Logos Carousel */}
-        <div className="mt-8 w-full max-w-5xl overflow-hidden pause-on-hover">
-          <div className="flex w-max animate-marquee gap-16">
-            {[...teams, ...teams].map((team, index) => (
-              <div key={index} className="flex flex-col items-center gap-4">
-                <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-white/10 bg-white/5 p-2 backdrop-blur-sm transition-transform hover:scale-110 sm:h-24 sm:w-24">
-                  <img
-                    src={team.logo}
-                    alt={team.name}
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <span className="text-xs font-bold tracking-wider text-white uppercase sm:text-sm">
-                  {team.name}
-                </span>
-              </div>
-            ))}
-          </div>
+        {/* Schedule Image Section */}
+        <div className="pb-20 px-4 w-full flex justify-center">
+            <div className="w-full max-w-4xl rounded-xl border border-white/10 bg-white/5 p-2 backdrop-blur-md">
+                <img 
+                    src="/schedule.png" 
+                    alt="Season Schedule" 
+                    className="w-full h-auto rounded-lg"
+                />
+            </div>
         </div>
       </div>
     </div>
