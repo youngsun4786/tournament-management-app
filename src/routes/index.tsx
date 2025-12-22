@@ -228,7 +228,7 @@ function LandingPage() {
       <div className="relative z-10 flex flex-col items-center w-full">
         
         {/* HERO SECTION - Centered Viewport Content */}
-        <div className="flex min-h-[calc(100vh-80px)] flex-col items-center justify-center px-4 text-center py-10 w-full">
+        <div className="flex miany-h-[calc(100vh-80px)] flex-col items-center justify-center px-4 text-center py-10 w-full">
             {/* Badge */}
             <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 backdrop-blur-sm">
             <span className="mr-2 h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />

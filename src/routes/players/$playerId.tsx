@@ -29,7 +29,7 @@ export const Route = createFileRoute("/players/$playerId")({
   beforeLoad: async ({ params, context }) => {
     await context.queryClient.ensureQueryData(
       playerGameStatsQueries.playerGameStatsAverage(params.playerId!)
-    );  
+    );
     await context.queryClient.ensureQueryData(
       playerGameStatsQueries.playerGameStatsByPlayerId(params.playerId!)
     );
@@ -146,13 +146,14 @@ function RouteComponent() {
     <div className="container max-w-7xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
       {/* Player Header Section */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-md mb-8">
-        <div className="bg-gradient-to-br from-rose-400 to-red-600 p-6">
-          <div className="flex flex-col xl:flex-row gap-6">
-            <div className="py-4 shrink-0 flex flex-col md:flex-row gap-6">
-              <div className="px-2 relative">
+        <div className="bg-gradient-to-br from-rose-400 to-red-600 p-5">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+            {/* Column 1: Player Info */}
+            <div className="flex flex-col md:flex-row xl:flex-col items-center xl:items-start text-center xl:text-left gap-6 xl:gap-4 p-4 space-y-4">
+              <div className="relative mx-auto xl:mx-0">
                 {/* Player image */}
                 {player.player_url ? (
-                  <div className="h-72 w-48 rounded-xl overflow-hidden ring-4 ring-white/30 shadow-lg">
+                  <div className="h-64 w-44 xl:h-72 xl:w-48 rounded-xl overflow-hidden ring-4 ring-white/30 shadow-lg mx-auto">
                     <img
                       src={`${player.player_url}`}
                       alt={`${player.name}'s avatar`}
@@ -160,118 +161,119 @@ function RouteComponent() {
                     />
                   </div>
                 ) : (
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl h-64 w-48 flex items-center justify-center text-7xl font-bold text-white shadow-lg ring-4 ring-white/30">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl h-64 w-44 xl:h-72 xl:w-48 flex items-center justify-center text-7xl font-bold text-white shadow-lg ring-4 ring-white/30 mx-auto">
                     {player.name.charAt(0)}
                   </div>
                 )}
               </div>
 
-              <div className="py-4 text-center md:text-left text-white">
+              <div className="text-white w-full">
                 {/* Player info */}
-                <div className="flex flex-col md:flex-row items-center md:items-baseline gap-2 md:gap-4">
-                  <h1 className="text-4xl font-bold">{player.name}</h1>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl px-2 py-0.5 bg-white/20 rounded-md">
-                      #{player.jersey_number || "00"}
-                    </span>
-                    <span className="text-xl">{player.position || "POS"}</span>
-                  </div>
+                <h1 className="text-3xl xl:text-4xl font-bold mb-2 xl:mb-4">
+                  {player.name}
+                </h1>
+                <div className="flex flex-wrap items-center justify-center xl:justify-start gap-3 mb-2">
+                  <span className="text-lg xl:text-xl px-2 py-0.5 bg-white/20 rounded-md whitespace-nowrap">
+                    #{player.jersey_number || "00"}
+                  </span>
+                  <span className="text-lg xl:text-xl whitespace-nowrap">
+                    {player.position || "POS"}
+                  </span>
                 </div>
-
-                <h2 className="text-xl mt-1 opacity-90">{player.team_name}</h2>
+                <h2 className="text-xl opacity-90">{player.team_name}</h2>
               </div>
             </div>
 
-            <div className="grow grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0">
-              <div className="bg-white p-4 rounded-xl shadow-sm flex flex-col justify-center h-full">
-                <h3 className="text-sm font-bold mb-2 text-gray-800">
-                  Performance Overview
-                </h3>
-                <div className="h-64 relative w-full flex items-center justify-center">
-                  <Radar
-                    data={radarData}
-                    options={{
-                      scales: {
-                        r: {
-                          min: 0,
-                          ticks: {
-                            stepSize: 5,
-                            backdropColor: "transparent",
-                          },
-                          angleLines: {
-                            color: "rgba(0, 0, 0, 0.1)",
-                          },
-                          grid: {
-                            color: "rgba(0, 0, 0, 0.1)",
-                          },
+            {/* Column 2: Performance Overview */}
+            <div className="bg-white pt-10 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center h-full min-h-[300px]">
+              <h3 className="text-sm font-bold mb-2 text-gray-800">
+                Performance Overview
+              </h3>
+              <div className="flex-grow relative w-full flex items-center justify-center">
+                <Radar
+                  data={radarData}
+                  options={{
+                    scales: {
+                      r: {
+                        min: 0,
+                        ticks: {
+                          stepSize: 5,
+                          backdropColor: "transparent",
+                        },
+                        angleLines: {
+                          color: "rgba(0, 0, 0, 0.1)",
+                        },
+                        grid: {
+                          color: "rgba(0, 0, 0, 0.1)",
                         },
                       },
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        display: false,
                       },
-                    }}
-                  />
-                </div>
+                    },
+                  }}
+                />
               </div>
+            </div>
 
-              <div className="bg-white p-4 rounded-xl shadow-sm flex flex-col h-full">
-                <h3 className="text-sm font-bold mb-4 text-gray-800">
-                  Shooting Efficiency
-                </h3>
-                <div className="grid grid-cols-2 gap-4 flex-grow content-center">
-                  <ShootingStatCard
-                    label="FG"
-                    made={playerGameStatsAverage.field_goals_made_per_game.toFixed(
-                      1
-                    )}
-                    attempts={playerGameStatsAverage.field_goal_attempts_per_game.toFixed(
-                      1
-                    )}
-                    percentage={(
-                      playerGameStatsAverage.field_goal_percentage * 100
-                    ).toFixed(1)}
-                  />
-                  <ShootingStatCard
-                    label="3P"
-                    made={playerGameStatsAverage.three_pointers_made_per_game.toFixed(
-                      1
-                    )}
-                    attempts={playerGameStatsAverage.three_point_attempts_per_game.toFixed(
-                      1
-                    )}
-                    percentage={(
-                      playerGameStatsAverage.three_point_percentage * 100
-                    ).toFixed(1)}
-                  />
-                  <ShootingStatCard
-                    label="2P"
-                    made={playerGameStatsAverage.two_pointers_made_per_game.toFixed(
-                      1
-                    )}
-                    attempts={playerGameStatsAverage.two_point_attempts_per_game.toFixed(
-                      1
-                    )}
-                    percentage={(
-                      playerGameStatsAverage.two_point_percentage * 100
-                    ).toFixed(1)}
-                  />
-                  <ShootingStatCard
-                    label="FT"
-                    made={playerGameStatsAverage.free_throws_made_per_game.toFixed(
-                      1
-                    )}
-                    attempts={playerGameStatsAverage.free_throw_attempts_per_game.toFixed(
-                      1
-                    )}
-                    percentage={(
-                      playerGameStatsAverage.free_throw_percentage * 100
-                    ).toFixed(1)}
-                  />
-                </div>
+            {/* Column 3: Shooting Efficiency */}
+            <div className="bg-white pt-10 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center h-full">
+              <h3 className="text-sm font-bold mb-3 text-gray-800">
+                Shooting Efficiency
+              </h3>
+              <div className="grid grid-cols-2 gap-3 flex-grow content-center">
+                <ShootingStatCard
+                  label="FG"
+                  made={playerGameStatsAverage.field_goals_made_per_game.toFixed(
+                    1
+                  )}
+                  attempts={playerGameStatsAverage.field_goal_attempts_per_game.toFixed(
+                    1
+                  )}
+                  percentage={(
+                    playerGameStatsAverage.field_goal_percentage * 100
+                  ).toFixed(1)}
+                />
+                <ShootingStatCard
+                  label="3P"
+                  made={playerGameStatsAverage.three_pointers_made_per_game.toFixed(
+                    1
+                  )}
+                  attempts={playerGameStatsAverage.three_point_attempts_per_game.toFixed(
+                    1
+                  )}
+                  percentage={(
+                    playerGameStatsAverage.three_point_percentage * 100
+                  ).toFixed(1)}
+                />
+                <ShootingStatCard
+                  label="2P"
+                  made={playerGameStatsAverage.two_pointers_made_per_game.toFixed(
+                    1
+                  )}
+                  attempts={playerGameStatsAverage.two_point_attempts_per_game.toFixed(
+                    1
+                  )}
+                  percentage={(
+                    playerGameStatsAverage.two_point_percentage * 100
+                  ).toFixed(1)}
+                />
+                <ShootingStatCard
+                  label="FT"
+                  made={playerGameStatsAverage.free_throws_made_per_game.toFixed(
+                    1
+                  )}
+                  attempts={playerGameStatsAverage.free_throw_attempts_per_game.toFixed(
+                    1
+                  )}
+                  percentage={(
+                    playerGameStatsAverage.free_throw_percentage * 100
+                  ).toFixed(1)}
+                />
               </div>
             </div>
           </div>
@@ -297,8 +299,6 @@ function RouteComponent() {
           />
         </div>
       </div>
-
-
 
       {/* Recent Games */}
       <PlayerGameStatsTable
@@ -344,19 +344,19 @@ const ShootingStatCard = ({
   const colorClass = getColorClass(pct);
 
   return (
-    <div className="p-4 border rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-medium text-gray-800">{label}</span>
+    <div className="p-3 border rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+      <div className="flex justify-between items-center mb-1">
+        <span className="font-medium text-gray-800 text-sm">{label}</span>
         <span
-          className={`text-xs px-2 py-1 rounded-full font-medium ${colorClass}`}
+          className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${colorClass}`}
         >
           {percentage}%
         </span>
       </div>
-      <div className="text-gray-500 text-sm">
-        <span>
-          {made} made | {attempts} attempts
-        </span>
+      <div className="text-gray-500 text-xs flex flex-col xl:flex-row xl:gap-1">
+        <span>{made} made</span>
+        <span className="hidden xl:inline">|</span>
+        <span>{attempts} att</span>
       </div>
     </div>
   );
