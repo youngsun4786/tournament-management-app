@@ -90,10 +90,14 @@ export const EditPlayersSection = ({
   const createPlayerMutation = useMutation({
     mutationFn: (data: Parameters<typeof createPlayer>[0]) =>
       createPlayer(data),
-    onSuccess: async () => {
+    onSuccess: async (newPlayer) => {
       toast.success("Player added successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
-      queryClient.invalidateQueries(playerQueries.detail(selectedPlayer!.player_id));
+      if (newPlayer?.player_id) {
+        queryClient.invalidateQueries(
+          playerQueries.detail(newPlayer.player_id)
+        );
+      }
       setIsCreateDialogOpen(false);
       setPreviewUrl(null);
       setNewAvatarUrl(null);
@@ -115,10 +119,12 @@ export const EditPlayersSection = ({
         throw error;
       }
     },
-    onSuccess: async () => {
+    onSuccess: async (updatedPlayer) => {
       toast.success("Player updated successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
-      queryClient.invalidateQueries(playerQueries.detail(selectedPlayer!.player_id));
+      if (updatedPlayer?.player_id) {
+        queryClient.invalidateQueries(playerQueries.detail(updatedPlayer.player_id));
+      }
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
       setPreviewUrl(null);
@@ -135,10 +141,12 @@ export const EditPlayersSection = ({
   const deletePlayerMutation = useMutation({
     mutationFn: (data: Parameters<typeof deletePlayer>[0]) =>
       deletePlayer(data),
-    onSuccess: () => {
+    onSuccess: (deletedPlayer) => {
       toast.success("Player removed successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
-      queryClient.invalidateQueries(playerQueries.detail(selectedPlayer!.player_id));
+      if (deletedPlayer?.player_id) {
+        queryClient.invalidateQueries(playerQueries.detail(deletedPlayer.player_id));
+      }
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
     },
@@ -307,7 +315,6 @@ export const EditPlayersSection = ({
       setIsUploading(false);
     }
   };
-
 
   const AvatarUpload = () => {
     return (
