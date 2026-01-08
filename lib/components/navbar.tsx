@@ -90,8 +90,8 @@ export const Navbar = () => {
                       <li key={team.name}>
                         <NavigationMenuItem asChild>
                           <Link
-                            to={`/teams/$teamName`}
-                            params={{ teamName: team.name }}
+                            to={`/teams/$teamId`}
+                            params={{ teamId: team.id }}
                             preload="intent"
                             className="flex items-center text-center gap-3 p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
@@ -233,8 +233,8 @@ export const Navbar = () => {
                   {teams.map((team) => (
                     <Link
                       key={team.name}
-                      to={`/teams/$teamName`}
-                      params={{ teamName: team.name }}
+                      to={`/teams/$teamId`}
+                      params={{ teamId: team.id }}
                       className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

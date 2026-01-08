@@ -92,8 +92,8 @@ export const columns: ColumnDef<Game>[] = [
         <div className="flex items-center justify-items-center gap-2 w-full px-6 py-2">
           <div className="flex flex-col items-end gap-2 min-w-[130px]">
             <Link
-              to={`/teams/$teamName`}
-              params={{ teamName: game.home_team_name }}
+              to={`/teams/$teamId`}
+              params={{ teamId: game.home_team_id }}
               className="flex items-center gap-2 hover:underline"
             >
               <span
@@ -140,8 +140,8 @@ export const columns: ColumnDef<Game>[] = [
 
           <div className="flex flex-col items-start gap-2 min-w-[130px]">
             <Link
-              to={`/teams/$teamName`}
-              params={{ teamName: game.away_team_name }}
+              to={`/teams/$teamId`}
+              params={{ teamId: game.away_team_id }}
               className="flex items-center gap-2 hover:underline"
             >
               {game.away_team_logo ? (

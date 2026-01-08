@@ -29,7 +29,7 @@ import { Route as EditTeamsIndexRouteImport } from './routes/edit-teams/index'
 import { Route as EditGamesIndexRouteImport } from './routes/edit-games/index'
 import { Route as ContactUsIndexRouteImport } from './routes/contact-us/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as TeamsTeamNameRouteImport } from './routes/teams/$teamName'
+import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
 import { Route as PlayersPlayerIdRouteImport } from './routes/players/$playerId'
 import { Route as GamesGameIdRouteImport } from './routes/games/$gameId'
 import { Route as EditTeamsTeamIdRouteImport } from './routes/edit-teams/$teamId'
@@ -135,9 +135,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TeamsTeamNameRoute = TeamsTeamNameRouteImport.update({
-  id: '/teams/$teamName',
-  path: '/teams/$teamName',
+const TeamsTeamIdRoute = TeamsTeamIdRouteImport.update({
+  id: '/teams/$teamId',
+  path: '/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayersPlayerIdRoute = PlayersPlayerIdRouteImport.update({
@@ -176,7 +176,7 @@ export interface FileRoutesByFullPath {
   '/edit-teams/$teamId': typeof EditTeamsTeamIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
-  '/teams/$teamName': typeof TeamsTeamNameRoute
+  '/teams/$teamId': typeof TeamsTeamIdRoute
   '/admin': typeof AdminIndexRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/edit-games': typeof EditGamesIndexRoute
@@ -203,7 +203,7 @@ export interface FileRoutesByTo {
   '/edit-teams/$teamId': typeof EditTeamsTeamIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
-  '/teams/$teamName': typeof TeamsTeamNameRoute
+  '/teams/$teamId': typeof TeamsTeamIdRoute
   '/admin': typeof AdminIndexRoute
   '/contact-us': typeof ContactUsIndexRoute
   '/edit-games': typeof EditGamesIndexRoute
@@ -231,7 +231,7 @@ export interface FileRoutesById {
   '/edit-teams/$teamId': typeof EditTeamsTeamIdRoute
   '/games/$gameId': typeof GamesGameIdRoute
   '/players/$playerId': typeof PlayersPlayerIdRoute
-  '/teams/$teamName': typeof TeamsTeamNameRoute
+  '/teams/$teamId': typeof TeamsTeamIdRoute
   '/admin/': typeof AdminIndexRoute
   '/contact-us/': typeof ContactUsIndexRoute
   '/edit-games/': typeof EditGamesIndexRoute
@@ -260,7 +260,7 @@ export interface FileRouteTypes {
     | '/edit-teams/$teamId'
     | '/games/$gameId'
     | '/players/$playerId'
-    | '/teams/$teamName'
+    | '/teams/$teamId'
     | '/admin'
     | '/contact-us'
     | '/edit-games'
@@ -287,7 +287,7 @@ export interface FileRouteTypes {
     | '/edit-teams/$teamId'
     | '/games/$gameId'
     | '/players/$playerId'
-    | '/teams/$teamName'
+    | '/teams/$teamId'
     | '/admin'
     | '/contact-us'
     | '/edit-games'
@@ -314,7 +314,7 @@ export interface FileRouteTypes {
     | '/edit-teams/$teamId'
     | '/games/$gameId'
     | '/players/$playerId'
-    | '/teams/$teamName'
+    | '/teams/$teamId'
     | '/admin/'
     | '/contact-us/'
     | '/edit-games/'
@@ -342,7 +342,7 @@ export interface RootRouteChildren {
   EditTeamsTeamIdRoute: typeof EditTeamsTeamIdRoute
   GamesGameIdRoute: typeof GamesGameIdRoute
   PlayersPlayerIdRoute: typeof PlayersPlayerIdRoute
-  TeamsTeamNameRoute: typeof TeamsTeamNameRoute
+  TeamsTeamIdRoute: typeof TeamsTeamIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ContactUsIndexRoute: typeof ContactUsIndexRoute
   EditGamesIndexRoute: typeof EditGamesIndexRoute
@@ -497,11 +497,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/teams/$teamName': {
-      id: '/teams/$teamName'
-      path: '/teams/$teamName'
-      fullPath: '/teams/$teamName'
-      preLoaderRoute: typeof TeamsTeamNameRouteImport
+    '/teams/$teamId': {
+      id: '/teams/$teamId'
+      path: '/teams/$teamId'
+      fullPath: '/teams/$teamId'
+      preLoaderRoute: typeof TeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/players/$playerId': {
@@ -550,7 +550,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditTeamsTeamIdRoute: EditTeamsTeamIdRoute,
   GamesGameIdRoute: GamesGameIdRoute,
   PlayersPlayerIdRoute: PlayersPlayerIdRoute,
-  TeamsTeamNameRoute: TeamsTeamNameRoute,
+  TeamsTeamIdRoute: TeamsTeamIdRoute,
   AdminIndexRoute: AdminIndexRoute,
   ContactUsIndexRoute: ContactUsIndexRoute,
   EditGamesIndexRoute: EditGamesIndexRoute,

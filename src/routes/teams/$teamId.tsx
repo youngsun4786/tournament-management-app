@@ -1,18 +1,12 @@
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import {
-  gameQueries,
-  playerGameStatsQueries,
-  playerQueries,
-  teamGameStatsQueries,
-  teamQueries,
-} from "~/src/queries";
-import { Game } from "~/src/types/game";
-import { Player } from "~/src/types/player";
-import { PlayerGameStatsAverage } from "~/src/types/player-game-stats";
-import { TeamGameStatsWithTeam } from "~/src/types/team-game-stats";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import { TeamOverallStatsTable } from "~/lib/components/stats/team-overall-stats-table";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/lib/components/ui/avatar";
 import {
   Card,
   CardContent,
@@ -31,35 +25,43 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import {
+  gameQueries,
+  playerGameStatsQueries,
+  playerQueries,
+  teamGameStatsQueries,
+  teamQueries,
+} from "~/src/queries";
+import { Game } from "~/src/types/game";
+import { Player } from "~/src/types/player";
+import { PlayerGameStatsAverage } from "~/src/types/player-game-stats";
+import { Team } from "~/src/types/team";
+import { TeamGameStatsWithTeam } from "~/src/types/team-game-stats";
 
-export const Route = createFileRoute("/teams/$teamName")({
-  component: RouteComponent,
-  loader: async ({ params, context }) => {
+export const Route = createFileRoute("/teams/$teamId")({
+  beforeLoad: async ({ params, context }) => {
     // Pre-fetch data
     const team = await context.queryClient.ensureQueryData(
-      teamQueries.detail(params.teamName)
+      teamQueries.getTeamById(params.teamId)
     );
 
-    if (team) {
-      // Pre-fetch team players and stats
-      await context.queryClient.ensureQueryData(
-        playerQueries.teamPlayers(team.id)
-      );
+    // Pre-fetch team players and stats
+    await context.queryClient.ensureQueryData(
+      playerQueries.teamPlayers(team!.id)
+    );
 
-      await context.queryClient.ensureQueryData(
-        teamGameStatsQueries.teamStats(team.id)
-      );
+    await context.queryClient.ensureQueryData(
+      teamGameStatsQueries.teamStats(team!.id)
+    );
 
-      // Pre-fetch all games for the team
-      await context.queryClient.ensureQueryData(gameQueries.teamGames(team.id));
+    // Pre-fetch all games for the team
+    await context.queryClient.ensureQueryData(gameQueries.teamGames(team!.id));
 
-      await context.queryClient.ensureQueryData(
-        playerGameStatsQueries.playerGameStatsAveragesByTeam(team.id)
-      );
-    }
-
-    return { team };
+    await context.queryClient.ensureQueryData(
+      playerGameStatsQueries.playerGameStatsAveragesByTeam(team!.id)
+    );
   },
+  component: RouteComponent,
 });
 
 // Add interfaces for the team stats
@@ -77,30 +79,29 @@ interface StatLeader {
 }
 
 function RouteComponent() {
-  const { team } = Route.useLoaderData();
+  const { teamId } = Route.useParams();
   const [
+    teamQuery,
     playerQuery,
     teamStatsQuery,
     gamesQuery,
     playerGameStatsAveragesQuery,
   ] = useSuspenseQueries({
     queries: [
-      playerQueries.teamPlayers(team!.id),
-      teamGameStatsQueries.teamStats(team!.id),
-      gameQueries.teamGames(team!.id),
-      playerGameStatsQueries.playerGameStatsAveragesByTeam(team!.id),
+      teamQueries.getTeamById(teamId),
+      playerQueries.teamPlayers(teamId),
+      teamGameStatsQueries.teamStats(teamId),
+      gameQueries.teamGames(teamId),
+      playerGameStatsQueries.playerGameStatsAveragesByTeam(teamId),
     ],
   });
 
+  const team = teamQuery.data as Team;
   const players = playerQuery.data as Player[];
   const teamStats = teamStatsQuery.data as TeamGameStatsWithTeam[];
   const games = gamesQuery.data as Game[];
   const playerGameStatsAverages =
     playerGameStatsAveragesQuery.data as PlayerGameStatsAverage[];
-
-  if (!team) {
-    return <div className="p-8">Loading team information...</div>;
-  }
 
   // Process team stats to calculate averages
   const groupedStats: GroupedStats = {
@@ -117,7 +118,7 @@ function RouteComponent() {
       // Find the game to determine if it was a win or loss
       const game = games.find((g) => g.id === stat.game_id);
       if (game) {
-        const isHome = game.home_team_id === team.id;
+        const isHome = game.home_team_id === teamId;
         const teamScore = isHome ? game.home_team_score : game.away_team_score;
         const opponentScore = isHome
           ? game.away_team_score
@@ -227,7 +228,7 @@ function RouteComponent() {
       <div className="max-w-7xl mx-auto p-6">
         <div className="grid grid-cols-1 gap-6">
           {/* Team Roster and Player Leaders */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {/* Team Roster */}
             <Card className="h-full">
               <CardHeader>
@@ -252,7 +253,30 @@ function RouteComponent() {
                             {player.jersey_number}
                           </TableCell>
                           <TableCell className="text-center">
-                            {player.name}
+                            <div className="pl-4 flex items-center gap-4">
+                                <Avatar>
+                                  <AvatarImage
+                                    src={player.player_url || ""}
+                                    alt={player.name}
+                                    className="object-cover"
+                                  />
+                                  <AvatarFallback>
+                                    {player.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")
+                                      .toUpperCase()
+                                      .slice(0, 2)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              <Link
+                                to="/players/$playerId"
+                                params={{ playerId: player.player_id }}
+                                className="flex items-center gap-3 hover:underline underline-offset-4"
+                              >
+                                <span className="font-medium">{player.name}</span>
+                              </Link>
+                            </div>
                           </TableCell>
                           <TableCell className="text-center">
                             {player.position || "-"}
