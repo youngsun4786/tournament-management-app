@@ -44,16 +44,16 @@ export const FinalScoreForm = ({ game }: FinalScoreFormProps) => {
     },
     onSuccess: () => {
       toast.success("Game score updated successfully");
-      queryClient.resetQueries(gameQueries.detail(game.id));
+      queryClient.invalidateQueries(gameQueries.detail(game.id));
     },
   });
 
   const form = useAppForm({
     defaultValues: {
       game_id: game.id,
-      home_team_score: game.home_team_score,
-      away_team_score: game.away_team_score,
-      is_completed: game.is_completed!,
+      home_team_score: game.homeTeamScore,
+      away_team_score: game.awayTeamScore,
+      is_completed: game.isCompleted!,
     },
     onSubmit: async ({ value }) => {
       await mutation.mutateAsync(value);
@@ -81,7 +81,7 @@ export const FinalScoreForm = ({ game }: FinalScoreFormProps) => {
             children={(formField) => (
               <FormField
                 id="home_team_score"
-                label={`${game.home_team_name} Score`}
+                label={`${game.homeTeamName} Score`}
                 field={formField}
                 className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
               />
@@ -92,7 +92,7 @@ export const FinalScoreForm = ({ game }: FinalScoreFormProps) => {
             children={(formField) => (
               <FormField
                 id="away_team_score"
-                label={`${game.away_team_name} Score`}
+                label={`${game.awayTeamName} Score`}
                 field={formField}
                 className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
               />

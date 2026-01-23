@@ -4,10 +4,9 @@ import {
   useRouteContext,
 } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
+import { format, isAfter, isBefore, isSameDay } from "date-fns";
 import { ArrowUpDown, Edit } from "lucide-react";
 import { useState } from "react";
-import { Game } from "~/src/types/game";
 import { ButtonLink } from "~/lib/components/button-link";
 import { DataTable } from "~/lib/components/schedules/data-table";
 import { Badge } from "~/lib/components/ui/badge";
@@ -20,6 +19,7 @@ import {
   SelectValue,
 } from "~/lib/components/ui/select";
 import { convert24to12 } from "~/lib/utils/date";
+import { Game } from "~/src/types/game";
 
 export const Route = createFileRoute("/edit-games/")({
   component: RouteComponent,
@@ -46,9 +46,7 @@ function RouteComponent() {
   const teamNames = [
     "All team",
     ...Array.from(
-      new Set(
-        games.flatMap((game) => [game.home_team_name, game.away_team_name])
-      )
+      new Set(games.flatMap((game) => [game.homeTeamName, game.awayTeamName])),
     ),
   ].sort();
 
@@ -56,12 +54,12 @@ function RouteComponent() {
   const filteredGames = games.filter((game) => {
     const teamFilter =
       selectedTeam === "All team" ||
-      game.home_team_name === selectedTeam ||
-      game.away_team_name === selectedTeam;
+      game.homeTeamName === selectedTeam ||
+      game.awayTeamName === selectedTeam;
 
     const statusFilter =
       selectedFilter === "All" ||
-      (selectedFilter === "Completed" && game.is_completed);
+      (selectedFilter === "Completed" && game.isCompleted);
 
     return teamFilter && statusFilter;
   });
@@ -78,7 +76,7 @@ function RouteComponent() {
             </SelectTrigger>
             <SelectContent>
               {teamNames.map((team) => (
-                <SelectItem key={team} value={team}>
+                <SelectItem key={team} value={team!}>
                   {team}
                 </SelectItem>
               ))}
@@ -113,7 +111,7 @@ function RouteComponent() {
 
 const columns: ColumnDef<Game>[] = [
   {
-    accessorKey: "game_date",
+    accessorKey: "gameDate",
     meta: {
       className: "text-center",
     },
@@ -129,7 +127,7 @@ const columns: ColumnDef<Game>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = parseISO(row.getValue("game_date"));
+      const date = row.getValue("gameDate") as Date;
       return (
         <div className="text-center">
           <div className="font-medium">{format(date, "MM.dd")}</div>
@@ -142,7 +140,7 @@ const columns: ColumnDef<Game>[] = [
     sortingFn: "datetime",
   },
   {
-    accessorKey: "start_time",
+    accessorKey: "startTime",
     header: "Time",
     meta: {
       className: "text-center",
@@ -151,7 +149,7 @@ const columns: ColumnDef<Game>[] = [
       return (
         <div className="text-center">
           <div className="font-medium">
-            {convert24to12(row.getValue("start_time"))}
+            {convert24to12(row.getValue("startTime") as string)}
           </div>
         </div>
       );
@@ -185,11 +183,9 @@ const columns: ColumnDef<Game>[] = [
     },
     cell: ({ row }) => {
       const game = row.original;
-      const isCompleted = game.is_completed;
-      const homeWon =
-        isCompleted && game.home_team_score > game.away_team_score;
-      const awayWon =
-        isCompleted && game.away_team_score > game.home_team_score;
+      const isCompleted = game.isCompleted;
+      const homeWon = isCompleted && game.homeTeamScore > game.awayTeamScore;
+      const awayWon = isCompleted && game.awayTeamScore > game.homeTeamScore;
 
       return (
         <div className="flex items-center justify-items-center gap-2 w-full px-6 py-2">
@@ -197,7 +193,7 @@ const columns: ColumnDef<Game>[] = [
             <span
               className={`font-medium text-right ${homeWon ? "font-bold text-blue-600" : ""}`}
             >
-              {game.home_team_name}
+              {game.homeTeamName}
             </span>
           </div>
 
@@ -205,11 +201,11 @@ const columns: ColumnDef<Game>[] = [
             <div className="flex flex-col items-center justify-center min-w-[70px]">
               <div className="flex items-center justify-center gap-1 text-xl font-bold">
                 <span className={homeWon ? "text-blue-600" : ""}>
-                  {game.home_team_score}
+                  {game.homeTeamScore}
                 </span>
                 <span>:</span>
                 <span className={awayWon ? "text-blue-600" : ""}>
-                  {game.away_team_score}
+                  {game.awayTeamScore}
                 </span>
               </div>
               <Badge variant="outline" className="mt-1">
@@ -226,7 +222,7 @@ const columns: ColumnDef<Game>[] = [
             <span
               className={`font-medium text-left ${awayWon ? "font-bold text-blue-600" : ""}`}
             >
-              {game.away_team_name}
+              {game.awayTeamName}
             </span>
           </div>
         </div>
@@ -242,7 +238,7 @@ const columns: ColumnDef<Game>[] = [
     cell: ({ row }) => {
       const game = row.original;
 
-      if (game.is_completed) {
+      if (game.isCompleted) {
         return (
           <Badge
             variant="outline"
@@ -253,13 +249,12 @@ const columns: ColumnDef<Game>[] = [
         );
       }
 
-      const gameDate = parseISO(game.game_date);
       const today = new Date();
 
-      if (isSameDay(gameDate, today)) {
+      if (isSameDay(game.gameDate, today)) {
         // Check if game is happening now
-        const [hours, minutes] = game.start_time.split(":");
-        const gameTime = new Date(gameDate);
+        const [hours, minutes] = game.startTime.split(":");
+        const gameTime = new Date(game.gameDate);
         gameTime.setHours(parseInt(hours), parseInt(minutes));
 
         const twoHoursLater = new Date(gameTime);
@@ -276,7 +271,7 @@ const columns: ColumnDef<Game>[] = [
         return <Badge className="bg-blue-600 hover:bg-blue-700">Today</Badge>;
       }
 
-      if (isBefore(gameDate, today)) {
+      if (isBefore(game.gameDate, today)) {
         return (
           <Badge
             variant="outline"

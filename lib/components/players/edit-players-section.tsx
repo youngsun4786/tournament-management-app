@@ -26,6 +26,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "~/lib/components/ui/avatar";
+import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
 import {
   Dialog,
@@ -51,7 +52,8 @@ import {
   deletePlayer,
   updatePlayer,
 } from "~/src/controllers/player.api";
-import { playerQueries } from "~/src/queries";
+import { updateTeam } from "~/src/controllers/team.api";
+import { playerQueries, teamQueries } from "~/src/queries";
 import { Player } from "~/src/types/player";
 import { Team } from "~/src/types/team";
 import { uploadImageToStorage } from "~/supabase/storage/client";
@@ -84,19 +86,103 @@ export const EditPlayersSection = ({
   const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const teamLogoInputRef = useRef<HTMLInputElement>(null);
+  const [teamLogoPreview, setTeamLogoPreview] = useState<string | null>(null);
+  const [newTeamLogoFile, setNewTeamLogoFile] = useState<File | null>(null);
+  const [isTeamLogoUploading, setIsTeamLogoUploading] = useState(false);
   const queryClient = useQueryClient();
+
+  const updateTeamMutation = useMutation({
+    mutationFn: (data: Parameters<typeof updateTeam>[0]) => updateTeam(data),
+    onSuccess: () => {
+      toast.success("Team logo updated successfully");
+      queryClient.invalidateQueries(teamQueries.getTeamById(teamId));
+      setTeamLogoPreview(null);
+      setNewTeamLogoFile(null);
+    },
+    onError: (error) => {
+      toast.error(`Failed to update team logo: ${error.message}`);
+    },
+  });
+
+  const handleTeamLogoChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    try {
+      const objectUrl = URL.createObjectURL(file);
+      setTeamLogoPreview(objectUrl);
+      setNewTeamLogoFile(file);
+    } catch (error) {
+      console.error("Error preparing team logo:", error);
+      toast.error("Failed to prepare image");
+    }
+  };
+
+  const handleTeamLogoUpload = async () => {
+    if (!newTeamLogoFile) return;
+
+    try {
+      setIsTeamLogoUploading(true);
+      const uploadResult = await uploadImageToStorage({
+        file: newTeamLogoFile,
+        bucket: "media-images",
+        folder: "teams",
+      });
+
+      if (uploadResult.error || !uploadResult.image_url) {
+        toast.error(`Failed to upload team logo: ${uploadResult.error}`);
+        return;
+      }
+
+      // Update team with new logo URL (extract filename from URL if needed, or store full URL depending on implementation)
+      // The current implementation seems to store the filename/path in logo_url based on edit-players-section.tsx line 429
+      // but the uploadImageToStorage returns a full URL.
+      // Let's check how src/routes/teams/$teamId.tsx uses it.
+      // It uses `src={'/team_logos/${team.logo_url}'}`.
+      // So I should probably change the logic in $teamId.tsx to handle absolute URLs too, OR just store the filename here.
+      // But uploadImageToStorage returns the full URL.
+      // If I look at the upload function: `path` is `folder/uuid.ext`.
+      // The return image_url is fully qualified.
+      // The existing code expects a local path relative to `/team_logos/`.
+      // I should update the team with the FULL URL, and update the display component to handle it.
+
+      const logoUrl = uploadResult.image_url;
+
+      updateTeamMutation.mutate({
+        data: {
+          teamId,
+          data: {
+            logoUrl: logoUrl,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading team logo:", error);
+      toast.error("Failed to upload team logo");
+    } finally {
+      setIsTeamLogoUploading(false);
+    }
+  };
 
   // Create player mutation
   const createPlayerMutation = useMutation({
-    mutationFn: (data: Parameters<typeof createPlayer>[0]) =>
-      createPlayer(data),
+    mutationFn: (data: Parameters<typeof createPlayer>[0]) => {
+      return createPlayer(data);
+    },
     onSuccess: async (newPlayer) => {
       toast.success("Player added successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
-      if (newPlayer?.player_id) {
-        queryClient.invalidateQueries(
-          playerQueries.detail(newPlayer.player_id)
-        );
+
+      if (newPlayer?.id) {
+        queryClient.invalidateQueries(playerQueries.detail(newPlayer.id));
       }
       setIsCreateDialogOpen(false);
       setPreviewUrl(null);
@@ -122,8 +208,8 @@ export const EditPlayersSection = ({
     onSuccess: async (updatedPlayer) => {
       toast.success("Player updated successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
-      if (updatedPlayer?.player_id) {
-        queryClient.invalidateQueries(playerQueries.detail(updatedPlayer.player_id));
+      if (updatedPlayer?.id) {
+        queryClient.invalidateQueries(playerQueries.detail(updatedPlayer.id));
       }
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
@@ -144,8 +230,8 @@ export const EditPlayersSection = ({
     onSuccess: (deletedPlayer) => {
       toast.success("Player removed successfully");
       queryClient.invalidateQueries(playerQueries.teamPlayers(teamId));
-      if (deletedPlayer?.player_id) {
-        queryClient.invalidateQueries(playerQueries.detail(deletedPlayer.player_id));
+      if (deletedPlayer?.id) {
+        queryClient.invalidateQueries(playerQueries.detail(deletedPlayer.id));
       }
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
@@ -157,7 +243,7 @@ export const EditPlayersSection = ({
 
   // Display avatar URL
   const displayAvatarUrl =
-    previewUrl || selectedPlayer?.player_url || "/placeholder.svg";
+    previewUrl || selectedPlayer?.playerUrl || "/placeholder.svg";
 
   const hasUnsavedChanges = newAvatarUrl !== null;
 
@@ -218,14 +304,14 @@ export const EditPlayersSection = ({
     // Create the player without the avatar URL first
     createPlayerMutation.mutate({
       data: {
-        team_id: teamId,
+        teamId,
         name,
-        jersey_number: jerseyNumber,
+        jerseyNumber,
         position: position || undefined,
         height: height || undefined,
         weight: weight || undefined,
         // Avatar will be handled in the onSuccess callback
-        ...(newAvatarUrl && { player_url: newAvatarUrl }),
+        ...(newAvatarUrl && { playerUrl: newAvatarUrl }),
       },
     });
   };
@@ -253,14 +339,14 @@ export const EditPlayersSection = ({
       // If a new avatar is being uploaded, it will be handled in the onSuccess callback
       const updateData = {
         data: {
-          player_id: selectedPlayer.player_id,
-          team_id: teamId,
+          id: selectedPlayer.id,
+          teamId,
           name,
-          jersey_number: jerseyNumber,
+          jerseyNumber,
           position: position || undefined,
           height: height || undefined,
           weight: weight || undefined,
-          ...(newAvatarUrl && { player_url: newAvatarUrl }),
+          ...(newAvatarUrl && { playerUrl: newAvatarUrl }),
         },
       };
 
@@ -278,8 +364,8 @@ export const EditPlayersSection = ({
   const openEditDialog = (player: Player) => {
     setSelectedPlayer(player);
     // Set avatar preview if player has an avatar
-    if (player.player_url) {
-      setNewAvatarUrl(player.player_url);
+    if (player.playerUrl) {
+      setNewAvatarUrl(player.playerUrl);
     } else {
       setNewAvatarUrl(null);
     }
@@ -300,12 +386,12 @@ export const EditPlayersSection = ({
 
       if (uploadResult.error || !uploadResult.image_url) {
         toast.error(
-          `Failed to upload player's profile image: ${uploadResult.error ?? "ERROR"}`
+          `Failed to upload player's profile image: ${uploadResult.error ?? "ERROR"}`,
         );
       } else if (uploadResult.image_url) {
         setNewAvatarUrl(uploadResult.image_url);
         toast.success(
-          "Image uploaded successfully. Click 'Save Changes' to update player's profile."
+          "Image uploaded successfully. Click 'Save Changes' to update player's profile.",
         );
       }
     } catch (error) {
@@ -406,14 +492,32 @@ export const EditPlayersSection = ({
     return <div className="text-gray-600 mb-8">Loading players...</div>;
   }
 
+  const captainPlayer = players?.find(
+    (p) => captain && p.name === `${captain.firstName} ${captain.lastName}`,
+  );
+
+  const otherPlayers = players?.filter(
+    (p) => !captain || p.name !== `${captain.firstName} ${captain.lastName}`,
+  );
+
   return (
     <>
       {/* Team Header with Logo */}
       <div className="flex items-center gap-6 mb-8">
-        <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-md">
-          {team?.logo_url ? (
+        <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-md relative group">
+          {teamLogoPreview ? (
             <img
-              src={`/team_logos/${team.logo_url}`}
+              src={teamLogoPreview}
+              alt="Team logo preview"
+              className="w-full h-full object-contain p-2"
+            />
+          ) : team?.logoUrl ? (
+            <img
+              src={
+                team.logoUrl.startsWith("http")
+                  ? team.logoUrl
+                  : `/team_logos/${team.logoUrl}`
+              }
               alt={`${team?.name} logo`}
               className="w-full h-full object-contain p-2"
             />
@@ -422,16 +526,158 @@ export const EditPlayersSection = ({
               <User className="h-12 w-12 text-gray-400" />
             </div>
           )}
+
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-white hover:text-white hover:bg-white/20"
+              onClick={() => teamLogoInputRef.current?.click()}
+            >
+              <Upload className="h-6 w-6" />
+            </Button>
+          </div>
+          <input
+            type="file"
+            ref={teamLogoInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleTeamLogoChange}
+          />
         </div>
-        <div>
+        <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold">{team?.name || "Team"}</h1>
-          {showCaptainInfo && captain && (
-            <p className="text-gray-500 dark:text-gray-400">
-              Captain: {captain.firstName} {captain.lastName}
-            </p>
+          {newTeamLogoFile && (
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={handleTeamLogoUpload}
+                disabled={isTeamLogoUploading}
+              >
+                {isTeamLogoUploading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <UploadCloud className="mr-2 h-4 w-4" />
+                )}
+                Save Logo
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setTeamLogoPreview(null);
+                  setNewTeamLogoFile(null);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           )}
         </div>
       </div>
+
+      {/* Captain Section */}
+      {captainPlayer && (
+        <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="destructive">Team Captain</Badge>
+          </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Jersey</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead>Position</TableHead>
+                  <TableHead>Height</TableHead>
+                  <TableHead>Weight</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow key={captainPlayer.id}>
+                  <TableCell className="font-medium">
+                    {captainPlayer.jerseyNumber !== null
+                      ? captainPlayer.jerseyNumber
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      to={`/players/$playerId`}
+                      params={{
+                        playerId: captainPlayer.id,
+                      }}
+                      className="flex items-center gap-2 hover:underline"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={captainPlayer.playerUrl || "/placeholder.svg"}
+                          alt={`${captainPlayer.name}'s avatar`}
+                        />
+                        <AvatarFallback className="bg-gray-200">
+                          <User className="h-4 w-4 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+                      {captainPlayer.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{captainPlayer.position || "-"}</TableCell>
+                  <TableCell>
+                    {captainPlayer.height || "-"}{" "}
+                    {captainPlayer.height ? "cm" : ""}{" "}
+                  </TableCell>
+                  <TableCell>
+                    {captainPlayer.weight || "-"}{" "}
+                    {captainPlayer.weight ? "kg" : ""}{" "}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-900 mr-2"
+                      onClick={() => openEditDialog(captainPlayer)}
+                    >
+                      Edit
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Remove
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove Player</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to remove {captainPlayer.name}{" "}
+                            from the team? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeletePlayer(captainPlayer.id)}
+                            disabled={deletePlayerMutation.isPending}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            {deletePlayerMutation.isPending
+                              ? "Removing..."
+                              : "Remove Player"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      )}
 
       {/* Players Management Section */}
       <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
@@ -547,25 +793,23 @@ export const EditPlayersSection = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {players && players.length > 0 ? (
-                players.map((player) => (
-                  <TableRow key={player.player_id}>
+              {otherPlayers && otherPlayers.length > 0 ? (
+                otherPlayers.map((player) => (
+                  <TableRow key={player.id}>
                     <TableCell className="font-medium">
-                      {player.jersey_number !== null
-                        ? player.jersey_number
-                        : "-"}
+                      {player.jerseyNumber !== null ? player.jerseyNumber : "-"}
                     </TableCell>
                     <TableCell>
                       <Link
                         to={`/players/$playerId`}
                         params={{
-                          playerId: player.player_id,
+                          playerId: player.id,
                         }}
                         className="flex items-center gap-2 hover:underline"
                       >
                         <Avatar className="h-8 w-8">
                           <AvatarImage
-                            src={player.player_url || "/placeholder.svg"}
+                            src={player.playerUrl || "/placeholder.svg"}
                             alt={`${player.name}'s avatar`}
                           />
                           <AvatarFallback className="bg-gray-200">
@@ -612,9 +856,7 @@ export const EditPlayersSection = ({
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() =>
-                                handleDeletePlayer(player.player_id)
-                              }
+                              onClick={() => handleDeletePlayer(player.id)}
                               disabled={deletePlayerMutation.isPending}
                               className="bg-red-600 hover:bg-red-700"
                             >
@@ -688,7 +930,7 @@ export const EditPlayersSection = ({
                 name="jersey_number"
                 type="text"
                 placeholder="0"
-                defaultValue={selectedPlayer?.jersey_number || ""}
+                defaultValue={selectedPlayer?.jerseyNumber || ""}
                 pattern="^\d*$"
                 title="Please enter a valid number"
               />

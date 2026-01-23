@@ -2,13 +2,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Plus, Trash, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { getPlayersByGameId } from "~/src/controllers/game-players.api";
-import {
-  createPlayerGameStats,
-  deletePlayerGameStats,
-  getPlayerGameStatsByGameId,
-} from "~/src/controllers/player-game-stats.api";
-import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 import {
   Table,
   TableBody,
@@ -17,6 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import { getPlayersByGameId } from "~/src/controllers/game-players.api";
+import {
+  createPlayerGameStats,
+  deletePlayerGameStats,
+  getPlayerGameStatsByGameId,
+} from "~/src/controllers/player-game-stats.api";
+import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -25,7 +25,6 @@ import { PlayerStatsModal } from "./player-stats-modal";
 // Import Excel processing library
 import * as XLSX from "xlsx";
 import { z } from "zod";
-import { PlayerGameStatsSchema } from "~/src/schemas/player-game-stats.schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/lib/components/ui/alert-dialog";
+import { PlayerGameStatsSchema } from "~/src/schemas/player-game-stats.schema";
 
 interface PlayerStatsManagerProps {
   gameId: string;
@@ -101,7 +101,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
     (acc, stat) => {
       // Get team id from the player's team relationship
       // Since we might not have team_id directly on player, use a reliable identifier
-      const teamName = stat.player?.team_name || "Unknown Team";
+      const teamName = stat.player?.teamName || "Unknown Team";
       if (!acc[teamName]) {
         acc[teamName] = {
           teamName,
@@ -114,7 +114,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
     {} as Record<
       string,
       { teamName: string; stats: PlayerGameStatsWithPlayer[] }
-    >
+    >,
   );
 
   const handleAddStats = () => {
@@ -133,7 +133,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
       }
 
       const promises = playerStats.map((stat) => {
-        return deleteStatsMutation.mutateAsync(stat.pgs_id);
+        return deleteStatsMutation.mutateAsync(stat.id);
       });
 
       await Promise.all(promises);
@@ -164,7 +164,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
 
       // Convert to JSON
       const data = JSON.parse(
-        JSON.stringify(XLSX.utils.sheet_to_json(worksheet))
+        JSON.stringify(XLSX.utils.sheet_to_json(worksheet)),
       );
 
       if (data.length === 0) {
@@ -181,8 +181,8 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
       players.forEach((player) => {
         // Map by name and jersey number - this is to avoid conflicts
         playerMap.set(
-          `${player.name.toLowerCase()}-${player.jersey_number}`,
-          player.id
+          `${player.name.toLowerCase()}-${player.jerseyNumber}`,
+          player.id,
         );
       });
 
@@ -198,7 +198,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
           // Check if there's a player name column
           if (row["Player Name"] && row["Jersey Number"]) {
             playerId = playerMap.get(
-              `${row["Player Name"].toLowerCase()}-${row["Jersey Number"]}`
+              `${row["Player Name"].toLowerCase()}-${row["Jersey Number"]}`,
             );
           } else {
             // iterate over the playerMap and find the playerId by name
@@ -208,8 +208,6 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                 break;
               }
             }
-            console.log(row["Player Name"]);
-            console.log(playerId);
           }
 
           if (!playerId) {
@@ -229,27 +227,26 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
 
           // Prepare the player stats data
           const statsData = {
-            game_id: gameId,
-            player_id: playerId,
-            minutes_played: Number(row["Minutes Played"] || 0),
-            field_goals_made: twoPointersMade + threePointersMade,
-            field_goals_attempted:
-              twoPointersAttempted + threePointersAttempted,
-            two_pointers_made: twoPointersMade,
-            two_pointers_attempted: twoPointersAttempted,
-            three_pointers_made: threePointersMade,
-            three_pointers_attempted: threePointersAttempted,
-            free_throws_made: freeThrowsMade,
-            free_throws_attempted: Number(row["FT Attempted"] || 0),
-            offensive_rebounds: offensiveRebounds,
-            defensive_rebounds: defensiveRebounds,
-            total_rebounds: offensiveRebounds + defensiveRebounds,
+            gameId: gameId,
+            playerId: playerId,
+            minutesPlayed: Number(row["Minutes Played"] || 0),
+            fieldGoalsMade: twoPointersMade + threePointersMade,
+            fieldGoalsAttempted: twoPointersAttempted + threePointersAttempted,
+            twoPointersMade: twoPointersMade,
+            twoPointersAttempted: twoPointersAttempted,
+            threePointersMade: threePointersMade,
+            threePointersAttempted: threePointersAttempted,
+            freeThrowsMade: freeThrowsMade,
+            freeThrowsAttempted: Number(row["FT Attempted"] || 0),
+            offensiveRebounds: offensiveRebounds,
+            defensiveRebounds: defensiveRebounds,
+            totalRebounds: offensiveRebounds + defensiveRebounds,
             assists: Number(row["Assists"] || 0),
             steals: Number(row["Steals"] || 0),
             blocks: Number(row["Blocks"] || 0),
             turnovers: Number(row["Turnovers"] || 0),
-            personal_fouls: Number(row["Personal Fouls"] || 0),
-            plus_minus: Number(row["Plus/Minus"] || 0),
+            personalFouls: Number(row["Personal Fouls"] || 0),
+            plusMinus: Number(row["Plus/Minus"] || 0),
             points:
               twoPointersMade * 2 + threePointersMade * 3 + freeThrowsMade,
           };
@@ -280,7 +277,7 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
     } catch (error) {
       console.error("Error processing Excel file:", error);
       setUploadError(
-        error instanceof Error ? error.message : "Failed to process Excel file"
+        error instanceof Error ? error.message : "Failed to process Excel file",
       );
       toast.error("Failed to process Excel file");
     } finally {
@@ -460,33 +457,31 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                       </TableHeader>
                       <TableBody>
                         {stats.map((stat) => (
-                          <TableRow key={stat.pgs_id}>
+                          <TableRow key={stat.id}>
                             <TableCell className="text-center">
-                              {stat.player?.jersey_number}
+                              {stat.player?.jerseyNumber}
                             </TableCell>
                             <TableCell className="font-medium">
                               {stat.player?.name}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.minutes_played}
+                              {stat.minutesPlayed}
                             </TableCell>
                             <TableCell className="text-center">
                               {stat.points}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.field_goals_made}/
-                              {stat.field_goals_attempted}
+                              {stat.fieldGoalsMade}/{stat.fieldGoalsAttempted}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.three_pointers_made}/
-                              {stat.three_pointers_attempted}
+                              {stat.threePointersMade}/
+                              {stat.threePointersAttempted}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.free_throws_made}/
-                              {stat.free_throws_attempted}
+                              {stat.freeThrowsMade}/{stat.freeThrowsAttempted}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.total_rebounds}
+                              {stat.totalRebounds}
                             </TableCell>
                             <TableCell className="text-center">
                               {stat.assists}
@@ -501,10 +496,10 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                               {stat.turnovers}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.personal_fouls}
+                              {stat.personalFouls}
                             </TableCell>
                             <TableCell className="text-center">
-                              {stat.plus_minus}
+                              {stat.plusMinus}
                             </TableCell>
                             <TableCell className="flex items-center justify-center">
                               <PlayerStatsActions

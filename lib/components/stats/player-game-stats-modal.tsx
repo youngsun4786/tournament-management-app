@@ -54,7 +54,7 @@ export const PlayerGameStatsModal = ({
     key: string;
     direction: "ascending" | "descending";
   }>({
-    key: viewMode === "per_game" ? "points_per_game" : "total_points",
+    key: viewMode === "per_game" ? "pointsPerGame" : "totalPoints",
     direction: "descending",
   });
 
@@ -156,7 +156,7 @@ export const PlayerGameStatsModal = ({
   const handleViewModeChange = (value: "per_game" | "totals") => {
     setViewMode(value);
     setSortConfig({
-      key: value === "per_game" ? "points_per_game" : "total_points",
+      key: value === "per_game" ? "pointsPerGame" : "totalPoints",
       direction: "descending",
     });
   };
@@ -181,50 +181,50 @@ export const PlayerGameStatsModal = ({
 
   const perGameHeaders = [
     { key: "player.name", label: "Player", align: "" },
-    { key: "player.team_name", label: "Team", align: "center" },
-    { key: "games_played", label: "GP", align: "center" },
-    { key: "points_per_game", label: "PPG", align: "center" },
-    { key: "field_goal_attempts_per_game", label: "FGA", align: "center" },
-    { key: "field_goals_made_per_game", label: "FGM", align: "center" },
-    { key: "field_goal_percentage", label: "FG%", align: "center" },
-    { key: "two_point_attempts_per_game", label: "2PA", align: "center" },
-    { key: "two_pointers_made_per_game", label: "2PM", align: "center" },
-    { key: "two_point_percentage", label: "2P%", align: "center" },
-    { key: "three_point_attempts_per_game", label: "3PA", align: "center" },
-    { key: "three_pointers_made_per_game", label: "3PM", align: "center" },
-    { key: "three_point_percentage", label: "3P%", align: "center" },
-    { key: "free_throw_attempts_per_game", label: "FTA", align: "center" },
-    { key: "free_throw_made_per_game", label: "FTM", align: "center" },
-    { key: "free_throw_percentage", label: "FT%", align: "center" },
-    { key: "rebounds_per_game", label: "RPG", align: "center" },
-    { key: "assists_per_game", label: "APG", align: "center" },
-    { key: "steals_per_game", label: "SPG", align: "center" },
-    { key: "blocks_per_game", label: "BPG", align: "center" },
-    { key: "turnovers_per_game", label: "TOV", align: "center" },
+    { key: "player.teamName", label: "Team", align: "center" },
+    { key: "gamesPlayed", label: "GP", align: "center" },
+    { key: "pointsPerGame", label: "PPG", align: "center" },
+    { key: "fieldGoalAttemptsPerGame", label: "FGA", align: "center" },
+    { key: "fieldGoalsMadePerGame", label: "FGM", align: "center" },
+    { key: "fieldGoalPercentage", label: "FG%", align: "center" },
+    { key: "twoPointAttemptsPerGame", label: "2PA", align: "center" },
+    { key: "twoPointersMadePerGame", label: "2PM", align: "center" },
+    { key: "twoPointPercentage", label: "2P%", align: "center" },
+    { key: "threePointAttemptsPerGame", label: "3PA", align: "center" },
+    { key: "threePointersMadePerGame", label: "3PM", align: "center" },
+    { key: "threePointPercentage", label: "3P%", align: "center" },
+    { key: "freeThrowAttemptsPerGame", label: "FTA", align: "center" },
+    { key: "freeThrowsMadePerGame", label: "FTM", align: "center" },
+    { key: "freeThrowPercentage", label: "FT%", align: "center" },
+    { key: "reboundsPerGame", label: "RPG", align: "center" },
+    { key: "assistsPerGame", label: "APG", align: "center" },
+    { key: "stealsPerGame", label: "SPG", align: "center" },
+    { key: "blocksPerGame", label: "BPG", align: "center" },
+    { key: "turnoversPerGame", label: "TOV", align: "center" },
   ];
 
   const totalHeaders = [
     { key: "player.name", label: "Player", align: "" },
-    { key: "player.team_name", label: "Team", align: "center" },
-    { key: "games_played", label: "GP", align: "center" },
-    { key: "total_points", label: "PTS", align: "center" },
-    { key: "total_field_goal_attempts", label: "FGA", align: "center" },
-    { key: "total_field_goals_made", label: "FGM", align: "center" },
-    { key: "total_field_goal_percentage", label: "FG%", align: "center" },
-    { key: "total_two_point_attempts", label: "2PA", align: "center" },
-    { key: "total_two_pointers_made", label: "2PM", align: "center" },
-    { key: "total_two_point_percentage", label: "2P%", align: "center" },
-    { key: "total_three_point_attempts", label: "3PA", align: "center" },
-    { key: "total_three_pointers_made", label: "3PM", align: "center" },
-    { key: "total_three_point_percentage", label: "3P%", align: "center" },
-    { key: "total_free_throw_attempts", label: "FTA", align: "center" },
-    { key: "total_free_throws_made", label: "FTM", align: "center" },
-    { key: "total_free_throw_percentage", label: "FT%", align: "center" },
-    { key: "total_rebounds", label: "REB", align: "center" },
-    { key: "total_assists", label: "AST", align: "center" },
-    { key: "total_steals", label: "STL", align: "center" },
-    { key: "total_blocks", label: "BLK", align: "center" },
-    { key: "total_turnovers", label: "TOV", align: "center" },
+    { key: "player.teamName", label: "Team", align: "center" },
+    { key: "gamesPlayed", label: "GP", align: "center" },
+    { key: "totalPoints", label: "PTS", align: "center" },
+    { key: "totalFieldGoalAttempts", label: "FGA", align: "center" },
+    { key: "totalFieldGoalsMade", label: "FGM", align: "center" },
+    { key: "totalFieldGoalPercentage", label: "FG%", align: "center" },
+    { key: "totalTwoPointAttempts", label: "2PA", align: "center" },
+    { key: "totalTwoPointersMade", label: "2PM", align: "center" },
+    { key: "totalTwoPointPercentage", label: "2P%", align: "center" },
+    { key: "totalThreePointAttempts", label: "3PA", align: "center" },
+    { key: "totalThreePointersMade", label: "3PM", align: "center" },
+    { key: "totalThreePointPercentage", label: "3P%", align: "center" },
+    { key: "totalFreeThrowAttempts", label: "FTA", align: "center" },
+    { key: "totalFreeThrowsMade", label: "FTM", align: "center" },
+    { key: "totalFreeThrowPercentage", label: "FT%", align: "center" },
+    { key: "totalRebounds", label: "REB", align: "center" },
+    { key: "totalAssists", label: "AST", align: "center" },
+    { key: "totalSteals", label: "STL", align: "center" },
+    { key: "totalBlocks", label: "BLK", align: "center" },
+    { key: "totalTurnovers", label: "TOV", align: "center" },
   ];
 
   return (
@@ -279,64 +279,64 @@ export const PlayerGameStatsModal = ({
                         {stat.player?.name || "Unknown"}
                       </TableCell>
                       <TableCell className="text-center">
-                        {stat.player?.team_name || "-"}
+                        {stat.player?.teamName || "-"}
                       </TableCell>
                       <TableCell className="text-center">
-                        {stat.games_played}
+                        {stat.gamesPlayed}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.points_per_game)}
+                        {formatDecimal(stat.pointsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.field_goal_attempts_per_game)}
+                        {formatDecimal(stat.fieldGoalAttemptsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.field_goals_made_per_game)}
+                        {formatDecimal(stat.fieldGoalsMadePerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.field_goal_percentage)}
+                        {formatDecimal(stat.fieldGoalPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.two_point_attempts_per_game)}
+                        {formatDecimal(stat.twoPointAttemptsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.two_pointers_made_per_game)}
+                        {formatDecimal(stat.twoPointersMadePerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.two_point_percentage)}
+                        {formatPercentage(stat.twoPointPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.three_point_attempts_per_game)}
+                        {formatDecimal(stat.threePointAttemptsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.three_pointers_made_per_game)}
+                        {formatDecimal(stat.threePointersMadePerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.three_point_percentage)}
+                        {formatPercentage(stat.threePointPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.free_throw_attempts_per_game)}
+                        {formatDecimal(stat.freeThrowAttemptsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.free_throws_made_per_game)}
+                        {formatDecimal(stat.freeThrowsMadePerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.free_throw_percentage)}
+                        {formatPercentage(stat.freeThrowPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.rebounds_per_game)}
+                        {formatDecimal(stat.reboundsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.assists_per_game)}
+                        {formatDecimal(stat.assistsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.steals_per_game)}
+                        {formatDecimal(stat.stealsPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.blocks_per_game)}
+                        {formatDecimal(stat.blocksPerGame)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.turnovers_per_game)}
+                        {formatDecimal(stat.turnoversPerGame)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -368,64 +368,64 @@ export const PlayerGameStatsModal = ({
                         {stat.player?.name || "Unknown"}
                       </TableCell>
                       <TableCell className="text-center">
-                        {stat.player?.team_name || "-"}
+                        {stat.player?.teamName || "-"}
                       </TableCell>
                       <TableCell className="text-center">
-                        {stat.games_played}
+                        {stat.gamesPlayed}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_points)}
+                        {formatDecimal(stat.totalPoints)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_field_goal_attempts)}
+                        {formatDecimal(stat.totalFieldGoalAttempts)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_field_goals_made)}
+                        {formatDecimal(stat.totalFieldGoalsMade)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.total_field_goal_percentage)}
+                        {formatPercentage(stat.totalFieldGoalPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_two_point_attempts)}
+                        {formatDecimal(stat.totalTwoPointAttempts)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_two_pointers_made)}
+                        {formatDecimal(stat.totalTwoPointersMade)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.total_two_point_percentage)}
+                        {formatPercentage(stat.totalTwoPointPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_three_point_attempts)}
+                        {formatDecimal(stat.totalThreePointAttempts)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_three_pointers_made)}
+                        {formatDecimal(stat.totalThreePointersMade)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.total_three_point_percentage)}
+                        {formatPercentage(stat.totalThreePointPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_free_throw_attempts)}
+                        {formatDecimal(stat.totalFreeThrowAttempts)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_free_throws_made)}
+                        {formatDecimal(stat.totalFreeThrowsMade)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatPercentage(stat.total_free_throw_percentage)}
+                        {formatPercentage(stat.totalFreeThrowPercentage)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_rebounds)}
+                        {formatDecimal(stat.totalRebounds)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_assists)}
+                        {formatDecimal(stat.totalAssists)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_steals)}
+                        {formatDecimal(stat.totalSteals)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_blocks)}
+                        {formatDecimal(stat.totalBlocks)}
                       </TableCell>
                       <TableCell className="text-center">
-                        {formatDecimal(stat.total_turnovers)}
+                        {formatDecimal(stat.totalTurnovers)}
                       </TableCell>
                     </TableRow>
                   ))}

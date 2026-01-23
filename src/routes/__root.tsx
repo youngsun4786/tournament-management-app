@@ -12,7 +12,8 @@ import type { ReactNode } from "react";
 import { lazy, Suspense } from "react";
 import { authQueries, gameQueries, teamQueries } from "~/src/queries";
 
-import appCss from '../styles.css?url';
+import "sonner/dist/styles.css";
+import appCss from "../styles.css?url";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -21,7 +22,7 @@ const TanStackRouterDevtools =
         // Lazy load in development
         import("@tanstack/react-router-devtools").then((res) => ({
           default: res.TanStackRouterDevtools,
-        }))
+        })),
       );
 
 export const Route = createRootRouteWithContext<{
@@ -49,7 +50,7 @@ export const Route = createRootRouteWithContext<{
     const teams = await context.queryClient.ensureQueryData(teamQueries.list());
     const games = await context.queryClient.ensureQueryData(gameQueries.list());
     const authState = await context.queryClient.ensureQueryData(
-      authQueries.user()
+      authQueries.user(),
     );
     // const galleryImages = await context.queryClient.ensureQueryData(
     //   mediaQueries.specificImages("gallery")
@@ -74,58 +75,90 @@ function RootComponent() {
         <div className="flex-1 overflow-auto">
           <div className="flex flex-row min-h-full">
             {/* Left Sponsor Slot */}
-            <aside className="hidden md:flex w-32 lg:w-48 shrink-0 flex-col gap-8 p-4 bg-gray-50/5 border-r border-white/10 items-center pt-8" aria-label="Left Sponsor">
-               <a href="/title-sponsor-1" className="block w-full hover:opacity-80 transition-opacity">
-                 <img 
-                    src="/main_title_sponsors/side/consultant-sponsor.png" 
-                    alt="Sponsor Consultant" 
-                    className="w-full object-contain"
-                  />
-               </a>
-               <a href="https://gonglaw.ca/" target="_blank" rel="noopener noreferrer" className="block w-full hover:opacity-80 transition-opacity">
-                 <img 
-                  src="/main_title_sponsors/side/gong-law-sponsor.png" 
-                  alt="Sponsor Gong Law" 
+            <aside
+              className="hidden md:flex w-32 lg:w-48 shrink-0 flex-col gap-8 p-4 bg-gray-50/5 border-r border-white/10 items-center pt-8"
+              aria-label="Left Sponsor"
+            >
+              <a
+                href="/title-sponsor-1"
+                className="block w-full hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/main_title_sponsors/side/consultant-sponsor.png"
+                  alt="Sponsor Consultant"
                   className="w-full object-contain"
                 />
-               </a>
-               <a href="https://rundledental.com/" target="_blank" rel="noopener noreferrer" className="block w-full hover:opacity-80 transition-opacity">
-                 <img 
-                  src="/main_title_sponsors/side/rundle-dental-sponsor.png" 
-                  alt="Sponsor Rundle Dental" 
+              </a>
+              <a
+                href="https://gonglaw.ca/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/main_title_sponsors/side/gong-law-sponsor.png"
+                  alt="Sponsor Gong Law"
                   className="w-full object-contain"
                 />
-               </a>
+              </a>
+              <a
+                href="https://rundledental.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/main_title_sponsors/side/rundle-dental-sponsor.png"
+                  alt="Sponsor Rundle Dental"
+                  className="w-full object-contain"
+                />
+              </a>
             </aside>
-            
+
             {/* Main Content */}
             <main className="flex-1 min-w-0">
               <Outlet />
             </main>
 
             {/* Right Sponsor Slot */}
-            <aside className="hidden md:flex w-32 lg:w-48 shrink-0 flex-col gap-8 p-4 bg-gray-50/5 border-l border-white/10 items-center pt-8" aria-label="Right Sponsor">
-               <a href="/title-sponsor-1" className="block w-full hover:opacity-80 transition-opacity">
-                 <img 
-                    src="/main_title_sponsors/side/consultant-sponsor.png" 
-                    alt="Sponsor Consultant" 
-                    className="w-full object-contain"
-                  />
-               </a>
-               <a href="https://gonglaw.ca/" target="_blank" rel="noopener noreferrer" className="block w-full hover:opacity-80 transition-opacity">
-                 <img 
-                  src="/main_title_sponsors/side/gong-law-sponsor.png" 
-                  alt="Sponsor Gong Law" 
+            <aside
+              className="hidden md:flex w-32 lg:w-48 shrink-0 flex-col gap-8 p-4 bg-gray-50/5 border-l border-white/10 items-center pt-8"
+              aria-label="Right Sponsor"
+            >
+              <a
+                href="/title-sponsor-1"
+                className="block w-full hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/main_title_sponsors/side/consultant-sponsor.png"
+                  alt="Sponsor Consultant"
                   className="w-full object-contain"
                 />
-               </a>
-               <a href="https://rundledental.com/" target="_blank" rel="noopener noreferrer" className="block w-full hover:opacity-80 transition-opacity">
-                 <img 
-                  src="/main_title_sponsors/side/rundle-dental-sponsor.png" 
-                  alt="Sponsor Rundle Dental" 
+              </a>
+              <a
+                href="https://gonglaw.ca/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/main_title_sponsors/side/gong-law-sponsor.png"
+                  alt="Sponsor Gong Law"
                   className="w-full object-contain"
                 />
-               </a>
+              </a>
+              <a
+                href="https://rundledental.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src="/main_title_sponsors/side/rundle-dental-sponsor.png"
+                  alt="Sponsor Rundle Dental"
+                  className="w-full object-contain"
+                />
+              </a>
             </aside>
           </div>
         </div>

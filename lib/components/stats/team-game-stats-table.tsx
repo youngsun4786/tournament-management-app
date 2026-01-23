@@ -1,9 +1,4 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { teamGameStatsQueries } from "~/src/queries";
-import {
-  TeamGameStats,
-  TeamGameStatsWithTeam,
-} from "~/src/types/team-game-stats";
 import {
   GlossaryItem,
   StatsGlossary,
@@ -16,6 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import { teamGameStatsQueries } from "~/src/queries";
+import {
+  TeamGameStats,
+  TeamGameStatsWithTeam,
+} from "~/src/types/team-game-stats";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface TeamGameStatsTableProps {
@@ -60,7 +60,7 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
       acc[teamName] = stat;
       return acc;
     },
-    {} as Record<string, TeamGameStatsWithTeam>
+    {} as Record<string, TeamGameStatsWithTeam>,
   );
 
   // Get team names
@@ -80,26 +80,26 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
 
   const statsComparison = [
     { key: "points", label: "PTS" },
-    { key: "field_goals_made", label: "FGM" },
-    { key: "field_goals_attempted", label: "FGA" },
-    { key: "field_goals_percentage", label: "FG%" },
-    { key: "two_pointers_made", label: "2PM" },
-    { key: "two_pointers_attempted", label: "2PA" },
-    { key: "two_point_percentage", label: "2P%" },
-    { key: "three_pointers_made", label: "3PM" },
-    { key: "three_pointers_attempted", label: "3PA" },
-    { key: "three_point_percentage", label: "3P%" },
-    { key: "free_throws_made", label: "FTM" },
-    { key: "free_throws_attempted", label: "FTA" },
-    { key: "free_throw_percentage", label: "FT%" },
-    { key: "offensive_rebounds", label: "OREB" },
-    { key: "defensive_rebounds", label: "DREB" },
-    { key: "total_rebounds", label: "REB" },
+    { key: "fieldGoalsMade", label: "FGM" },
+    { key: "fieldGoalsAttempted", label: "FGA" },
+    { key: "fieldGoalPercentage", label: "FG%" },
+    { key: "twoPointersMade", label: "2PM" },
+    { key: "twoPointersAttempted", label: "2PA" },
+    { key: "twoPointPercentage", label: "2P%" },
+    { key: "threePointersMade", label: "3PM" },
+    { key: "threePointersAttempted", label: "3PA" },
+    { key: "threePointPercentage", label: "3P%" },
+    { key: "freeThrowsMade", label: "FTM" },
+    { key: "freeThrowsAttempted", label: "FTA" },
+    { key: "freeThrowPercentage", label: "FT%" },
+    { key: "offensiveRebounds", label: "OREB" },
+    { key: "defensiveRebounds", label: "DREB" },
+    { key: "totalRebounds", label: "REB" },
     { key: "assists", label: "AST" },
     { key: "steals", label: "STL" },
     { key: "blocks", label: "BLK" },
     { key: "turnovers", label: "TOV" },
-    { key: "team_fouls", label: "PF" },
+    { key: "teamFouls", label: "PF" },
   ];
 
   // Convert statsComparison to GlossaryItems for the tooltip
@@ -120,13 +120,13 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
 
   const isHigherBetter = (key: string) => {
     // Fields where lower is better
-    return !["turnovers", "team_fouls"].includes(key);
+    return !["turnovers", "teamFouls"].includes(key);
   };
 
   const compareStats = (
     key: string,
     value1: string | number | null,
-    value2: string | number | null
+    value2: string | number | null,
   ) => {
     if (value1 === null || value2 === null) return null;
 
@@ -177,7 +177,7 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
                     const comparison = compareStats(
                       key,
                       team1Value,
-                      team2Value
+                      team2Value,
                     );
 
                     return (
@@ -217,7 +217,7 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
                     const comparison = compareStats(
                       key,
                       team1Value,
-                      team2Value
+                      team2Value,
                     );
 
                     return (

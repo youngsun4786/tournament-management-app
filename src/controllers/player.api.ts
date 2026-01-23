@@ -33,14 +33,14 @@ export const updatePlayer = createServerFn(
 ).inputValidator(PlayerSchema).handler(async ({ data }) => {
   try {
     const player = await playerService.update({
-      player_id: data.player_id!,
+      id: data.id!,
       name: data.name,
-      jersey_number: data.jersey_number,
+      jerseyNumber: data.jerseyNumber,
       height: data.height,
       weight: data.weight,
       position: data.position,
-      team_id: data.team_id,
-      player_url: data.player_url
+      teamId: data.teamId,
+      playerUrl: data.playerUrl
     });
     return player;
   } catch (error) {

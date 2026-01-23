@@ -84,7 +84,7 @@ export const gameQueries = {
       queryKey: [...gameQueries.all, "teamGames", teamId],
       queryFn: ({signal}) => getGames({signal}).then(games => 
         games.filter(game => 
-          game.home_team_id === teamId || game.away_team_id === teamId
+          game.homeTeamId === teamId || game.awayTeamId === teamId
         )
       )
     })
@@ -162,7 +162,7 @@ export const playerGameStatsQueries = {
           }
           
           // Access team_id directly from the player object
-          return playerStat.player.team_id === teamId;
+          return playerStat.player.teamId === teamId;
         });
       }
     }),

@@ -33,7 +33,7 @@ export const PlayerStatsActions = ({
   const deleteMutation = useMutation({
     mutationFn: async () => {
       return await deletePlayerGameStats({
-        data: { id: stats.pgs_id },
+        data: { id: stats.id },
       });
     },
     onSuccess: () => {
@@ -85,7 +85,7 @@ export const PlayerStatsActions = ({
             </div>
             <PlayerGameStatsForm
               gameId={gameId}
-              playerId={stats.player_id!}
+              playerId={stats.playerId!}
               initialData={stats}
               onSuccess={() => setIsEditing(false)}
             />

@@ -97,7 +97,7 @@ export const Navbar = () => {
                           >
                             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
                               <img
-                                src={`/team_logos/${team.logo_url}`}
+                                src={`/team_logos/${team.logoUrl}`}
                                 alt={`${team.name} logo`}
                                 className="w-full h-full object-contain"
                               />
@@ -240,7 +240,7 @@ export const Navbar = () => {
                     >
                        <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
                           <img
-                            src={`/team_logos/${team.logo_url}`}
+                            src={`/team_logos/${team.logoUrl}`}
                             alt={`${team.name} logo`}
                             className="w-full h-full object-contain"
                           />

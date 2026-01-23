@@ -24,15 +24,15 @@ export type TeamStanding = {
 
 export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) => {
   // Filter to only completed games
-  const completedGames = games.filter((game) => game.is_completed === true);
+  const completedGames = games.filter((game) => game.isCompleted === true);
 
   // Create map for tracking which teams have actually played games
   const teamsWithGames = new Set<string>();
 
   // Add teams to the set if they've played games
   completedGames.forEach((game) => {
-    teamsWithGames.add(game.home_team_id);
-    teamsWithGames.add(game.away_team_id);
+    teamsWithGames.add(game.homeTeamId);
+    teamsWithGames.add(game.awayTeamId);
   });
 
   // Only include teams that are in the game data (have actually played games)
@@ -46,7 +46,7 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
     standings[team.id] = {
       id: team.id,
       name: team.name,
-      logo_url: team.logo_url,
+      logo_url: team.logoUrl,
       wins: 0,
       losses: 0,
       winPercentage: 0,
@@ -66,16 +66,16 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
 
   // Sort games by date (oldest first) for accurate streak calculation
   completedGames.sort(
-    (a, b) => new Date(a.game_date).getTime() - new Date(b.game_date).getTime()
+    (a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime()
   );
   // Calculate win/loss records
   completedGames.forEach((game) => {
-    const homeTeam = standings[game.home_team_id];
-    const awayTeam = standings[game.away_team_id];
+    const homeTeam = standings[game.homeTeamId];
+    const awayTeam = standings[game.awayTeamId];
 
-    if (homeTeam && awayTeam && (game.home_team_score > 0 && game.away_team_score > 0)) {
+    if (homeTeam && awayTeam && (game.homeTeamScore > 0 && game.awayTeamScore > 0)) {
       // Home team won
-      if (game.home_team_score > game.away_team_score) {
+      if (game.homeTeamScore > game.awayTeamScore) {
         homeTeam.wins++;
         homeTeam.homeWins++;
         awayTeam.losses++;
@@ -90,10 +90,10 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
       }
 
       // Update points
-      homeTeam.pointsScored += game.home_team_score;
-      homeTeam.pointsAllowed += game.away_team_score;
-      awayTeam.pointsScored += game.away_team_score;
-      awayTeam.pointsAllowed += game.home_team_score;
+      homeTeam.pointsScored += game.homeTeamScore;
+      homeTeam.pointsAllowed += game.awayTeamScore;
+      awayTeam.pointsScored += game.awayTeamScore;
+      awayTeam.pointsAllowed += game.homeTeamScore;
     }
   });
 
@@ -103,7 +103,7 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
     if (!team) return;
 
     const teamGames = completedGames.filter(
-      (game) => game.home_team_id === teamId || game.away_team_id === teamId
+      (game) => game.homeTeamId === teamId || game.awayTeamId === teamId
     );
 
     if (teamGames.length === 0) return; // Skip if no games played
@@ -111,7 +111,7 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
     // Sort team games by date (most recent first)
     teamGames.sort(
       (a, b) =>
-        new Date(b.game_date).getTime() - new Date(a.game_date).getTime()
+        new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime()
     );
 
     // Calculate streak
@@ -119,8 +119,8 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
     let streakType: "W" | "L" | null = null;
 
     for (const game of teamGames) {
-      const isHomeTeam = game.home_team_id === teamId;
-      const homeWon = game.home_team_score > game.away_team_score;
+      const isHomeTeam = game.homeTeamId === teamId;
+      const homeWon = game.homeTeamScore > game.awayTeamScore;
       const teamWon = isHomeTeam ? homeWon : !homeWon;
 
       if (streakType === null) {
@@ -146,8 +146,8 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
     // Calculate last5
     const last5Games = teamGames.slice(0, 5);
     const wins = last5Games.filter((game) => {
-      const isHomeTeam = game.home_team_id === teamId;
-      const homeWon = game.home_team_score > game.away_team_score;
+      const isHomeTeam = game.homeTeamId === teamId;
+      const homeWon = game.homeTeamScore > game.awayTeamScore;
       return isHomeTeam ? homeWon : !homeWon;
     }).length;
 
@@ -168,7 +168,7 @@ export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) =
       standings[team.id] = {
         id: team.id,
         name: team.name,
-        logo_url: team.logo_url,
+        logo_url: team.logoUrl,
         wins: 0,
         losses: 0,
         winPercentage: 0,

@@ -12,9 +12,9 @@ export const columns: ColumnDef<Player>[] = [
       return (
         <div className="ml-4 flex items-center gap-2">
           {/* Player avatar */}
-          {player.player_url ? (
+          {player.playerUrl ? (
             <img
-              src={`${player.player_url}`}
+              src={`${player.playerUrl}`}
               alt={`${player.name}'s avatar`}
               className="h-8 w-8 rounded-full object-cover"
             />
@@ -25,10 +25,10 @@ export const columns: ColumnDef<Player>[] = [
               </span>
             </div>
           )}
-{player.player_id ? (
+{player.id ? (
             <Link
               to={"/players/$playerId"}
-              params={{ playerId: player.player_id }}
+              params={{ playerId: player.id }}
               className="hover:underline"
             >
               <span className="font-medium">{player.name}</span>
@@ -41,16 +41,16 @@ export const columns: ColumnDef<Player>[] = [
     },
   },
   {
-    accessorFn: (player) => player.team_name,
-    accessorKey: "team_name",
+    accessorFn: (player) => player.teamName,
+    accessorKey: "teamName",
     header: "Teams",
   },
   {
-    accessorFn: (player) => player.jersey_number,
-    accessorKey: "jersey_number",
+    accessorFn: (player) => player.jerseyNumber,
+    accessorKey: "jerseyNumber",
     header: "Number",
     cell: ({ row }) => (
-      <div className="text-center">{row.getValue("jersey_number")}</div>
+      <div className="text-center">{row.getValue("jerseyNumber")}</div>
     ),
   },
   {

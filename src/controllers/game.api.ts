@@ -42,7 +42,7 @@ export const updateGameScore = createServerFn({
     })
 ).handler(async ({ data }) => {
   try {
-    const updatedGame = await gameService.updateScore({id: data.game_id, home_team_score: data.home_team_score, away_team_score: data.away_team_score, is_completed: data.is_completed});
+    const updatedGame = await gameService.updateScore({id: data.game_id, homeTeamScore: data.home_team_score, awayTeamScore: data.away_team_score, isCompleted: data.is_completed});
     return updatedGame;
   } catch (error) {
     console.error("Error updating game score:", error);

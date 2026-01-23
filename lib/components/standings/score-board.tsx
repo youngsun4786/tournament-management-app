@@ -35,7 +35,7 @@ export const ScoreBoard = () => {
       !selectedSeasonId
     ) {
       // First try to find the active season
-      const activeSeason = seasonsQuery.data.find((season) => season.is_active);
+      const activeSeason = seasonsQuery.data.find((season) => season.isActive);
 
       // If there's an active season, use it; otherwise use the first season
       if (activeSeason) {

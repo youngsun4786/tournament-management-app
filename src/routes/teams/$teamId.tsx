@@ -116,13 +116,13 @@ function RouteComponent() {
       groupedStats.all.push(stat);
 
       // Find the game to determine if it was a win or loss
-      const game = games.find((g) => g.id === stat.game_id);
+      const game = games.find((g) => g.id === stat.gameId);
       if (game) {
-        const isHome = game.home_team_id === teamId;
-        const teamScore = isHome ? game.home_team_score : game.away_team_score;
+        const isHome = game.homeTeamId === teamId;
+        const teamScore = isHome ? game.homeTeamScore : game.awayTeamScore;
         const opponentScore = isHome
-          ? game.away_team_score
-          : game.home_team_score;
+          ? game.awayTeamScore
+          : game.homeTeamScore;
 
         if (teamScore > opponentScore) {
           groupedStats.wins.push(stat);
@@ -138,22 +138,22 @@ function RouteComponent() {
 
   // Define stat categories with their sorting criteria
   const statCategories = [
-    { key: "points_per_game", label: "PPG" },
-    { key: "assists_per_game", label: "APG" },
-    { key: "steals_per_game", label: "SPG" },
-    { key: "blocks_per_game", label: "BPG" },
-    { key: "rebounds_per_game", label: "RBG" },
-    { key: "two_point_attempts_per_game", label: "2PA" },
-    { key: "two_pointers_made_per_game", label: "2PM" },
-    { key: "two_point_percentage", label: "2PT%" },
-    { key: "three_point_attempts_per_game", label: "3PA" },
-    { key: "three_pointers_made_per_game", label: "3PM" },
-    { key: "three_point_percentage", label: "3PT%" },
-    { key: "free_throw_attempts_per_game", label: "FTA" },
-    { key: "free_throws_made_per_game", label: "FTM" },
-    { key: "free_throw_percentage", label: "FT%" },
-    { key: "turnovers_per_game", label: "TPG" },
-    { key: "personal_fouls_per_game", label: "PFPG" },
+    { key: "pointsPerGame", label: "PPG" },
+    { key: "assistsPerGame", label: "APG" },
+    { key: "stealsPerGame", label: "SPG" },
+    { key: "blocksPerGame", label: "BPG" },
+    { key: "reboundsPerGame", label: "RBG" },
+    { key: "twoPointAttemptsPerGame", label: "2PA" },
+    { key: "twoPointersMadePerGame", label: "2PM" },
+    { key: "twoPointPercentage", label: "2PT%" },
+    { key: "threePointAttemptsPerGame", label: "3PA" },
+    { key: "threePointersMadePerGame", label: "3PM" },
+    { key: "threePointPercentage", label: "3PT%" },
+    { key: "freeThrowAttemptsPerGame", label: "FTA" },
+    { key: "freeThrowsMadePerGame", label: "FTM" },
+    { key: "freeThrowPercentage", label: "FT%" },
+    { key: "turnoversPerGame", label: "TPG" },
+    { key: "personalFoulsPerGame", label: "PFPG" },
   ];
 
   if (playerGameStatsAverages.length > 0) {
@@ -199,7 +199,13 @@ function RouteComponent() {
       <div className="max-w-7xl p-8 mx-auto flex items-center gap-6 mb-4">
         <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-md">
           <img
-            src={`/team_logos/${team.logo_url}`}
+            src={
+              team.logoUrl && team.logoUrl.startsWith("http")
+                ? team.logoUrl
+                : team.logoUrl
+                  ? `/team_logos/${team.logoUrl}`
+                  : ""
+            }
             alt={`${team.name} logo`}
             className="w-full h-full object-contain p-2"
           />
@@ -218,8 +224,8 @@ function RouteComponent() {
           <CarouselSpacing
             isTeamInfo={true}
             filter={(game) =>
-              game.home_team_name === team.name ||
-              game.away_team_name === team.name
+              game.homeTeamName === team.name ||
+              game.awayTeamName === team.name
             }
           />
         </div>
@@ -248,33 +254,35 @@ function RouteComponent() {
                     </TableHeader>
                     <TableBody>
                       {players.map((player) => (
-                        <TableRow key={player.player_id}>
+                        <TableRow key={player.id}>
                           <TableCell className="text-center">
-                            {player.jersey_number}
+                            {player.jerseyNumber}
                           </TableCell>
                           <TableCell className="text-center">
                             <div className="pl-4 flex items-center gap-4">
-                                <Avatar>
-                                  <AvatarImage
-                                    src={player.player_url || ""}
-                                    alt={player.name}
-                                    className="object-cover"
-                                  />
-                                  <AvatarFallback>
-                                    {player.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")
-                                      .toUpperCase()
-                                      .slice(0, 2)}
-                                  </AvatarFallback>
-                                </Avatar>
+                              <Avatar>
+                                <AvatarImage
+                                  src={player.playerUrl || ""}
+                                  alt={player.name}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback>
+                                  {player.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .toUpperCase()
+                                    .slice(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
                               <Link
                                 to="/players/$playerId"
-                                params={{ playerId: player.player_id }}
+                                params={{ playerId: player.id }}
                                 className="flex items-center gap-3 hover:underline underline-offset-4"
                               >
-                                <span className="font-medium">{player.name}</span>
+                                <span className="font-medium">
+                                  {player.name}
+                                </span>
                               </Link>
                             </div>
                           </TableCell>

@@ -13,7 +13,7 @@ export default function TeamSlider() {
         teams.map((team) => (
           <div key={team.id} className="flex items-center justify-center">
             <img
-              src={`team_logos/${team.logo_url}`}
+              src={`team_logos/${team.logoUrl}`}
               alt={team.name}
               className="h-[120px] w-auto"
             />

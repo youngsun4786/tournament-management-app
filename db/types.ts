@@ -1,10 +1,5 @@
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
-import {
-	games,
-	players,
-	seasons,
-	teams,
-} from './schema';
+import { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { games, players, seasons, teams } from "./schema";
 
 // Select types (what you get when querying)
 export type Season = InferSelectModel<typeof seasons>;
@@ -17,7 +12,6 @@ export type NewSeason = InferInsertModel<typeof seasons>;
 export type NewTeam = InferInsertModel<typeof teams>;
 export type NewGame = InferInsertModel<typeof games>;
 export type NewPlayer = InferInsertModel<typeof players>;
-
 
 // Extended types for joined data
 export type GameWithTeams = Game & {

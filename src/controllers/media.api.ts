@@ -13,9 +13,9 @@ export const addVideo = createServerFn({
     })
 ).handler(async ({ data }) => {
     const video = await mediaService.addVideo({
-        game_id: data.game_id,
+        gameId: data.game_id,
         quarter: data.quarter,
-        youtube_url: data.youtube_url,
+        youtubeUrl: data.youtube_url,
         description: data.description || undefined,
     });
     return video;
@@ -33,8 +33,8 @@ export const addImages = createServerFn({
     // use promise to add images
     const images = await Promise.all(data.imageUrls.map(async (imageUrl, index) => {
         return await mediaService.addImage({
-            image_url: imageUrl,
-            image_id: data.imageIds[index],
+            imageUrl: imageUrl,
+            imageId: data.imageIds[index],
             description: data.description,
             folder: data.folder!,
         });

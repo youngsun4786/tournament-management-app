@@ -23,10 +23,10 @@ export function CarouselSpacing({ filter, isTeamInfo }: CarouselSpacingProps) {
   let upcomingGames = selectedGames;
   if (!isTeamInfo) {
     upcomingGames = selectedGames
-      .filter((game) => !game.is_completed)
+      .filter((game) => !game.isCompleted)
       .sort(
         (a, b) =>
-          new Date(a.game_date).getTime() - new Date(b.game_date).getTime()
+          new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime()
       )
       .slice(0, 12); // Limit to 12 games
   }

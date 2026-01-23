@@ -131,11 +131,11 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-.netlify
 .vscode
 .idea
 .output
 
+**/snapshot.json
 
 node_modules
 .DS_Store

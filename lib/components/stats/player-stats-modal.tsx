@@ -72,45 +72,45 @@ export const PlayerStatsModal = ({
   const mutation = useMutation({
     mutationFn: async (formData: PlayerStatsFormData) => {
       // Calculate derived fields
-      const twoPointersMade = Number(formData.two_pointers_made || 0);
-      const twoPointersAttempted = Number(formData.two_pointers_attempted || 0);
-      const threePointersMade = Number(formData.three_pointers_made || 0);
+      const twoPointersMade = Number(formData.twoPointersMade || 0);
+      const twoPointersAttempted = Number(formData.twoPointersAttempted || 0);
+      const threePointersMade = Number(formData.threePointersMade || 0);
       const threePointersAttempted = Number(
-        formData.three_pointers_attempted || 0
+        formData.threePointersAttempted || 0
       );
-      const offensiveRebounds = Number(formData.offensive_rebounds || 0);
-      const defensiveRebounds = Number(formData.defensive_rebounds || 0);
+      const offensiveRebounds = Number(formData.offensiveRebounds || 0);
+      const defensiveRebounds = Number(formData.defensiveRebounds || 0);
 
       // Calculate field goals (sum of 2PT and 3PT)
-      formData.field_goals_made = twoPointersMade + threePointersMade;
-      formData.field_goals_attempted =
+      formData.fieldGoalsMade = twoPointersMade + threePointersMade;
+      formData.fieldGoalsAttempted =
         twoPointersAttempted + threePointersAttempted;
 
       // Calculate total rebounds
-      formData.total_rebounds = offensiveRebounds + defensiveRebounds;
+      formData.totalRebounds = offensiveRebounds + defensiveRebounds;
 
       // Convert all numeric fields
-      formData.minutes_played = Number(formData.minutes_played);
+      formData.minutesPlayed = Number(formData.minutesPlayed);
       formData.points =
         shotValues.twoPointersMade * 2 +
         shotValues.threePointersMade * 3 +
         shotValues.freeThrowsMade;
-      formData.three_pointers_made = Number(formData.three_pointers_made);
-      formData.three_pointers_attempted = Number(
-        formData.three_pointers_attempted
+      formData.threePointersMade = Number(formData.threePointersMade);
+      formData.threePointersAttempted = Number(
+        formData.threePointersAttempted
       );
-      formData.two_pointers_made = twoPointersMade;
-      formData.two_pointers_attempted = twoPointersAttempted;
-      formData.free_throws_made = Number(formData.free_throws_made);
-      formData.free_throws_attempted = Number(formData.free_throws_attempted);
-      formData.offensive_rebounds = Number(formData.offensive_rebounds);
-      formData.defensive_rebounds = Number(formData.defensive_rebounds);
+      formData.twoPointersMade = twoPointersMade;
+      formData.twoPointersAttempted = twoPointersAttempted;
+      formData.freeThrowsMade = Number(formData.freeThrowsMade);
+      formData.freeThrowsAttempted = Number(formData.freeThrowsAttempted);
+      formData.offensiveRebounds = Number(formData.offensiveRebounds);
+      formData.defensiveRebounds = Number(formData.defensiveRebounds);
       formData.assists = Number(formData.assists);
       formData.steals = Number(formData.steals);
       formData.blocks = Number(formData.blocks);
       formData.turnovers = Number(formData.turnovers);
-      formData.personal_fouls = Number(formData.personal_fouls);
-      formData.plus_minus = Number(formData.plus_minus);
+      formData.personalFouls = Number(formData.personalFouls);
+      formData.plusMinus = Number(formData.plusMinus);
 
       return await createPlayerGameStats({ data: formData });
     },
@@ -126,27 +126,27 @@ export const PlayerStatsModal = ({
 
   const form = useAppForm({
     defaultValues: {
-      game_id: gameId,
-      player_id: "",
-      minutes_played: 0,
+      gameId: gameId,
+      playerId: "",
+      minutesPlayed: 0,
       points: 0,
-      field_goals_made: 0,
-      field_goals_attempted: 0,
-      two_pointers_made: 0,
-      two_pointers_attempted: 0,
-      three_pointers_made: 0,
-      three_pointers_attempted: 0,
-      free_throws_made: 0,
-      free_throws_attempted: 0,
-      offensive_rebounds: 0,
-      defensive_rebounds: 0,
-      total_rebounds: 0,
+      fieldGoalsMade: 0,
+      fieldGoalsAttempted: 0,
+      twoPointersMade: 0,
+      twoPointersAttempted: 0,
+      threePointersMade: 0,
+      threePointersAttempted: 0,
+      freeThrowsMade: 0,
+      freeThrowsAttempted: 0,
+      offensiveRebounds: 0,
+      defensiveRebounds: 0,
+      totalRebounds: 0,
       assists: 0,
       steals: 0,
       blocks: 0,
       turnovers: 0,
-      personal_fouls: 0,
-      plus_minus: 0,
+      personalFouls: 0,
+      plusMinus: 0,
     } as PlayerStatsFormData,
     onSubmit: async ({ value }) => {
       if (!selectedPlayer) {
@@ -154,9 +154,9 @@ export const PlayerStatsModal = ({
         return;
       }
 
-      value.player_id = selectedPlayer;
+      value.playerId = selectedPlayer;
       await mutation.mutateAsync(value);
-    },
+    }
   });
 
   // Handler for when shot values change
@@ -186,17 +186,17 @@ export const PlayerStatsModal = ({
 
   // Define the fields organized in columns as requested
   const columnOneFields = [
-    { name: "two_pointers_made" as const, label: "2PT Made" },
-    { name: "two_pointers_attempted" as const, label: "2PT Attempted" },
-    { name: "three_pointers_made" as const, label: "3PT Made" },
-    { name: "three_pointers_attempted" as const, label: "3PT Attempted" },
-    { name: "free_throws_made" as const, label: "FT Made" },
-    { name: "free_throws_attempted" as const, label: "FT Attempted" },
+    { name: "twoPointersMade" as const, label: "2PT Made" },
+    { name: "twoPointersAttempted" as const, label: "2PT Attempted" },
+    { name: "threePointersMade" as const, label: "3PT Made" },
+    { name: "threePointersAttempted" as const, label: "3PT Attempted" },
+    { name: "freeThrowsMade" as const, label: "FT Made" },
+    { name: "freeThrowsAttempted" as const, label: "FT Attempted" },
   ];
 
   const columnTwoFields = [
-    { name: "offensive_rebounds" as const, label: "Off. Rebounds" },
-    { name: "defensive_rebounds" as const, label: "Def. Rebounds" },
+    { name: "offensiveRebounds" as const, label: "Off. Rebounds" },
+    { name: "defensiveRebounds" as const, label: "Def. Rebounds" },
     { name: "assists" as const, label: "Assists" },
     { name: "steals" as const, label: "Steals" },
     { name: "blocks" as const, label: "Blocks" },
@@ -204,10 +204,10 @@ export const PlayerStatsModal = ({
   ];
 
   const columnThreeFields = [
-    { name: "plus_minus" as const, label: "Plus/Minus" },
-    { name: "minutes_played" as const, label: "Minutes Played" },
+    { name: "plusMinus" as const, label: "Plus/Minus" },
+    { name: "minutesPlayed" as const, label: "Minutes Played" },
     { name: "points" as const, label: "Points" },
-    { name: "personal_fouls" as const, label: "Personal Fouls" },
+    { name: "personalFouls" as const, label: "Personal Fouls" },
   ];
 
   return (
@@ -227,7 +227,7 @@ export const PlayerStatsModal = ({
             {Object.entries(
               players.reduce(
                 (acc, player) => {
-                  const teamName = player.team_name || "Unknown Team";
+                  const teamName = player.teamName || "Unknown Team";
                   if (!acc[teamName]) {
                     acc[teamName] = [];
                   }
@@ -258,7 +258,7 @@ export const PlayerStatsModal = ({
                   <SelectContent>
                     {teamPlayers.map((player) => (
                       <SelectItem key={player.id} value={player.id}>
-                        {player.jersey_number} - {player.name}
+                        {player.jerseyNumber} - {player.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -288,23 +288,23 @@ export const PlayerStatsModal = ({
                     text_type="text"
                     className="transition-all duration-300 focus:ring-2 focus:ring-blue-500"
                     onChange={
-                      field.name === "two_pointers_made" ||
-                      field.name === "three_pointers_made" ||
-                      field.name === "free_throws_made"
+                      field.name === "twoPointersMade" ||
+                      field.name === "threePointersMade" ||
+                      field.name === "freeThrowsMade"
                         ? () => {
                             // Update the state with the new value
                             const newValue = Number(formField.state.value || 0);
-                            if (field.name === "two_pointers_made") {
+                            if (field.name === "twoPointersMade") {
                               setShotValues((prev) => ({
                                 ...prev,
                                 twoPointersMade: newValue,
                               }));
-                            } else if (field.name === "three_pointers_made") {
+                            } else if (field.name === "threePointersMade") {
                               setShotValues((prev) => ({
                                 ...prev,
                                 threePointersMade: newValue,
                               }));
-                            } else if (field.name === "free_throws_made") {
+                            } else if (field.name === "freeThrowsMade") {
                               setShotValues((prev) => ({
                                 ...prev,
                                 freeThrowsMade: newValue,

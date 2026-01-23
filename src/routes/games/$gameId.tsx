@@ -2,13 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowDown } from "lucide-react";
 import { useEffect } from "react";
-import {
-  gameQueries,
-  mediaQueries,
-  playerGameStatsQueries,
-  teamGameStatsQueries,
-} from "~/src/queries";
-import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
 import { TeamGameStatsTable } from "~/lib/components/stats/team-game-stats-table";
 import { Button } from "~/lib/components/ui/button";
@@ -25,6 +18,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/lib/components/ui/tabs";
+import {
+  gameQueries,
+  mediaQueries,
+  playerGameStatsQueries,
+  teamGameStatsQueries,
+} from "~/src/queries";
+import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 
 export const Route = createFileRoute("/games/$gameId")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -34,14 +34,14 @@ export const Route = createFileRoute("/games/$gameId")({
   },
   loader: async ({ params, context }) => {
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.detail(params.gameId)
+      playerGameStatsQueries.detail(params.gameId),
     );
     await context.queryClient.ensureQueryData(
-      teamGameStatsQueries.detail(params.gameId)
+      teamGameStatsQueries.detail(params.gameId),
     );
     await context.queryClient.ensureQueryData(gameQueries.list());
     await context.queryClient.ensureQueryData(
-      mediaQueries.videosByGameId(params.gameId)
+      mediaQueries.videosByGameId(params.gameId),
     );
   },
   component: RouteComponent,
@@ -50,13 +50,11 @@ export const Route = createFileRoute("/games/$gameId")({
 function RouteComponent() {
   const { gameId } = Route.useParams();
   const { data: playerStats, isLoading } = useQuery(
-    playerGameStatsQueries.detail(gameId)
+    playerGameStatsQueries.detail(gameId),
   );
   const { data: games } = useQuery(gameQueries.list());
   const gameInfo = games?.find((game) => game.id === gameId);
-  const { data: videos } = useQuery(
-    mediaQueries.videosByGameId(gameId)
-  );
+  const { data: videos } = useQuery(mediaQueries.videosByGameId(gameId));
   const { section } = Route.useSearch();
 
   // Scroll to video section if section=video-section is in the URL
@@ -79,15 +77,15 @@ function RouteComponent() {
       return { home: null, away: null };
 
     const homeTeamStats = playerStats.filter(
-      (stat) => stat.player?.team_name === gameInfo.home_team_name
+      (stat) => stat.player?.teamName === gameInfo.homeTeamName,
     );
     const awayTeamStats = playerStats.filter(
-      (stat) => stat.player?.team_name === gameInfo.away_team_name
+      (stat) => stat.player?.teamName === gameInfo.awayTeamName,
     );
 
     const sortByPoints = (
       a: PlayerGameStatsWithPlayer,
-      b: PlayerGameStatsWithPlayer
+      b: PlayerGameStatsWithPlayer,
     ) => (b.points || 0) - (a.points || 0);
 
     const homeTopScorer = homeTeamStats.sort(sortByPoints)[0];
@@ -121,26 +119,26 @@ function RouteComponent() {
               <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-md mb-2">
                 <img
                   src={
-                    gameInfo.home_team_logo
-                      ? `/team_logos/${gameInfo.home_team_logo}`
+                    gameInfo.homeTeamLogo
+                      ? `/team_logos/${gameInfo.homeTeamLogo}`
                       : "/team_logos/ccbc_logo.png"
                   }
-                  alt={`${gameInfo.home_team_name} logo`}
+                  alt={`${gameInfo.homeTeamName} logo`}
                   className="w-full h-full object-contain p-1"
                 />
               </div>
               <span className="font-semibold text-lg">
-                {gameInfo.home_team_name}
+                {gameInfo.homeTeamName}
               </span>
               <span className="text-4xl font-bold mt-2">
-                {gameInfo.home_team_score}
+                {gameInfo.homeTeamScore}
               </span>
             </div>
 
             <div className="text-center">
               <div className="text-lg font-medium mb-1">VS</div>
               <div className="text-sm text-muted-foreground">
-                {new Date(gameInfo.game_date).toLocaleDateString()}
+                {new Date(gameInfo.gameDate).toLocaleDateString()}
               </div>
             </div>
 
@@ -148,19 +146,19 @@ function RouteComponent() {
               <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-md mb-2">
                 <img
                   src={
-                    gameInfo.away_team_logo
-                      ? `/team_logos/${gameInfo.away_team_logo}`
+                    gameInfo.awayTeamLogo
+                      ? `/team_logos/${gameInfo.awayTeamLogo}`
                       : "/team_logos/ccbc_logo.png"
                   }
-                  alt={`${gameInfo.away_team_name} logo`}
+                  alt={`${gameInfo.awayTeamName} logo`}
                   className="w-full h-full object-contain p-1"
                 />
               </div>
               <span className="font-semibold text-lg">
-                {gameInfo.away_team_name}
+                {gameInfo.awayTeamName}
               </span>
               <span className="text-4xl font-bold mt-2">
-                {gameInfo.away_team_score}
+                {gameInfo.awayTeamScore}
               </span>
             </div>
           </CardContent>
@@ -186,15 +184,15 @@ function RouteComponent() {
                 <div className="w-6 h-6 rounded-full overflow-hidden bg-white">
                   <img
                     src={
-                      gameInfo.home_team_logo
-                        ? `/team_logos/${gameInfo.home_team_logo}`
+                      gameInfo.homeTeamLogo
+                        ? `/team_logos/${gameInfo.homeTeamLogo}`
                         : "/team_logos/ccbc_logo.png"
                     }
-                    alt={`${gameInfo.home_team_name} logo`}
+                    alt={`${gameInfo.homeTeamName} logo`}
                     className="w-full h-full object-contain p-0.5"
                   />
                 </div>
-                {gameInfo.home_team_name}
+                {gameInfo.homeTeamName}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -203,7 +201,7 @@ function RouteComponent() {
                 {topScorers.home ? (
                   <div className="flex items-center gap-2">
                     <div className="bg-primary/10 rounded-full px-2 py-1 text-xs font-medium">
-                      #{topScorers.home.player?.jersey_number}
+                      #{topScorers.home.player?.jerseyNumber}
                     </div>
                     <span className="font-semibold">
                       {topScorers.home.player?.name}
@@ -250,15 +248,15 @@ function RouteComponent() {
                 <div className="w-6 h-6 rounded-full overflow-hidden bg-white">
                   <img
                     src={
-                      gameInfo.away_team_logo
-                        ? `/team_logos/${gameInfo.away_team_logo}`
+                      gameInfo.awayTeamLogo
+                        ? `/team_logos/${gameInfo.awayTeamLogo}`
                         : "/team_logos/ccbc_logo.png"
                     }
-                    alt={`${gameInfo.away_team_name} logo`}
+                    alt={`${gameInfo.awayTeamName} logo`}
                     className="w-full h-full object-contain p-0.5"
                   />
                 </div>
-                {gameInfo.away_team_name}
+                {gameInfo.awayTeamName}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -267,7 +265,7 @@ function RouteComponent() {
                 {topScorers.away ? (
                   <div className="flex items-center gap-2">
                     <div className="bg-primary/10 rounded-full px-2 py-1 text-xs font-medium">
-                      #{topScorers.away.player?.jersey_number}
+                      #{topScorers.away.player?.jerseyNumber}
                     </div>
                     <span className="font-semibold">
                       {topScorers.away.player?.name}
@@ -339,7 +337,7 @@ function RouteComponent() {
                   <TabsList>
                     {[1, 2, 3, 4].map((quarter) => {
                       const hasVideos = videos.some(
-                        (video) => video.quarter === quarter
+                        (video) => video.quarter === quarter,
                       );
                       return (
                         <TabsTrigger
@@ -356,7 +354,7 @@ function RouteComponent() {
                 <CardContent className="pt-4">
                   {[1, 2, 3, 4].map((quarter) => {
                     const quarterVideos = videos.filter(
-                      (video) => video.quarter === quarter
+                      (video) => video.quarter === quarter,
                     );
                     return (
                       <TabsContent
@@ -368,15 +366,15 @@ function RouteComponent() {
                           <div className="grid gap-4">
                             {quarterVideos.map((video) => (
                               <div
-                                key={`video-${video.video_id}`}
+                                key={`video-${video.id}`}
                                 className="flex flex-col gap-3"
                               >
                                 <div className="aspect-video w-full max-w-4xl mx-auto">
                                   <iframe
                                     className="w-full h-full border-none rounded-lg shadow-md"
-                                    src={video.youtube_url.replace(
+                                    src={video.youtubeUrl.replace(
                                       "watch?v=",
-                                      "embed/"
+                                      "embed/",
                                     )}
                                     title={`Quarter ${quarter} Video`}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

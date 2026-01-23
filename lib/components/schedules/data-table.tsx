@@ -41,7 +41,7 @@ export function DataTable<TData, TValue>({
   columns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([
-    { id: "game_date", desc: false },
+    { id: "gameDate", desc: false },
   ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

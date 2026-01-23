@@ -4,8 +4,8 @@ import { useState } from "react";
 import { playerGameStatsQueries } from "~/src/queries";
 import type { Player } from "~/src/types/player";
 import type {
-    PlayerGameStatsAverage,
-    PlayerGameStatsTotal,
+  PlayerGameStatsAverage,
+  PlayerGameStatsTotal,
 } from "~/src/types/player-game-stats";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -52,11 +52,11 @@ const StatsCard = <T extends PlayerStatsCommon>({
           >
             <div className="flex items-center">
               <span className="text-sm mr-2 font-medium">{index + 1}.</span>
-{stat.player?.player_id ? (
+              {stat.player?.id ? (
                 <Link
                   className="hover:underline"
                   to="/players/$playerId"
-                  params={{ playerId: stat.player.player_id }}
+                  params={{ playerId: stat.player.id }}
                 >
                   <span className="font-medium">
                     {stat.player?.name || "Unknown Player"}
@@ -68,8 +68,8 @@ const StatsCard = <T extends PlayerStatsCommon>({
                 </span>
               )}
               <span className="text-xs text-gray-500 ml-2">
-                {stat.player?.team_name &&
-                  `(${stat.player.team_name.substring(0, 3).toUpperCase()})`}
+                {stat.player?.teamName &&
+                  `(${stat.player.teamName.substring(0, 3).toUpperCase()})`}
               </span>
             </div>
             <div className="font-semibold">
@@ -126,10 +126,10 @@ export const PlayerGameStatsGrid = () => {
   const getTopPlayersAverage = (
     data: PlayerStatsAverageResponse[],
     key: keyof PlayerStatsAverageResponse,
-    limit: number = 5
+    limit: number = 5,
   ) => {
     return [...data]
-      .filter((stat) => stat.games_played > 0 && stat.player !== null) // Ensure they've played at least one game and player data exists
+      .filter((stat) => stat.gamesPlayed > 0 && stat.player !== null) // Ensure they've played at least one game and player data exists
       .sort((a, b) => {
         const aValue = a[key] as number;
         const bValue = b[key] as number;
@@ -141,7 +141,7 @@ export const PlayerGameStatsGrid = () => {
   const getTopPlayersTotal = (
     data: PlayerStatsTotalResponse[],
     key: keyof PlayerStatsTotalResponse,
-    limit: number = 5
+    limit: number = 5,
   ) => {
     return [...data]
       .sort((a, b) => (b[key] as number) - (a[key] as number))
@@ -151,64 +151,64 @@ export const PlayerGameStatsGrid = () => {
   // Define the statistical categories to display
   const pointsAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "points_per_game"
+    "pointsPerGame",
   );
   const reboundsAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "rebounds_per_game"
+    "reboundsPerGame",
   );
   const assistsAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "assists_per_game"
+    "assistsPerGame",
   );
   const stealsAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "steals_per_game"
+    "stealsPerGame",
   );
   const blocksAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "blocks_per_game"
+    "blocksPerGame",
   );
   const turnoversAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "turnovers_per_game"
+    "turnoversPerGame",
   );
   const freeThrowsMadeAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "free_throws_made_per_game"
+    "freeThrowsMadePerGame",
   );
   const twoPointersMadeAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "two_pointers_made_per_game"
+    "twoPointersMadePerGame",
   );
   const threePointersMadeAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
-    "three_pointers_made_per_game"
+    "threePointersMadePerGame",
   );
 
-  const pointsLeaders = getTopPlayersTotal(playerStatsTotals, "total_points");
+  const pointsLeaders = getTopPlayersTotal(playerStatsTotals, "totalPoints");
   const reboundsLeaders = getTopPlayersTotal(
     playerStatsTotals,
-    "total_rebounds"
+    "totalRebounds",
   );
-  const assistsLeaders = getTopPlayersTotal(playerStatsTotals, "total_assists");
-  const stealsLeaders = getTopPlayersTotal(playerStatsTotals, "total_steals");
-  const blocksLeaders = getTopPlayersTotal(playerStatsTotals, "total_blocks");
+  const assistsLeaders = getTopPlayersTotal(playerStatsTotals, "totalAssists");
+  const stealsLeaders = getTopPlayersTotal(playerStatsTotals, "totalSteals");
+  const blocksLeaders = getTopPlayersTotal(playerStatsTotals, "totalBlocks");
   const turnoversLeaders = getTopPlayersTotal(
     playerStatsTotals,
-    "total_turnovers"
+    "totalTurnovers",
   );
   const freeThrowsMadeLeaders = getTopPlayersTotal(
     playerStatsTotals,
-    "total_free_throws_made"
+    "totalFreeThrowsMade",
   );
   const twoPointersMadeLeaders = getTopPlayersTotal(
     playerStatsTotals,
-    "total_two_pointers_made"
+    "totalTwoPointersMade",
   );
   const threePointersMadeLeaders = getTopPlayersTotal(
     playerStatsTotals,
-    "total_three_pointers_made"
+    "totalThreePointersMade",
   );
 
   // Define the grid layout for both tabs to ensure consistent sizing
@@ -253,47 +253,47 @@ export const PlayerGameStatsGrid = () => {
             <StatsCard
               title="POINTS PER GAME"
               data={pointsAverageLeaders}
-              valueProp="points_per_game"
+              valueProp="pointsPerGame"
             />
             <StatsCard
               title="REBOUNDS PER GAME"
               data={reboundsAverageLeaders}
-              valueProp="rebounds_per_game"
+              valueProp="reboundsPerGame"
             />
             <StatsCard
               title="ASSISTS PER GAME"
               data={assistsAverageLeaders}
-              valueProp="assists_per_game"
+              valueProp="assistsPerGame"
             />
             <StatsCard
               title="STEALS PER GAME"
               data={stealsAverageLeaders}
-              valueProp="steals_per_game"
+              valueProp="stealsPerGame"
             />
             <StatsCard
               title="BLOCKS PER GAME"
               data={blocksAverageLeaders}
-              valueProp="blocks_per_game"
+              valueProp="blocksPerGame"
             />
             <StatsCard
               title="TURNOVERS PER GAME"
               data={turnoversAverageLeaders}
-              valueProp="turnovers_per_game"
+              valueProp="turnoversPerGame"
             />
             <StatsCard
               title="FREE THROWS MADE PER GAME"
               data={freeThrowsMadeAverageLeaders}
-              valueProp="free_throws_made_per_game"
+              valueProp="freeThrowsMadePerGame"
             />
             <StatsCard
               title="2 POINTERS MADE PER GAME"
               data={twoPointersMadeAverageLeaders}
-              valueProp="two_pointers_made_per_game"
+              valueProp="twoPointersMadePerGame"
             />
             <StatsCard
               title="3 POINTERS MADE PER GAME"
               data={threePointersMadeAverageLeaders}
-              valueProp="three_pointers_made_per_game"
+              valueProp="threePointersMadePerGame"
             />
           </div>
         </TabsContent>
@@ -303,47 +303,47 @@ export const PlayerGameStatsGrid = () => {
             <StatsCard
               title="TOTAL POINTS"
               data={pointsLeaders}
-              valueProp="total_points"
+              valueProp="totalPoints"
             />
             <StatsCard
               title="TOTAL REBOUNDS"
               data={reboundsLeaders}
-              valueProp="total_rebounds"
+              valueProp="totalRebounds"
             />
             <StatsCard
               title="TOTAL ASSISTS"
               data={assistsLeaders}
-              valueProp="total_assists"
+              valueProp="totalAssists"
             />
             <StatsCard
               title="TOTAL STEALS"
               data={stealsLeaders}
-              valueProp="total_steals"
+              valueProp="totalSteals"
             />
             <StatsCard
               title="TOTAL BLOCKS"
               data={blocksLeaders}
-              valueProp="total_blocks"
+              valueProp="totalBlocks"
             />
             <StatsCard
               title="TOTAL TURNOVERS"
               data={turnoversLeaders}
-              valueProp="total_turnovers"
+              valueProp="totalTurnovers"
             />
             <StatsCard
               title="TOTAL FREE THROWS MADE"
               data={freeThrowsMadeLeaders}
-              valueProp="total_free_throws_made"
+              valueProp="totalFreeThrowsMade"
             />
             <StatsCard
               title="TOTAL 2 POINTERS MADE"
               data={twoPointersMadeLeaders}
-              valueProp="total_two_pointers_made"
+              valueProp="totalTwoPointersMade"
             />
             <StatsCard
               title="TOTAL 3 POINTERS MADE"
               data={threePointersMadeLeaders}
-              valueProp="total_three_pointers_made"
+              valueProp="totalThreePointersMade"
             />
           </div>
         </TabsContent>

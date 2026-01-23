@@ -18,7 +18,7 @@ export const TeamRankings = () => {
   // Query to fetch active season
   const seasonsQuery = useGetSeasons();
   const activeSeason = seasonsQuery.data?.filter(
-    (season) => season.is_active
+    (season) => season.isActive
   )[0];
 
   // Query to fetch teams for the active season

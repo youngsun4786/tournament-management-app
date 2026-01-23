@@ -1,15 +1,16 @@
-import { config } from 'dotenv';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import * as schema from "~/db/schema";
+import { config } from "dotenv";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import { relations } from "./relations";
 
-config({ path: '.env' });
+config({ path: ".env" });
 
 const connectionString = process.env.DATABASE_URL!;
 
 // Disable prefetch as it is not supported for "Transaction" pool mode
 export const client = postgres(connectionString, { prepare: false });
-export const db = drizzle(client, { schema });
+
+export const db = drizzle({ client, relations });
 
 export default db;
 
@@ -23,7 +24,7 @@ export default db;
 //       orderBy: (games, { asc }) => [asc(games.game_date), asc(games.start_time)]
 //     });
 //   };
-  
+
 //   export const getGameById = async (id: string) => {
 //     return db.query.games.findFirst({
 //       where: eq(schema.games.id, id),
@@ -33,7 +34,7 @@ export default db;
 //       }
 //     });
 //   };
-  
+
 //   export const getGamesByTeamId = async (teamId: string) => {
 //     return db.query.games.findMany({
 //       where: or(
@@ -47,8 +48,7 @@ export default db;
 //       orderBy: (games, { asc }) => [asc(games.game_date)]
 //     });
 //   };
-  
-  
+
 //   export const getUpcomingGames = async (limit = 5) => {
 //     return db.query.games.findMany({
 //       where: and(
@@ -63,7 +63,7 @@ export default db;
 //       limit
 //     });
 //   };
-  
+
 //   export const getRecentResults = async (limit = 5) => {
 //     return db.query.games.findMany({
 //       where: eq(schema.games.is_completed, true),
@@ -75,7 +75,7 @@ export default db;
 //       limit
 //     });
 //   };
-  
+
 //   // Seasons queries
 //   export const getActiveSeasons = async () => {
 //     return db.query.seasons.findMany({

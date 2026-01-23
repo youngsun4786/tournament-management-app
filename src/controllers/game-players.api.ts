@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "~/db";
-import { games, players, teams } from "~/db/schema";
+import { players, teams } from "~/db/schema";
 
 export const getPlayersByGameId = createServerFn({
   method: "GET",
@@ -14,10 +14,12 @@ export const getPlayersByGameId = createServerFn({
 
     // First get the home and away team IDs for the game
     const game = await db.query.games.findFirst({
-      where: eq(games.id, gameId),
+      where: {
+        id: gameId
+      },
       columns: {
-        home_team_id: true,
-        away_team_id: true,
+        homeTeamId: true,
+        awayTeamId: true,
       },
     });
 
@@ -30,25 +32,25 @@ export const getPlayersByGameId = createServerFn({
       .select({
         id: players.id,
         name: players.name,
-        jersey_number: players.jersey_number,
-        team_id: players.team_id,
-        team_name: teams.name,
-        team_type: sql<string>`
+        jerseyNumber: players.jerseyNumber,
+        teamId: players.teamId,
+        teamName: teams.name,
+        teamType: sql<string>`
           CASE 
-            WHEN ${players.team_id} = ${game.home_team_id} THEN 'home'
-            WHEN ${players.team_id} = ${game.away_team_id} THEN 'away'
+            WHEN ${players.teamId} = ${game.homeTeamId} THEN 'home'
+            WHEN ${players.teamId} = ${game.awayTeamId} THEN 'away'
           END
         `.as("team_type"),
       })
       .from(players)
-      .innerJoin(teams, eq(players.team_id, teams.id))
+      .innerJoin(teams, eq(players.teamId, teams.id))
       .where(
         or(
-          eq(players.team_id, game.home_team_id),
-          eq(players.team_id, game.away_team_id)
+          eq(players.teamId, game.homeTeamId),
+          eq(players.teamId, game.awayTeamId)
         )
       )
-      .orderBy(sql`team_type`, players.jersey_number);
+      .orderBy(sql`team_type`, players.jerseyNumber);
 
     return gamePlayers;
   } catch (error) {

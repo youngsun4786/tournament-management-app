@@ -3,7 +3,6 @@ import {
   getDaysInMonth,
   getMonth,
   getYear,
-  parseISO,
   startOfMonth,
 } from "date-fns";
 import { cn } from "~/lib/utils/cn";
@@ -35,14 +34,12 @@ export function CalendarView({ games, currentDate }: CalendarViewProps) {
   // Group games by date
   const gamesByDate = games.reduce(
     (acc, game) => {
-      const gameDate = parseISO(game.game_date);
-
       // Only include games for the current month/year
       if (
-        getMonth(gameDate) === currentMonth &&
-        getYear(gameDate) === currentYear
+        getMonth(game.gameDate) === currentMonth &&
+        getYear(game.gameDate) === currentYear
       ) {
-        const day = getDate(gameDate);
+        const day = getDate(game.gameDate);
         if (!acc[day]) {
           acc[day] = [];
         }
@@ -93,9 +90,9 @@ export function CalendarView({ games, currentDate }: CalendarViewProps) {
                           <Card key={game.id} className="p-2 text-xs">
                             <div className="flex justify-between items-center mb-1">
                               <span className="font-semibold">
-                                {game.start_time.slice(0, 5)}
+                                {game.startTime.slice(0, 5)}
                               </span>
-                              {game.is_completed ? (
+                              {game.isCompleted ? (
                                 <Badge variant="outline" className="text-xs">
                                   Final
                                 </Badge>
@@ -107,32 +104,32 @@ export function CalendarView({ games, currentDate }: CalendarViewProps) {
                             </div>
 
                             <div className="flex items-center gap-1">
-                              {game.home_team_logo ? (
+                              {game.homeTeamLogo ? (
                                 <img
-                                  src={`/team_logos/${game.home_team_logo}`}
-                                  alt={`${game.home_team_name}`}
+                                  src={`/team_logos/${game.homeTeamLogo}`}
+                                  alt={`${game.homeTeamName}`}
                                   className="h-4 w-4"
                                 />
                               ) : (
                                 <div className="h-4 w-4 bg-gray-200 rounded-full"></div>
                               )}
                               <span className="truncate">
-                                {game.home_team_name}
+                                {game.homeTeamName}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-1">
-                              {game.away_team_logo ? (
+                              {game.awayTeamLogo ? (
                                 <img
-                                  src={`/team_logos/${game.away_team_logo}`}
-                                  alt={`${game.away_team_name}`}
+                                  src={`/team_logos/${game.awayTeamLogo}`}
+                                  alt={`${game.awayTeamName}`}
                                   className="h-4 w-4"
                                 />
                               ) : (
                                 <div className="h-4 w-4 bg-gray-200 rounded-full"></div>
                               )}
                               <span className="truncate">
-                                {game.away_team_name}
+                                {game.awayTeamName}
                               </span>
                             </div>
 

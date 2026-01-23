@@ -72,7 +72,7 @@ export function ImageCarousel({
               )}
             >
               <img
-                src={src.image_url}
+                src={src.imageUrl}
                 alt={`Slide ${index + 1}`}
                 className="h-full w-full object-cover"
               />

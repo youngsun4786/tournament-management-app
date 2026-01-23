@@ -19,7 +19,7 @@ function RouteComponent() {
     () =>
       Array.from(
         new Set(
-          players?.map((player) => player.team_name).filter((team) => !!team)
+          players?.map((player) => player.teamName).filter((team) => !!team)
         )
       ),
     [players]

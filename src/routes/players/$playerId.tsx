@@ -22,19 +22,19 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export const Route = createFileRoute("/players/$playerId")({
   beforeLoad: async ({ params, context }) => {
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.playerGameStatsAverage(params.playerId!)
+      playerGameStatsQueries.playerGameStatsAverage(params.playerId!),
     );
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.playerGameStatsByPlayerId(params.playerId!)
+      playerGameStatsQueries.playerGameStatsByPlayerId(params.playerId!),
     );
     await context.queryClient.ensureQueryData(
-      playerQueries.detail(params.playerId!)
+      playerQueries.detail(params.playerId!),
     );
   },
   component: RouteComponent,
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/players/$playerId")({
 function RouteComponent() {
   const { playerId } = Route.useParams();
   const [recentGames, setRecentGames] = useState<PlayerGameStatsWithPlayer[]>(
-    []
+    [],
   );
 
   const [
@@ -70,10 +70,10 @@ function RouteComponent() {
   useEffect(() => {
     if (playerGameStats && playerGameStats.length > 0) {
       const sortedGames = [...playerGameStats].sort((a, b) => {
-        // Sort by updated_at if available, otherwise just take the first 5
-        if (a.updated_at && b.updated_at) {
+        // Sort by updatedAt if available, otherwise just take the first 5
+        if (a.updatedAt && b.updatedAt) {
           return (
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
           );
         }
         return 0;
@@ -90,11 +90,11 @@ function RouteComponent() {
         label: "Player Stats",
         data: playerGameStatsAverage
           ? [
-              playerGameStatsAverage.points_per_game,
-              playerGameStatsAverage.rebounds_per_game,
-              playerGameStatsAverage.assists_per_game,
-              playerGameStatsAverage.steals_per_game,
-              playerGameStatsAverage.blocks_per_game,
+              playerGameStatsAverage.pointsPerGame,
+              playerGameStatsAverage.reboundsPerGame,
+              playerGameStatsAverage.assistsPerGame,
+              playerGameStatsAverage.stealsPerGame,
+              playerGameStatsAverage.blocksPerGame,
             ]
           : [0, 0, 0, 0, 0],
         fill: true,
@@ -152,10 +152,10 @@ function RouteComponent() {
             <div className="flex flex-col md:flex-row xl:flex-col items-center xl:items-start text-center xl:text-left gap-6 xl:gap-4 p-4 space-y-4">
               <div className="relative mx-auto xl:mx-0">
                 {/* Player image */}
-                {player.player_url ? (
+                {player.playerUrl ? (
                   <div className="h-64 w-44 xl:h-72 xl:w-48 rounded-xl overflow-hidden ring-4 ring-white/30 shadow-lg mx-auto">
                     <img
-                      src={`${player.player_url}`}
+                      src={`${player.playerUrl}`}
                       alt={`${player.name}'s avatar`}
                       className="w-full h-full object-cover"
                     />
@@ -174,13 +174,13 @@ function RouteComponent() {
                 </h1>
                 <div className="flex flex-wrap items-center justify-center xl:justify-start gap-3 mb-2">
                   <span className="text-lg xl:text-xl px-2 py-0.5 bg-white/20 rounded-md whitespace-nowrap">
-                    #{player.jersey_number || "00"}
+                    #{player.jerseyNumber || "00"}
                   </span>
                   <span className="text-lg xl:text-xl whitespace-nowrap">
                     {player.position || "POS"}
                   </span>
                 </div>
-                <h2 className="text-xl opacity-90">{player.team_name}</h2>
+                <h2 className="text-xl opacity-90">{player.teamName}</h2>
               </div>
             </div>
 
@@ -228,50 +228,46 @@ function RouteComponent() {
               <div className="grid grid-cols-2 gap-3 flex-grow content-center">
                 <ShootingStatCard
                   label="FG"
-                  made={playerGameStatsAverage.field_goals_made_per_game.toFixed(
-                    1
-                  )}
-                  attempts={playerGameStatsAverage.field_goal_attempts_per_game.toFixed(
-                    1
+                  made={playerGameStatsAverage.fieldGoalsMadePerGame.toFixed(1)}
+                  attempts={playerGameStatsAverage.fieldGoalAttemptsPerGame.toFixed(
+                    1,
                   )}
                   percentage={(
-                    playerGameStatsAverage.field_goal_percentage * 100
+                    playerGameStatsAverage.fieldGoalPercentage * 100
                   ).toFixed(1)}
                 />
                 <ShootingStatCard
                   label="3P"
-                  made={playerGameStatsAverage.three_pointers_made_per_game.toFixed(
-                    1
+                  made={playerGameStatsAverage.threePointersMadePerGame.toFixed(
+                    1,
                   )}
-                  attempts={playerGameStatsAverage.three_point_attempts_per_game.toFixed(
-                    1
+                  attempts={playerGameStatsAverage.threePointAttemptsPerGame.toFixed(
+                    1,
                   )}
                   percentage={(
-                    playerGameStatsAverage.three_point_percentage * 100
+                    playerGameStatsAverage.threePointPercentage * 100
                   ).toFixed(1)}
                 />
                 <ShootingStatCard
                   label="2P"
-                  made={playerGameStatsAverage.two_pointers_made_per_game.toFixed(
-                    1
+                  made={playerGameStatsAverage.twoPointersMadePerGame.toFixed(
+                    1,
                   )}
-                  attempts={playerGameStatsAverage.two_point_attempts_per_game.toFixed(
-                    1
+                  attempts={playerGameStatsAverage.twoPointAttemptsPerGame.toFixed(
+                    1,
                   )}
                   percentage={(
-                    playerGameStatsAverage.two_point_percentage * 100
+                    playerGameStatsAverage.twoPointPercentage * 100
                   ).toFixed(1)}
                 />
                 <ShootingStatCard
                   label="FT"
-                  made={playerGameStatsAverage.free_throws_made_per_game.toFixed(
-                    1
-                  )}
-                  attempts={playerGameStatsAverage.free_throw_attempts_per_game.toFixed(
-                    1
+                  made={playerGameStatsAverage.freeThrowsMadePerGame.toFixed(1)}
+                  attempts={playerGameStatsAverage.freeThrowAttemptsPerGame.toFixed(
+                    1,
                   )}
                   percentage={(
-                    playerGameStatsAverage.free_throw_percentage * 100
+                    playerGameStatsAverage.freeThrowPercentage * 100
                   ).toFixed(1)}
                 />
               </div>
@@ -283,19 +279,19 @@ function RouteComponent() {
         <div className="grid grid-cols-4 divide-x">
           <StatCard
             label="PPG"
-            value={playerGameStatsAverage.points_per_game.toFixed(1)}
+            value={playerGameStatsAverage.pointsPerGame.toFixed(1)}
           />
           <StatCard
             label="RPG"
-            value={playerGameStatsAverage.rebounds_per_game.toFixed(1)}
+            value={playerGameStatsAverage.reboundsPerGame.toFixed(1)}
           />
           <StatCard
             label="APG"
-            value={playerGameStatsAverage.assists_per_game.toFixed(1)}
+            value={playerGameStatsAverage.assistsPerGame.toFixed(1)}
           />
           <StatCard
             label="Games"
-            value={playerGameStatsAverage.games_played.toString()}
+            value={playerGameStatsAverage.gamesPlayed.toString()}
           />
         </div>
       </div>

@@ -1,16 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { format, isAfter, isBefore, isSameDay, parseISO } from "date-fns";
+import { format, isAfter, isBefore, isSameDay } from "date-fns";
 import { ArrowUpDown, ExternalLink, PlayCircle } from "lucide-react";
-import { Game } from "~/src/types/game";
 import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
 import { convert24to12 } from "~/lib/utils/date";
+import { Game } from "~/src/types/game";
 import { ButtonLink } from "../button-link";
 
 export const columns: ColumnDef<Game>[] = [
   {
-    accessorKey: "game_date",
+    accessorKey: "gameDate",
     meta: {
       className: "text-center",
     },
@@ -26,7 +26,7 @@ export const columns: ColumnDef<Game>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = parseISO(row.getValue("game_date"));
+      const date = row.getValue("gameDate") as Date;
       return (
         <div className="text-center">
           <div className="font-medium">{format(date, "MM.dd")}</div>
@@ -39,7 +39,7 @@ export const columns: ColumnDef<Game>[] = [
     sortingFn: "datetime",
   },
   {
-    accessorKey: "start_time",
+    accessorKey: "startTime",
     header: "Time",
     meta: {
       className: "text-center",
@@ -48,7 +48,7 @@ export const columns: ColumnDef<Game>[] = [
       return (
         <div className="text-center">
           <div className="font-medium">
-            {convert24to12(row.getValue("start_time"))}
+            {convert24to12(row.getValue("startTime") as string)}
           </div>
         </div>
       );
@@ -82,33 +82,31 @@ export const columns: ColumnDef<Game>[] = [
     },
     cell: ({ row }) => {
       const game = row.original;
-      const isCompleted = game.is_completed;
-      const homeWon =
-        isCompleted && game.home_team_score > game.away_team_score;
-      const awayWon =
-        isCompleted && game.away_team_score > game.home_team_score;
+      const isCompleted = game.isCompleted;
+      const homeWon = isCompleted && game.homeTeamScore > game.awayTeamScore;
+      const awayWon = isCompleted && game.awayTeamScore > game.homeTeamScore;
 
       return (
         <div className="flex items-center justify-items-center gap-2 w-full px-6 py-2">
           <div className="flex flex-col items-end gap-2 min-w-[130px]">
             <Link
               to={`/teams/$teamId`}
-              params={{ teamId: game.home_team_id }}
+              params={{ teamId: game.homeTeamId }}
               className="flex items-center gap-2 hover:underline"
             >
               <span
                 className={`font-medium text-right ${homeWon ? "font-bold text-blue-600" : ""}`}
               >
-                {game.home_team_name}
+                {game.homeTeamName}
               </span>
-              {game.home_team_logo ? (
+              {game.homeTeamLogo ? (
                 <img
                   src={
-                    game.home_team_name === "TBD"
+                    game.homeTeamName === "TBD"
                       ? "/team_logos/ccbc_logo.png"
-                      : `/team_logos/${game.home_team_logo}`
+                      : `/team_logos/${game.homeTeamLogo}`
                   }
-                  alt={`${game.home_team_name} logo`}
+                  alt={`${game.homeTeamName} logo`}
                   className="h-8 w-8"
                 />
               ) : (
@@ -121,11 +119,11 @@ export const columns: ColumnDef<Game>[] = [
             <div className="flex flex-col items-center justify-center min-w-[70px]">
               <div className="flex items-center justify-center gap-1 text-xl font-bold">
                 <span className={homeWon ? "text-blue-600" : ""}>
-                  {game.home_team_score}
+                  {game.homeTeamScore}
                 </span>
                 <span>:</span>
                 <span className={awayWon ? "text-blue-600" : ""}>
-                  {game.away_team_score}
+                  {game.awayTeamScore}
                 </span>
               </div>
               <Badge variant="outline" className="mt-1">
@@ -141,17 +139,17 @@ export const columns: ColumnDef<Game>[] = [
           <div className="flex flex-col items-start gap-2 min-w-[130px]">
             <Link
               to={`/teams/$teamId`}
-              params={{ teamId: game.away_team_id }}
+              params={{ teamId: game.awayTeamId }}
               className="flex items-center gap-2 hover:underline"
             >
-              {game.away_team_logo ? (
+              {game.awayTeamLogo ? (
                 <img
                   src={
-                    game.away_team_name === "TBD"
+                    game.awayTeamName === "TBD"
                       ? "/team_logos/ccbc_logo.png"
-                      : `/team_logos/${game.away_team_logo}`
+                      : `/team_logos/${game.awayTeamLogo}`
                   }
-                  alt={`${game.away_team_name} logo`}
+                  alt={`${game.awayTeamName} logo`}
                   className="h-8 w-8"
                 />
               ) : (
@@ -160,7 +158,7 @@ export const columns: ColumnDef<Game>[] = [
               <span
                 className={`font-medium text-left ${awayWon ? "font-bold text-blue-600" : ""}`}
               >
-                {game.away_team_name}
+                {game.awayTeamName}
               </span>
             </Link>
           </div>
@@ -177,7 +175,7 @@ export const columns: ColumnDef<Game>[] = [
     cell: ({ row }) => {
       const game = row.original;
 
-      if (game.is_completed) {
+      if (game.isCompleted) {
         return (
           <Badge
             variant="outline"
@@ -188,13 +186,11 @@ export const columns: ColumnDef<Game>[] = [
         );
       }
 
-      const gameDate = parseISO(game.game_date);
       const today = new Date();
 
-      if (isSameDay(gameDate, today)) {
-        // Check if game is happening now
-        const [hours, minutes] = game.start_time.split(":");
-        const gameTime = new Date(gameDate);
+      if (isSameDay(game.gameDate, today)) {
+        const [hours, minutes] = game.startTime.split(":");
+        const gameTime = new Date(game.gameDate);
         gameTime.setHours(parseInt(hours), parseInt(minutes));
 
         const twoHoursLater = new Date(gameTime);
@@ -211,7 +207,7 @@ export const columns: ColumnDef<Game>[] = [
         return <Badge className="bg-blue-600 hover:bg-blue-700">Today</Badge>;
       }
 
-      if (isBefore(gameDate, today)) {
+      if (isBefore(game.gameDate, today)) {
         return (
           <Badge
             variant="outline"
@@ -237,7 +233,7 @@ export const columns: ColumnDef<Game>[] = [
           <ButtonLink
             variant="outline"
             to="/games/$gameId"
-            search={{section: ""}}
+            search={{ section: "" }}
             params={{ gameId: game.id }}
             className="w-24 flex gap-1 items-center justify-center"
           >

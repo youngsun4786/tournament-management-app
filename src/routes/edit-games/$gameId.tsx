@@ -35,7 +35,7 @@ function RouteComponent() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">
-        {gameInfo.home_team_name} vs {gameInfo.away_team_name}
+        {gameInfo.homeTeamName} vs {gameInfo.awayTeamName}
       </h1>
 
       <div className="grid grid-cols-1 gap-6">

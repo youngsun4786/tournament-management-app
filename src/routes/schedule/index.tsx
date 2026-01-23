@@ -5,7 +5,6 @@ import {
   isSameDay,
   isSameMonth,
   isSameYear,
-  parseISO,
   setMonth,
 } from "date-fns";
 import {
@@ -16,8 +15,6 @@ import {
   List,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Game } from "~/src/types/game";
-import { getGames } from "~/src/controllers/game.api";
 import { CalendarView } from "~/lib/components/schedules/calendar-view";
 import { columns } from "~/lib/components/schedules/columns";
 import { DataTable } from "~/lib/components/schedules/data-table";
@@ -31,6 +28,8 @@ import {
   SelectValue,
 } from "~/lib/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "~/lib/components/ui/tabs";
+import { getGames } from "~/src/controllers/game.api";
+import { Game } from "~/src/types/game";
 // Define filter status type
 type StatusFilterType = "all" | "upcoming" | "completed" | "live";
 type GameTypeFilter = "all" | "regular" | "playoff";
@@ -60,9 +59,9 @@ function RouteComponent() {
   const teams = [
     ...new Set(
       games!.flatMap((game) => [
-        { id: game.home_team_id, name: game.home_team_name },
-        { id: game.away_team_id, name: game.away_team_name },
-      ])
+        { id: game.homeTeamId, name: game.homeTeamName || "Unknown" },
+        { id: game.awayTeamId, name: game.awayTeamName || "Unknown" },
+      ]),
     ),
   ].reduce(
     (unique, team) => {
@@ -72,7 +71,7 @@ function RouteComponent() {
       }
       return unique;
     },
-    [] as { id: string; name: string }[]
+    [] as { id: string; name: string }[],
   );
 
   // Sort teams alphabetically
@@ -110,7 +109,7 @@ function RouteComponent() {
 
   // Filter games based on selected filters
   const filteredGames = games!.filter((game) => {
-    const gameDate = parseISO(game.game_date);
+    const gameDate = new Date(game.gameDate);
 
     // Today Only filter (higher priority)
     if (showTodayOnly) {
@@ -125,14 +124,12 @@ function RouteComponent() {
     }
 
     // Status filter
-    if (statusFilter === "upcoming" && game.is_completed) return false;
-    if (statusFilter === "completed" && !game.is_completed) return false;
+    if (statusFilter === "upcoming" && game.isCompleted) return false;
+    if (statusFilter === "completed" && !game.isCompleted) return false;
 
     // Team filter
     if (teamFilter !== "all") {
-      return (
-        game.home_team_id === teamFilter || game.away_team_id === teamFilter
-      );
+      return game.homeTeamId === teamFilter || game.awayTeamId === teamFilter;
     }
 
     return true;

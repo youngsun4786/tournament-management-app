@@ -1,6 +1,4 @@
 import React from "react";
-import { Game } from "~/src/types/game";
-import { TeamGameStatsWithTeam } from "~/src/types/team-game-stats";
 import {
   GlossaryItem,
   StatsGlossary,
@@ -11,6 +9,8 @@ import {
   TableCell,
   TableRow,
 } from "~/lib/components/ui/table";
+import { Game } from "~/src/types/game";
+import { TeamGameStatsWithTeam } from "~/src/types/team-game-stats";
 
 interface StatAverages {
   gp: number;
@@ -36,7 +36,7 @@ interface StatAverages {
   stl: string;
   blk: string;
   pf: string;
-  plus_minus: string;
+  plusMinus: string;
 }
 
 interface StatsBreakdown {
@@ -88,29 +88,29 @@ export const TeamOverallStatsTable = ({
   const validStats = teamStats.filter((stat) => {
     // Only include stats that have a corresponding game and the game_id is not null
     return (
-      stat.game_id !== null &&
-      typeof stat.game_id === "string" &&
-      gamesById[stat.game_id]
+      stat.gameId !== null &&
+      typeof stat.gameId === "string" &&
+      gamesById[stat.gameId]
     );
   });
 
   validStats.forEach((stat) => {
     // We already filtered out null game_ids
-    const gameId = stat.game_id as string;
+    const gameId = stat.gameId as string;
     const game = gamesById[gameId];
     if (!game) return;
 
     // Home or Away
-    if (game.home_team_id === teamId) {
+    if (game.homeTeamId === teamId) {
       homeGames.push(stat);
     } else {
       awayGames.push(stat);
     }
 
     // Win or Loss - use actual game score comparison
-    const isHome = game.home_team_id === teamId;
-    const teamScore = isHome ? game.home_team_score : game.away_team_score;
-    const opponentScore = isHome ? game.away_team_score : game.home_team_score;
+    const isHome = game.homeTeamId === teamId;
+    const teamScore = isHome ? game.homeTeamScore : game.awayTeamScore;
+    const opponentScore = isHome ? game.awayTeamScore : game.homeTeamScore;
 
     if (teamScore > opponentScore) {
       winGames.push(stat);
@@ -120,7 +120,7 @@ export const TeamOverallStatsTable = ({
     // Note: We don't handle ties here as they're uncommon in basketball
 
     // Month grouping
-    const date = new Date(game.game_date);
+    const date = new Date(game.gameDate);
     const month = date.toLocaleString("default", { month: "long" });
     if (!monthlyGames[month]) {
       monthlyGames[month] = [];
@@ -132,7 +132,7 @@ export const TeamOverallStatsTable = ({
   const calculateAverages = (
     stats: TeamGameStatsWithTeam[],
     wins = 0,
-    losses = 0
+    losses = 0,
   ): StatAverages => {
     if (!stats || stats.length === 0) {
       return {
@@ -159,7 +159,7 @@ export const TeamOverallStatsTable = ({
         stl: "0.0",
         blk: "0.0",
         pf: "0.0",
-        plus_minus: "0.0",
+        plusMinus: "0.0",
       };
     }
 
@@ -180,41 +180,39 @@ export const TeamOverallStatsTable = ({
       stl: 0,
       blk: 0,
       pf: 0,
-      plus_minus: 0,
+      plusMinus: 0,
     };
 
     stats.forEach((stat) => {
       // Assuming a standard game length if minutes played is not available
       totals.min += 48; // Standard game length
       totals.pts += stat.points || 0;
-      totals.fgm += stat.field_goals_made || 0;
-      totals.fga += stat.field_goals_attempted || 0;
-      totals.tpm += stat.three_pointers_made || 0;
-      totals.tpa += stat.three_pointers_attempted || 0;
-      totals.ftm += stat.free_throws_made || 0;
-      totals.fta += stat.free_throws_attempted || 0;
-      totals.oreb += stat.offensive_rebounds || 0;
-      totals.dreb += stat.defensive_rebounds || 0;
-      totals.reb += stat.total_rebounds || 0;
+      totals.fgm += stat.fieldGoalsMade || 0;
+      totals.fga += stat.fieldGoalsAttempted || 0;
+      totals.tpm += stat.threePointersMade || 0;
+      totals.tpa += stat.threePointersAttempted || 0;
+      totals.ftm += stat.freeThrowsMade || 0;
+      totals.fta += stat.freeThrowsAttempted || 0;
+      totals.oreb += stat.offensiveRebounds || 0;
+      totals.dreb += stat.defensiveRebounds || 0;
+      totals.reb += stat.totalRebounds || 0;
       totals.ast += stat.assists || 0;
       totals.tov += stat.turnovers || 0;
       totals.stl += stat.steals || 0;
       totals.blk += stat.blocks || 0;
-      totals.pf += stat.team_fouls || 0;
+      totals.pf += stat.teamFouls || 0;
 
       // Calculate plus/minus using game data
       if (
-        stat.game_id &&
-        typeof stat.game_id === "string" &&
-        gamesById[stat.game_id]
+        stat.gameId &&
+        typeof stat.gameId === "string" &&
+        gamesById[stat.gameId]
       ) {
-        const game = gamesById[stat.game_id];
-        const isHome = game.home_team_id === teamId;
-        const teamScore = isHome ? game.home_team_score : game.away_team_score;
-        const opponentScore = isHome
-          ? game.away_team_score
-          : game.home_team_score;
-        totals.plus_minus += teamScore - opponentScore;
+        const game = gamesById[stat.gameId];
+        const isHome = game.homeTeamId === teamId;
+        const teamScore = isHome ? game.homeTeamScore : game.awayTeamScore;
+        const opponentScore = isHome ? game.awayTeamScore : game.homeTeamScore;
+        totals.plusMinus += teamScore - opponentScore;
       }
     });
 
@@ -248,7 +246,7 @@ export const TeamOverallStatsTable = ({
       stl: (totals.stl / count).toFixed(1),
       blk: (totals.blk / count).toFixed(1),
       pf: (totals.pf / count).toFixed(1),
-      plus_minus: (totals.plus_minus / count).toFixed(1),
+      plusMinus: (totals.plusMinus / count).toFixed(1),
     };
   };
 
@@ -260,7 +258,7 @@ export const TeamOverallStatsTable = ({
         ? calculateAverages(
             homeGames,
             homeGames.filter((stat) => winGames.includes(stat)).length,
-            homeGames.filter((stat) => lossGames.includes(stat)).length
+            homeGames.filter((stat) => lossGames.includes(stat)).length,
           )
         : null,
     away:
@@ -268,7 +266,7 @@ export const TeamOverallStatsTable = ({
         ? calculateAverages(
             awayGames,
             awayGames.filter((stat) => winGames.includes(stat)).length,
-            awayGames.filter((stat) => lossGames.includes(stat)).length
+            awayGames.filter((stat) => lossGames.includes(stat)).length,
           )
         : null,
     wins:
@@ -287,7 +285,7 @@ export const TeamOverallStatsTable = ({
     statsBreakdown.months[month] = calculateAverages(
       monthStats,
       monthStats.filter((stat) => winGames.includes(stat)).length,
-      monthStats.filter((stat) => lossGames.includes(stat)).length
+      monthStats.filter((stat) => lossGames.includes(stat)).length,
     );
   });
 
@@ -316,7 +314,7 @@ export const TeamOverallStatsTable = ({
     { key: "stl", label: "STL" },
     { key: "blk", label: "BLK" },
     { key: "pf", label: "PF" },
-    { key: "plus_minus", label: "+/-" },
+    { key: "plusMinus", label: "+/-" },
   ];
 
   // Convert columns to GlossaryItems for the tooltip
@@ -442,8 +440,8 @@ export const TeamOverallStatsTable = ({
                             parseFloat(
                               r.stats[
                                 column.key as keyof StatAverages
-                              ] as string
-                            )
+                              ] as string,
+                            ),
                           )
                           .filter((v) => !isNaN(v));
 
