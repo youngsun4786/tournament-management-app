@@ -1,5 +1,5 @@
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouteContext } from "@tanstack/react-router";
 import { CarouselSpacing } from "~/lib/components/carousel-spacing";
 import { TeamOverallStatsTable } from "~/lib/components/stats/team-overall-stats-table";
 import {
@@ -26,39 +26,27 @@ import {
   TableRow,
 } from "~/lib/components/ui/table";
 import {
-  gameQueries,
   playerGameStatsQueries,
   playerQueries,
   teamGameStatsQueries,
-  teamQueries,
 } from "~/src/queries";
-import { Game } from "~/src/types/game";
 import { Player } from "~/src/types/player";
 import { PlayerGameStatsAverage } from "~/src/types/player-game-stats";
-import { Team } from "~/src/types/team";
 import { TeamGameStatsWithTeam } from "~/src/types/team-game-stats";
 
 export const Route = createFileRoute("/teams/$teamId")({
   beforeLoad: async ({ params, context }) => {
-    // Pre-fetch data
-    const team = await context.queryClient.ensureQueryData(
-      teamQueries.getTeamById(params.teamId),
-    );
-
     // Pre-fetch team players and stats
     await context.queryClient.ensureQueryData(
-      playerQueries.teamPlayers(team!.id),
+      playerQueries.teamPlayers(params.teamId!),
     );
 
     await context.queryClient.ensureQueryData(
-      teamGameStatsQueries.teamStats(team!.id),
+      teamGameStatsQueries.teamStats(params.teamId!),
     );
 
-    // Pre-fetch all games for the team
-    await context.queryClient.ensureQueryData(gameQueries.teamGames(team!.id));
-
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.playerGameStatsAveragesByTeam(team!.id),
+      playerGameStatsQueries.playerGameStatsAveragesByTeam(params.teamId!),
     );
   },
   component: RouteComponent,
@@ -80,26 +68,24 @@ interface StatLeader {
 
 function RouteComponent() {
   const { teamId } = Route.useParams();
-  const [
-    teamQuery,
-    playerQuery,
-    teamStatsQuery,
-    gamesQuery,
-    playerGameStatsAveragesQuery,
-  ] = useSuspenseQueries({
-    queries: [
-      teamQueries.getTeamById(teamId),
-      playerQueries.teamPlayers(teamId),
-      teamGameStatsQueries.teamStats(teamId),
-      gameQueries.teamGames(teamId),
-      playerGameStatsQueries.playerGameStatsAveragesByTeam(teamId),
-    ],
-  });
+  const [playerQuery, teamStatsQuery, playerGameStatsAveragesQuery] =
+    useSuspenseQueries({
+      queries: [
+        playerQueries.teamPlayers(teamId),
+        teamGameStatsQueries.teamStats(teamId),
+        playerGameStatsQueries.playerGameStatsAveragesByTeam(teamId),
+      ],
+    });
+  const { teams: teamInfo } = useRouteContext({ from: "__root__" });
+  const { games: gameInfo } = useRouteContext({ from: "__root__" });
 
-  const team = teamQuery.data as Team;
+  const team = teamInfo.find((t) => t.id === teamId)!;
+  const games = gameInfo.filter(
+    (g) => g.homeTeamId === teamId || g.awayTeamId === teamId,
+  );
+
   const players = playerQuery.data as Player[];
   const teamStats = teamStatsQuery.data as TeamGameStatsWithTeam[];
-  const games = gamesQuery.data as Game[];
   const playerGameStatsAverages =
     playerGameStatsAveragesQuery.data as PlayerGameStatsAverage[];
 
@@ -224,7 +210,6 @@ function RouteComponent() {
         </div>
 
         {/* Row 2: Captain & Team Image Grid */}
-        {/* Row 2: Captain & Team Image Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
           {/* Captain Card (Takes 1 col) */}
           {captain ? (
@@ -292,7 +277,7 @@ function RouteComponent() {
             <div
               className={`lg:col-span-2 relative rounded-2xl overflow-hidden shadow-xl group h-[350px]`}
             >
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
+              <div className="absolute inset-0 transition-colors z-10" />
               <img
                 src={team.imageUrl}
                 alt={`${team.name} Team Photo`}

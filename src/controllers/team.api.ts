@@ -85,7 +85,7 @@ export const updateTeam = createServerFn({ method: "POST" })
         wins: z.number().optional(),
         losses: z.number().optional(),
       }),
-    })
+    }),
   )
   .handler(async ({ data }) => {
     const { teamId, data: teamData } = data;

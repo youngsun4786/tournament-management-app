@@ -87,12 +87,12 @@ export const Navbar = () => {
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-3 rounded-md shadow-lg bg-white dark:bg-slate-800">
                     {teams.map((team) => (
-                      <li key={team.name}>
+                      <li key={team.id}>
                         <NavigationMenuItem asChild>
                           <Link
                             to={`/teams/$teamId`}
                             params={{ teamId: team.id }}
-                            preload="intent"
+                            preload={'intent'}
                             className="flex items-center text-center gap-3 p-3 w-full rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
                           >
                             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
