@@ -1,8 +1,13 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { getTeam } from "~/src/controllers/team.api";
-import { useAuthenticatedUser, useGetPlayersByTeamId } from "~/src/queries";
 import { Layout } from "~/lib/components/layout";
 import { EditPlayersSection } from "~/lib/components/players/edit-players-section";
+import { getTeam } from "~/src/controllers/team.api";
+import {
+  teamQueries,
+  useAuthenticatedUser,
+  useGetPlayersByTeamId,
+} from "~/src/queries";
 
 export const Route = createFileRoute("/edit-teams/$teamId")({
   component: EditTeamByIdPage,
@@ -28,7 +33,11 @@ export const Route = createFileRoute("/edit-teams/$teamId")({
 });
 
 function EditTeamByIdPage() {
-  const { teamId, team } = Route.useLoaderData();
+  const { teamId, team: initialTeam } = Route.useLoaderData();
+  const { data: team } = useSuspenseQuery({
+    ...teamQueries.getTeamById(teamId),
+    initialData: initialTeam,
+  });
   const {
     data: { user },
   } = useAuthenticatedUser();

@@ -80,6 +80,7 @@ export const updateTeam = createServerFn({ method: "POST" })
       data: z.object({
         name: z.string().optional(),
         logoUrl: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional(),
         seasonId: z.string().uuid().nullable().optional(),
         wins: z.number().optional(),
         losses: z.number().optional(),

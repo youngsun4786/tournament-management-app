@@ -42,23 +42,23 @@ export const Route = createFileRoute("/teams/$teamId")({
   beforeLoad: async ({ params, context }) => {
     // Pre-fetch data
     const team = await context.queryClient.ensureQueryData(
-      teamQueries.getTeamById(params.teamId)
+      teamQueries.getTeamById(params.teamId),
     );
 
     // Pre-fetch team players and stats
     await context.queryClient.ensureQueryData(
-      playerQueries.teamPlayers(team!.id)
+      playerQueries.teamPlayers(team!.id),
     );
 
     await context.queryClient.ensureQueryData(
-      teamGameStatsQueries.teamStats(team!.id)
+      teamGameStatsQueries.teamStats(team!.id),
     );
 
     // Pre-fetch all games for the team
     await context.queryClient.ensureQueryData(gameQueries.teamGames(team!.id));
 
     await context.queryClient.ensureQueryData(
-      playerGameStatsQueries.playerGameStatsAveragesByTeam(team!.id)
+      playerGameStatsQueries.playerGameStatsAveragesByTeam(team!.id),
     );
   },
   component: RouteComponent,
@@ -120,9 +120,7 @@ function RouteComponent() {
       if (game) {
         const isHome = game.homeTeamId === teamId;
         const teamScore = isHome ? game.homeTeamScore : game.awayTeamScore;
-        const opponentScore = isHome
-          ? game.awayTeamScore
-          : game.homeTeamScore;
+        const opponentScore = isHome ? game.awayTeamScore : game.homeTeamScore;
 
         if (teamScore > opponentScore) {
           groupedStats.wins.push(stat);
@@ -194,25 +192,118 @@ function RouteComponent() {
       ? (statCategories as GlossaryItem[])
       : [];
 
+  // Find the captain
+  const captain = players?.find((p) => p.isCaptain);
+
   return (
     <div className="">
-      <div className="max-w-7xl p-8 mx-auto flex items-center gap-6 mb-4">
-        <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-md">
-          <img
-            src={
-              team.logoUrl && team.logoUrl.startsWith("http")
-                ? team.logoUrl
-                : team.logoUrl
-                  ? `/team_logos/${team.logoUrl}`
-                  : ""
-            }
-            alt={`${team.name} logo`}
-            className="w-full h-full object-contain p-2"
-          />
+      <div className="max-w-7xl px-8 pt-8 mx-auto space-y-8">
+        {/* Row 1: Team Header (Logo + Name) */}
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-white shadow-xl ring-4 ring-white/50 shrink-0">
+            <img
+              src={
+                team.logoUrl && team.logoUrl.startsWith("http")
+                  ? team.logoUrl
+                  : team.logoUrl
+                    ? `/team_logos/${team.logoUrl}`
+                    : ""
+              }
+              alt={`${team.name} logo`}
+              className="w-full h-full object-contain p-2"
+            />
+          </div>
+          <div className="text-center md:text-left space-y-1">
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              {team.name}
+            </h1>
+            <p className="text-lg text-muted-foreground font-medium">
+              Est. {team.createdAt.getFullYear()}
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-3xl font-bold">{team.name}</h1>
-          <p className="text-gray-500 dark:text-gray-400">Est. 2023</p>
+
+        {/* Row 2: Captain & Team Image Grid */}
+        {/* Row 2: Captain & Team Image Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+          {/* Captain Card (Takes 1 col) */}
+          {captain ? (
+            <div className="lg:col-span-1 h-[350px]">
+              <div className="relative group overflow-hidden rounded-2xl shadow-2xl transition-all hover:shadow-3xl h-full flex flex-col">
+                {/* Background Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-400 to-red-600 z-0" />
+
+                {/* Captain Content */}
+                <div className="relative z-10 w-full h-full">
+                  {/* Player Cutout - Centered/Bottom */}
+                  <div className="absolute inset-0 flex items-end justify-center pb-20 z-10 pointer-events-none">
+                    <div className="relative w-full h-full flex items-end justify-center max-w-[280px] transition-transform group-hover:scale-105 duration-300">
+                      {captain.playerUrl ? (
+                        <img
+                          src={captain.playerUrl}
+                          alt={captain.name}
+                          className="w-full h-full object-cover object-top mask-image-gradient"
+                          style={{
+                            maskImage:
+                              "linear-gradient(to bottom, black 80%, transparent 100%)",
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-white/10 text-6xl font-bold text-white/20 rounded-t-xl mb-4">
+                          {captain.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Info Overlay - Absolute Bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-5 text-white">
+                    <div className="flex flex-col gap-3">
+                      <div>
+                        <h3 className="text-xs uppercase tracking-widest font-semibold text-red-300 mb-1">
+                          Team Captain
+                        </h3>
+                        <h2 className="text-3xl font-bold leading-none truncate">
+                          {captain.name}
+                        </h2>
+                      </div>
+                      <Link
+                        to="/players/$playerId"
+                        params={{ playerId: captain.id }}
+                        className="w-full py-3 rounded-xl bg-white text-indigo-950 text-sm font-bold hover:bg-indigo-50 transition-colors uppercase tracking-wider text-center"
+                      >
+                        View Profile
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="lg:col-span-1 bg-muted/20 rounded-2xl border flex items-center justify-center h-[350px]">
+              <p className="text-muted-foreground font-medium">
+                No Captain Assigned
+              </p>
+            </div>
+          )}
+
+          {/* Team Image (Takes 2 cols) */}
+          {team.imageUrl ? (
+            <div
+              className={`lg:col-span-2 relative rounded-2xl overflow-hidden shadow-xl group h-[350px]`}
+            >
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
+              <img
+                src={team.imageUrl}
+                alt={`${team.name} Team Photo`}
+                className="w-full h-full object-cover transform decoration-transparent transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+          ) : (
+            <div className="lg:col-span-2 bg-muted/20 rounded-2xl border flex items-center justify-center h-[350px]">
+              <p className="text-muted-foreground font-medium">No Team Photo</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -224,8 +315,7 @@ function RouteComponent() {
           <CarouselSpacing
             isTeamInfo={true}
             filter={(game) =>
-              game.homeTeamName === team.name ||
-              game.awayTeamName === team.name
+              game.homeTeamName === team.name || game.awayTeamName === team.name
             }
           />
         </div>

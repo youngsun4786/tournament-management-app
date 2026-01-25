@@ -90,6 +90,10 @@ export const EditPlayersSection = ({
   const [teamLogoPreview, setTeamLogoPreview] = useState<string | null>(null);
   const [newTeamLogoFile, setNewTeamLogoFile] = useState<File | null>(null);
   const [isTeamLogoUploading, setIsTeamLogoUploading] = useState(false);
+  const teamPhotoInputRef = useRef<HTMLInputElement>(null);
+  const [teamPhotoPreview, setTeamPhotoPreview] = useState<string | null>(null);
+  const [newTeamPhotoFile, setNewTeamPhotoFile] = useState<File | null>(null);
+  const [isTeamPhotoUploading, setIsTeamPhotoUploading] = useState(false);
   const queryClient = useQueryClient();
 
   const updateTeamMutation = useMutation({
@@ -102,6 +106,19 @@ export const EditPlayersSection = ({
     },
     onError: (error) => {
       toast.error(`Failed to update team logo: ${error.message}`);
+    },
+  });
+
+  const updateTeamPhotoMutation = useMutation({
+    mutationFn: (data: Parameters<typeof updateTeam>[0]) => updateTeam(data),
+    onSuccess: () => {
+      toast.success("Team photo updated successfully");
+      queryClient.invalidateQueries(teamQueries.getTeamById(teamId));
+      setTeamPhotoPreview(null);
+      setNewTeamPhotoFile(null);
+    },
+    onError: (error) => {
+      toast.error(`Failed to update team photo: ${error.message}`);
     },
   });
 
@@ -169,6 +186,61 @@ export const EditPlayersSection = ({
       toast.error("Failed to upload team logo");
     } finally {
       setIsTeamLogoUploading(false);
+    }
+  };
+
+  const handleTeamPhotoChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    try {
+      const objectUrl = URL.createObjectURL(file);
+      setTeamPhotoPreview(objectUrl);
+      setNewTeamPhotoFile(file);
+    } catch (error) {
+      console.error("Error preparing team photo:", error);
+      toast.error("Failed to prepare image");
+    }
+  };
+
+  const handleTeamPhotoUpload = async () => {
+    if (!newTeamPhotoFile) return;
+
+    try {
+      setIsTeamPhotoUploading(true);
+      const uploadResult = await uploadImageToStorage({
+        file: newTeamPhotoFile,
+        bucket: "media-images",
+        folder: "teams",
+      });
+
+      if (uploadResult.error || !uploadResult.image_url) {
+        toast.error(`Failed to upload team photo: ${uploadResult.error}`);
+        return;
+      }
+
+      const imageUrl = uploadResult.image_url;
+
+      updateTeamPhotoMutation.mutate({
+        data: {
+          teamId,
+          data: {
+            imageUrl: imageUrl,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error uploading team photo:", error);
+      toast.error("Failed to upload team photo");
+    } finally {
+      setIsTeamPhotoUploading(false);
     }
   };
 
@@ -574,6 +646,71 @@ export const EditPlayersSection = ({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Team Photo Section */}
+      <div className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow mb-6">
+        <h2 className="font-bold text-xl mb-4">Team Photo</h2>
+        <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden group">
+          {teamPhotoPreview ? (
+            <img
+              src={teamPhotoPreview}
+              alt="Team Photo Preview"
+              className="w-full h-full object-cover"
+            />
+          ) : team?.imageUrl ? (
+            <img
+              src={team?.imageUrl}
+              alt="Team Photo"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <Upload className="h-12 w-12 mb-2" />
+              <span>Upload Team Photo</span>
+            </div>
+          )}
+
+          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="secondary"
+              onClick={() => teamPhotoInputRef.current?.click()}
+            >
+              <Upload className="mr-2 h-4 w-4" /> Change Photo
+            </Button>
+          </div>
+          <input
+            type="file"
+            ref={teamPhotoInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleTeamPhotoChange}
+          />
+        </div>
+        {newTeamPhotoFile && (
+          <div className="mt-4 flex gap-2">
+            <Button
+              onClick={handleTeamPhotoUpload}
+              disabled={isTeamPhotoUploading}
+            >
+              {isTeamPhotoUploading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <UploadCloud className="mr-2 h-4 w-4" />
+              )}
+              Save Photo
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setTeamPhotoPreview(null);
+                setNewTeamPhotoFile(null);
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Captain Section */}
