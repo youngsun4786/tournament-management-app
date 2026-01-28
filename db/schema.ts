@@ -63,6 +63,12 @@ export const games = pgTable.withRLS(
         onDelete: "restrict",
         onUpdate: "cascade",
       }),
+    seasonId: uuid("season_id")
+      .notNull()
+      .references(() => seasons.id, {
+        onDelete: "restrict",
+        onUpdate: "cascade",
+      }),
     homeTeamScore: integer("home_team_score").default(0).notNull(),
     awayTeamScore: integer("away_team_score").default(0).notNull(),
     gameDate: timestamp("game_date", { withTimezone: true }).notNull(),

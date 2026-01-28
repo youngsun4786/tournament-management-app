@@ -12,3 +12,15 @@ export const getSeasons = createServerFn({
     throw new Error("Failed to fetch seasons");
   }
 });
+
+export const getActiveSeason = createServerFn({
+  method: "GET",
+}).handler(async () => {
+  try {
+    const season = await seasonService.getActiveSeason();
+    return season;
+  } catch (error) {
+    console.error("Error fetching active season:", error);
+    throw new Error("Failed to fetch active season");
+  }
+});

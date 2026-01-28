@@ -172,11 +172,11 @@ export function DataTable<TData, TValue>({
               setCurrentPage(page);
             }}
           >
-            <SelectTrigger className="gap-1 w-[60px]">
+            <SelectTrigger className="gap -1 w-[60px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Array.from({ length: totalPages || 1 }, (_, i) => (
+              {Array.from({ length: totalPages || 0 }, (_, i) => (
                 <SelectItem key={i + 1} value={(i + 1).toString()}>
                   {i + 1}
                 </SelectItem>

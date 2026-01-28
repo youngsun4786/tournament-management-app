@@ -44,6 +44,7 @@ export class GameService implements IGameService {
 
     return {
       id: game.id,
+      seasonId: game.seasonId,
       gameDate: game.gameDate,
       startTime: game.startTime,
       location: game.location,
@@ -74,6 +75,7 @@ export class GameService implements IGameService {
     const gamesWithTeams = games.map((game) => {
       return {
         id: game.id,
+        seasonId: game.seasonId,
         gameDate: game.gameDate,
         startTime: game.startTime,
         location: game.location,
@@ -113,6 +115,7 @@ export class GameService implements IGameService {
     const gamesWithTeams = gamesList.map((game) => {
       return {
         id: game.id,
+        seasonId: game.seasonId,
         gameDate: game.gameDate,
         startTime: game.startTime,
         location: game.location,

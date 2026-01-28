@@ -3,6 +3,7 @@ import type { MakeOptional } from "~/lib/utils/make-optional-type";
 // Game type from API response
 export type Game = {
   id: string;
+  seasonId: string;
   gameDate: Date;
   startTime: string;
   location: string | null;

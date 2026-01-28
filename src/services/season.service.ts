@@ -1,8 +1,11 @@
+import { eq } from "drizzle-orm";
 import { db as drizzle_db } from "~/db";
+import { seasons } from "~/db/schema";
 import type { Season } from "~/src/types/season";
 
 export interface ISeasonService {
   getSeasons(): Promise<Season[]>;
+  getActiveSeason(): Promise<Season | null>;
 }
 
 export class SeasonService implements ISeasonService {
@@ -28,5 +31,25 @@ export class SeasonService implements ISeasonService {
     }));
 
     return formattedSeasons;
+  }
+
+  async getActiveSeason(): Promise<Season | null> {
+    const [seasonData] = await this.drizzle_db
+      .select()
+      .from(seasons)
+      .where(eq(seasons.isActive, true))
+      .limit(1);
+
+    if (!seasonData) {
+      return null;
+    }
+
+    return {
+      id: seasonData.id,
+      name: seasonData.name,
+      startDate: seasonData.startDate,
+      endDate: seasonData.endDate,
+      isActive: seasonData.isActive ?? false,
+    };
   }
 }
