@@ -108,7 +108,6 @@ export const PlayerStatsModal = ({
       formData.assists = Number(formData.assists);
       formData.steals = Number(formData.steals);
       formData.blocks = Number(formData.blocks);
-      formData.turnovers = Number(formData.turnovers);
       formData.personalFouls = Number(formData.personalFouls);
       formData.plusMinus = Number(formData.plusMinus);
 
@@ -144,7 +143,6 @@ export const PlayerStatsModal = ({
       assists: 0,
       steals: 0,
       blocks: 0,
-      turnovers: 0,
       personalFouls: 0,
       plusMinus: 0,
     } as PlayerStatsFormData,
@@ -200,7 +198,6 @@ export const PlayerStatsModal = ({
     { name: "assists" as const, label: "Assists" },
     { name: "steals" as const, label: "Steals" },
     { name: "blocks" as const, label: "Blocks" },
-    { name: "turnovers" as const, label: "Turnovers" },
   ];
 
   const columnThreeFields = [

@@ -244,7 +244,6 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
             assists: Number(row["Assists"] || 0),
             steals: Number(row["Steals"] || 0),
             blocks: Number(row["Blocks"] || 0),
-            turnovers: Number(row["Turnovers"] || 0),
             personalFouls: Number(row["Personal Fouls"] || 0),
             plusMinus: Number(row["Plus/Minus"] || 0),
             points:
@@ -491,9 +490,6 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                             </TableCell>
                             <TableCell className="text-center">
                               {stat.blocks}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {stat.turnovers}
                             </TableCell>
                             <TableCell className="text-center">
                               {stat.personalFouls}

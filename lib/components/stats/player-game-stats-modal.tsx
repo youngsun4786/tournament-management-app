@@ -200,7 +200,6 @@ export const PlayerGameStatsModal = ({
     { key: "assistsPerGame", label: "APG", align: "center" },
     { key: "stealsPerGame", label: "SPG", align: "center" },
     { key: "blocksPerGame", label: "BPG", align: "center" },
-    { key: "turnoversPerGame", label: "TOV", align: "center" },
   ];
 
   const totalHeaders = [
@@ -224,7 +223,6 @@ export const PlayerGameStatsModal = ({
     { key: "totalAssists", label: "AST", align: "center" },
     { key: "totalSteals", label: "STL", align: "center" },
     { key: "totalBlocks", label: "BLK", align: "center" },
-    { key: "totalTurnovers", label: "TOV", align: "center" },
   ];
 
   return (
@@ -335,9 +333,6 @@ export const PlayerGameStatsModal = ({
                       <TableCell className="text-center">
                         {formatDecimal(stat.blocksPerGame)}
                       </TableCell>
-                      <TableCell className="text-center">
-                        {formatDecimal(stat.turnoversPerGame)}
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -423,9 +418,6 @@ export const PlayerGameStatsModal = ({
                       </TableCell>
                       <TableCell className="text-center">
                         {formatDecimal(stat.totalBlocks)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {formatDecimal(stat.totalTurnovers)}
                       </TableCell>
                     </TableRow>
                   ))}

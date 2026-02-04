@@ -54,7 +54,7 @@ const sponsors = [
 
 export const Navbar = () => {
   const { teams: teamInfo } = useRouteContext({ from: "__root__" });
-  const teams = teamInfo!.filter((team) => team.name !== "TBD");
+  const teams = teamInfo!.filter((team) => (team.name !== "TBD") && (team.isActive));
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   return (

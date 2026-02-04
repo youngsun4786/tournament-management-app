@@ -98,7 +98,6 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
     { key: "assists", label: "AST" },
     { key: "steals", label: "STL" },
     { key: "blocks", label: "BLK" },
-    { key: "turnovers", label: "TOV" },
     { key: "teamFouls", label: "PF" },
   ];
 
@@ -120,7 +119,7 @@ export const TeamGameStatsTable = ({ gameId }: TeamGameStatsTableProps) => {
 
   const isHigherBetter = (key: string) => {
     // Fields where lower is better
-    return !["turnovers", "teamFouls"].includes(key);
+    return !["teamFouls"].includes(key);
   };
 
   const compareStats = (

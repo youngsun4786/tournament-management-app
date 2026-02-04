@@ -136,7 +136,6 @@ function RouteComponent() {
     { key: "freeThrowAttemptsPerGame", label: "FTA" },
     { key: "freeThrowsMadePerGame", label: "FTM" },
     { key: "freeThrowPercentage", label: "FT%" },
-    { key: "turnoversPerGame", label: "TPG" },
     { key: "personalFoulsPerGame", label: "PFPG" },
   ];
 

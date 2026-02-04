@@ -169,10 +169,6 @@ export const PlayerGameStatsGrid = () => {
     playerStatsAverage,
     "blocksPerGame",
   );
-  const turnoversAverageLeaders = getTopPlayersAverage(
-    playerStatsAverage,
-    "turnoversPerGame",
-  );
   const freeThrowsMadeAverageLeaders = getTopPlayersAverage(
     playerStatsAverage,
     "freeThrowsMadePerGame",
@@ -194,10 +190,6 @@ export const PlayerGameStatsGrid = () => {
   const assistsLeaders = getTopPlayersTotal(playerStatsTotals, "totalAssists");
   const stealsLeaders = getTopPlayersTotal(playerStatsTotals, "totalSteals");
   const blocksLeaders = getTopPlayersTotal(playerStatsTotals, "totalBlocks");
-  const turnoversLeaders = getTopPlayersTotal(
-    playerStatsTotals,
-    "totalTurnovers",
-  );
   const freeThrowsMadeLeaders = getTopPlayersTotal(
     playerStatsTotals,
     "totalFreeThrowsMade",
@@ -276,11 +268,6 @@ export const PlayerGameStatsGrid = () => {
               valueProp="blocksPerGame"
             />
             <StatsCard
-              title="TURNOVERS PER GAME"
-              data={turnoversAverageLeaders}
-              valueProp="turnoversPerGame"
-            />
-            <StatsCard
               title="FREE THROWS MADE PER GAME"
               data={freeThrowsMadeAverageLeaders}
               valueProp="freeThrowsMadePerGame"
@@ -324,11 +311,6 @@ export const PlayerGameStatsGrid = () => {
               title="TOTAL BLOCKS"
               data={blocksLeaders}
               valueProp="totalBlocks"
-            />
-            <StatsCard
-              title="TOTAL TURNOVERS"
-              data={turnoversLeaders}
-              valueProp="totalTurnovers"
             />
             <StatsCard
               title="TOTAL FREE THROWS MADE"

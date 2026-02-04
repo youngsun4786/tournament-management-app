@@ -71,7 +71,6 @@ export const PlayerGameStatsForm = ({
       formData.assists = Number(formData.assists);
       formData.steals = Number(formData.steals);
       formData.blocks = Number(formData.blocks);
-      formData.turnovers = Number(formData.turnovers);
       formData.personalFouls = Number(formData.personalFouls);
       formData.plusMinus = Number(formData.plusMinus);
 
@@ -118,7 +117,6 @@ export const PlayerGameStatsForm = ({
       assists: initialData?.assists ?? 0,
       steals: initialData?.steals ?? 0,
       blocks: initialData?.blocks ?? 0,
-      turnovers: initialData?.turnovers ?? 0,
       personalFouls: initialData?.personalFouls ?? 0,
       plusMinus: initialData?.plusMinus ?? 0,
     } as PlayerStatsFormData,
@@ -155,7 +153,6 @@ export const PlayerGameStatsForm = ({
     { name: "assists" as const, label: "Assists" },
     { name: "steals" as const, label: "Steals" },
     { name: "blocks" as const, label: "Blocks" },
-    { name: "turnovers" as const, label: "Turnovers" },
   ];
 
   const columnThreeFields = [

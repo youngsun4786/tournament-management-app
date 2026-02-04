@@ -23,7 +23,6 @@ export const TeamGameStatsSchema = z.object({
   assists: z.number().int(),
   steals: z.number().int(),
   blocks: z.number().int(),
-  turnovers: z.number().int(),
   teamFouls: z.number().int(),
   team: TeamSchema,
 });

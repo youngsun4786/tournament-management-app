@@ -66,7 +66,6 @@ export const PlayerGameStatsTable = ({
     { key: "assists", label: "AST", className: "text-center" },
     { key: "steals", label: "STL", className: "text-center" },
     { key: "blocks", label: "BLK", className: "text-center" },
-    { key: "turnovers", label: "TOV", className: "text-center" },
     { key: "personalFouls", label: "PF", className: "text-center" },
     { key: "plusMinus", label: "+/-", className: "text-center" },
   ];
@@ -207,9 +206,6 @@ export const PlayerGameStatsTable = ({
                             </TableCell>
                             <TableCell className="text-center">
                               {stat.blocks}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {stat.turnovers}
                             </TableCell>
                             <TableCell className="text-center">
                               {stat.personalFouls}

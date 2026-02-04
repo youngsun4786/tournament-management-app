@@ -71,9 +71,6 @@ export const StatsGlossary: React.FC<StatsGlossaryProps> = ({
       "FTA": "Free Throws Attempted",
       "FT%": "Free Throw Percentage",
 
-      // Other stats
-      "TOV": "Turnovers",
-      "TPG": "Turnovers Per Game",
       "PF": "Personal Fouls",
       "PFPG": "Personal Fouls Per Game",
       "MIN": "Minutes Played",

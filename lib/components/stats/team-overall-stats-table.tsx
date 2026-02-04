@@ -32,7 +32,6 @@ interface StatAverages {
   dreb: string;
   reb: string;
   ast: string;
-  tov: string;
   stl: string;
   blk: string;
   pf: string;
@@ -155,7 +154,6 @@ export const TeamOverallStatsTable = ({
         dreb: "0.0",
         reb: "0.0",
         ast: "0.0",
-        tov: "0.0",
         stl: "0.0",
         blk: "0.0",
         pf: "0.0",
@@ -176,7 +174,6 @@ export const TeamOverallStatsTable = ({
       dreb: 0,
       reb: 0,
       ast: 0,
-      tov: 0,
       stl: 0,
       blk: 0,
       pf: 0,
@@ -197,7 +194,6 @@ export const TeamOverallStatsTable = ({
       totals.dreb += stat.defensiveRebounds || 0;
       totals.reb += stat.totalRebounds || 0;
       totals.ast += stat.assists || 0;
-      totals.tov += stat.turnovers || 0;
       totals.stl += stat.steals || 0;
       totals.blk += stat.blocks || 0;
       totals.pf += stat.teamFouls || 0;
@@ -242,7 +238,6 @@ export const TeamOverallStatsTable = ({
       dreb: (totals.dreb / count).toFixed(1),
       reb: (totals.reb / count).toFixed(1),
       ast: (totals.ast / count).toFixed(1),
-      tov: (totals.tov / count).toFixed(1),
       stl: (totals.stl / count).toFixed(1),
       blk: (totals.blk / count).toFixed(1),
       pf: (totals.pf / count).toFixed(1),
@@ -310,7 +305,6 @@ export const TeamOverallStatsTable = ({
     { key: "dreb", label: "DREB" },
     { key: "reb", label: "REB" },
     { key: "ast", label: "AST" },
-    { key: "tov", label: "TOV" },
     { key: "stl", label: "STL" },
     { key: "blk", label: "BLK" },
     { key: "pf", label: "PF" },
@@ -325,7 +319,7 @@ export const TeamOverallStatsTable = ({
 
   // Helper for determining if a stat should be higher or lower
   const isHigherBetter = (key: string) => {
-    return !["tov", "pf", "l"].includes(key);
+    return !["pf", "l"].includes(key);
   };
 
   // Sort months chronologically
