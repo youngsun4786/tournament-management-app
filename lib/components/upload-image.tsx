@@ -22,7 +22,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { convertBlobUrlToFile } from "~/lib/utils";
+import { convertBlobUrlToFile } from "~/lib/utils/index";
 
 type UploadImageProps = {
   folderType: "avatars" | "gallery" | "players" | "games" | "users";
@@ -39,7 +39,11 @@ const formSchema = z.object({
   folder: z.enum(["avatars", "gallery", "players", "games", "users"]),
 });
 
-export function UploadImage({ folderType, handleUpload, setPreviewUrls }: UploadImageProps) {
+export function UploadImage({
+  folderType,
+  handleUpload,
+  setPreviewUrls,
+}: UploadImageProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -107,9 +111,7 @@ export function UploadImage({ folderType, handleUpload, setPreviewUrls }: Upload
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Upload New Image</CardTitle>
-        <CardDescription>
-          Upload images to the gallery
-        </CardDescription>
+        <CardDescription>Upload images to the gallery</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
@@ -158,11 +160,7 @@ export function UploadImage({ folderType, handleUpload, setPreviewUrls }: Upload
                 )}
               />
             )}
-            <Button
-              type="submit"
-              disabled={uploading}
-              className="w-full mt-2"
-            >
+            <Button type="submit" disabled={uploading} className="w-full mt-2">
               {uploading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

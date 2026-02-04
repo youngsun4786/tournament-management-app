@@ -46,7 +46,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
-import { convertBlobUrlToFile } from "~/lib/utils";
+import { convertBlobUrlToFile } from "~/lib/utils/index";
 import {
   createPlayer,
   deletePlayer,
@@ -56,7 +56,7 @@ import { updateTeam } from "~/src/controllers/team.api";
 import { playerQueries, teamQueries } from "~/src/queries";
 import { Player } from "~/src/types/player";
 import { Team } from "~/src/types/team";
-import { uploadImageToStorage } from "~/supabase/storage/client";
+import { uploadFileToStorage } from "~/supabase/storage/client";
 
 interface EditPlayersSectionProps {
   teamId: string;
@@ -148,7 +148,7 @@ export const EditPlayersSection = ({
 
     try {
       setIsTeamLogoUploading(true);
-      const uploadResult = await uploadImageToStorage({
+      const uploadResult = await uploadFileToStorage({
         file: newTeamLogoFile,
         bucket: "media-images",
         folder: "teams",
@@ -215,7 +215,7 @@ export const EditPlayersSection = ({
 
     try {
       setIsTeamPhotoUploading(true);
-      const uploadResult = await uploadImageToStorage({
+      const uploadResult = await uploadFileToStorage({
         file: newTeamPhotoFile,
         bucket: "media-images",
         folder: "teams",
@@ -450,7 +450,7 @@ export const EditPlayersSection = ({
 
     try {
       setIsUploading(true);
-      const uploadResult = await uploadImageToStorage({
+      const uploadResult = await uploadFileToStorage({
         file: newAvatarFile,
         bucket: "media-images",
         folder: "players",
@@ -903,6 +903,7 @@ export const EditPlayersSection = ({
                     <Input id="weight" name="weight" placeholder="e.g. 70kg" />
                   </div>
                 </div>
+
                 <DialogFooter>
                   <Button
                     type="submit"
@@ -1009,7 +1010,7 @@ export const EditPlayersSection = ({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4">
+                  <TableCell colSpan={7} className="text-center py-4">
                     No players found. Add your first player to get started.
                   </TableCell>
                 </TableRow>

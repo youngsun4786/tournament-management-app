@@ -10,25 +10,33 @@ export function getStorageClient() {
 type UploadImageProps = {
   file: File;
   bucket: string;
-  folder?: "avatars" | "gallery" | "players" | "games" | "users" | "teams";
+  folder?: "avatars" | "gallery" | "players" | "games" | "users" | "teams" | "players/waivers";
 };
 
-export async function uploadImageToStorage({
+// Re-export specific upload function or rename generic?
+// Let's make a generic one and keep the old one for backward compatibility if needed, OR refactor it.
+// The file is named `client.ts` but the function is `uploadImageToStorage`.
+// I'll add `uploadFileToStorage` and update `uploadImageToStorage` to use it or behave similarly.
+
+export async function uploadFileToStorage({
   file,
   bucket,
   folder,
 }: UploadImageProps) {
   const fileName = file.name;
-  const fileExtension = fileName.slice(fileName.lastIndexOf(".") + 1);
+  const fileExtension = fileName.split(".").pop();
   const path = `${folder ? folder + "/" : ""}${uuidv4()}.${fileExtension}`;
 
-  try {
-    file = await imageCompression(file, {
-      maxSizeMB: 1,
-    });
-  } catch (error) {
-    console.error(error);
-    return { image_url: "", image_id: "", error: "Failed to compress image" };
+  // Only compress images
+  if (file.type.startsWith("image/")) {
+    try {
+      file = await imageCompression(file, {
+        maxSizeMB: 1,
+      });
+    } catch (error) {
+      console.error(error);
+      return { image_url: "", image_id: "", error: "Failed to compress image" };
+    }
   }
 
   const storage = getStorageClient();
@@ -36,9 +44,13 @@ export async function uploadImageToStorage({
 
   if (error) {
     console.error(error);
-    return { image_url: "", image_id: "", error: "Failed to upload image" };
+    return { image_url: "", image_id: "", error: "Failed to upload file" };
   }
 
   const image_url = `${import.meta.env.VITE_SUPABASE_URL!}/storage/v1/object/public/${bucket}/${data?.path}`;
+  // keeping 'image_url' key for compatibility but it's really a file_url
   return { image_url: image_url, image_id: data?.id, error: null };
 }
+
+// Alias for backward compatibility if needed, or just replace functionality
+export { uploadFileToStorage as uploadImageToStorage };

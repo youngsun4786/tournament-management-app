@@ -47,6 +47,7 @@ export const updatePlayer = createServerFn({
         position: data.position,
         teamId: data.teamId,
         playerUrl: data.playerUrl,
+        waiverUrl: data.waiverUrl,
       });
       return player;
     } catch (error) {

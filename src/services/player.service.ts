@@ -37,8 +37,6 @@ export class PlayerService implements IPlayerService {
       .select()
       .single();
 
-
-
     if (!player || error) {
       throw new Error("Failed to create player", { cause: error });
     }
@@ -55,6 +53,7 @@ export class PlayerService implements IPlayerService {
       weight: player.weight,
       position: player.position,
       playerUrl: player.player_url,
+      waiverUrl: player.waiver_url,
       isCaptain: player.is_captain ?? false,
     };
   }
@@ -69,6 +68,7 @@ export class PlayerService implements IPlayerService {
         weight: data.weight,
         position: data.position,
         player_url: data.playerUrl,
+        waiver_url: data.waiverUrl,
       })
       .eq("id", data.id)
       .select()
@@ -86,6 +86,7 @@ export class PlayerService implements IPlayerService {
       weight: player.weight,
       position: player.position,
       playerUrl: player.player_url,
+      waiverUrl: player.waiver_url,
       isCaptain: player.is_captain ?? false,
     };
   }
@@ -110,6 +111,7 @@ export class PlayerService implements IPlayerService {
       weight: player.weight,
       position: player.position,
       playerUrl: player.player_url,
+      waiverUrl: player.waiver_url,
       isCaptain: player.is_captain ?? false,
     };
   }
@@ -136,6 +138,7 @@ export class PlayerService implements IPlayerService {
         weight: player.weight,
         position: player.position,
         playerUrl: player.playerUrl,
+        waiverUrl: player.waiverUrl,
         isCaptain: player.isCaptain,
       };
     });
@@ -168,6 +171,7 @@ export class PlayerService implements IPlayerService {
       weight: player.weight,
       position: player.position,
       playerUrl: player.playerUrl,
+      waiverUrl: player.waiverUrl,
       isCaptain: player.isCaptain,
     };
   }
@@ -197,6 +201,7 @@ export class PlayerService implements IPlayerService {
         weight: player.weight,
         position: player.position,
         playerUrl: player.playerUrl,
+        waiverUrl: player.waiverUrl,
         isCaptain: player.isCaptain,
       };
     });

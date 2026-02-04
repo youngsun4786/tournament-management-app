@@ -10,6 +10,7 @@ export type Player = {
   weight: string | null;
   position: string | null;
   playerUrl: string | null;
+  waiverUrl: string | null;
   isCaptain: boolean;
 };
 
@@ -22,6 +23,7 @@ export type PlayerInsert = MakeOptional<
   | "weight"
   | "position"
   | "playerUrl"
+  | "waiverUrl"
   | "isCaptain"
 >;
 export type PlayerUpdate = Partial<Player>;

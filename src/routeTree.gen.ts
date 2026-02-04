@@ -19,6 +19,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WaiversIndexRouteImport } from './routes/waivers/index'
 import { Route as StatsIndexRouteImport } from './routes/stats/index'
 import { Route as StandingsIndexRouteImport } from './routes/standings/index'
 import { Route as ScheduleIndexRouteImport } from './routes/schedule/index'
@@ -82,6 +83,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaiversIndexRoute = WaiversIndexRouteImport.update({
+  id: '/waivers/',
+  path: '/waivers/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatsIndexRoute = StatsIndexRouteImport.update({
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
   '/stats': typeof StatsIndexRoute
+  '/waivers': typeof WaiversIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByTo {
   '/schedule': typeof ScheduleIndexRoute
   '/standings': typeof StandingsIndexRoute
   '/stats': typeof StatsIndexRoute
+  '/waivers': typeof WaiversIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/schedule/': typeof ScheduleIndexRoute
   '/standings/': typeof StandingsIndexRoute
   '/stats/': typeof StatsIndexRoute
+  '/waivers/': typeof WaiversIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/standings'
     | '/stats'
+    | '/waivers'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/standings'
     | '/stats'
+    | '/waivers'
   id:
     | '__root__'
     | '/'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/schedule/'
     | '/standings/'
     | '/stats/'
+    | '/waivers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -340,6 +352,7 @@ export interface RootRouteChildren {
   ScheduleIndexRoute: typeof ScheduleIndexRoute
   StandingsIndexRoute: typeof StandingsIndexRoute
   StatsIndexRoute: typeof StatsIndexRoute
+  WaiversIndexRoute: typeof WaiversIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -412,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/waivers/': {
+      id: '/waivers/'
+      path: '/waivers'
+      fullPath: '/waivers'
+      preLoaderRoute: typeof WaiversIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stats/': {
@@ -540,6 +560,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScheduleIndexRoute: ScheduleIndexRoute,
   StandingsIndexRoute: StandingsIndexRoute,
   StatsIndexRoute: StatsIndexRoute,
+  WaiversIndexRoute: WaiversIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,8 +3,6 @@ import { createLink, useNavigate, useRouter } from "@tanstack/react-router";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { signOut } from "~/src/controllers/auth.api";
-import { useAuthenticatedUser } from "~/src/queries";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/lib/components/ui/dropdown-menu";
+import { signOut } from "~/src/controllers/auth.api";
+import { useAuthenticatedUser } from "~/src/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
@@ -79,6 +79,9 @@ export function UserMenu() {
             <DropdownMenuSeparator />
             <ItemLink className="cursor-pointer" to="/edit-teams">
               Edit Teams
+            </ItemLink>
+            <ItemLink className="cursor-pointer" to="/waivers">
+              Waiver Forms
             </ItemLink>
           </>
         )}

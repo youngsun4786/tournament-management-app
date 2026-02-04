@@ -244,6 +244,7 @@ export const players = pgTable.withRLS(
     ),
     playerUrl: text("player_url"),
     isCaptain: boolean("is_captain").default(false).notNull(),
+    waiverUrl: text("waiver_url"),
   },
   (table) => [
     pgPolicy("Allow captain to insert players", {
