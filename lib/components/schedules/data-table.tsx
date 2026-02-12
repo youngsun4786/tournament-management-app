@@ -34,11 +34,13 @@ import { Badge } from "../ui/badge";
 interface DataTableProps<TData, TValue> {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
+  renderMobileItem?: (item: TData) => React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   data,
   columns,
+  renderMobileItem,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "gameDate", desc: false },
@@ -77,43 +79,63 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="flex items-center py-4 gap-4">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col md:flex-row md:items-center py-4 gap-4">
+        <div className="relative w-full md:flex-1 md:max-w-sm">
           <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search games..."
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            className="pl-9 max-w-sm"
+            className="pl-9 w-full"
           />
         </div>
-        <Select
-          value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value));
-          }}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Show" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="5">Show 5</SelectItem>
-            <SelectItem value="10">Show 10</SelectItem>
-            <SelectItem value="20">Show 20</SelectItem>
-            <SelectItem value="50">Show 50</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center justify-between gap-4 w-full md:w-auto">
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Show" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">Show 5</SelectItem>
+              <SelectItem value="10">Show 10</SelectItem>
+              <SelectItem value="20">Show 20</SelectItem>
+              <SelectItem value="50">Show 50</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <div className="text-sm text-muted-foreground">
-          Showing
-          <Badge variant="outline" className="mx-1 font-mono">
-            {table.getFilteredRowModel().rows.length}
-          </Badge>
-          results
+          <div className="text-sm text-muted-foreground whitespace-nowrap">
+            Showing
+            <Badge variant="outline" className="mx-1 font-mono">
+              {table.getFilteredRowModel().rows.length}
+            </Badge>
+            results
+          </div>
         </div>
       </div>
 
-      <div className="rounded-md border overflow-hidden">
+      {renderMobileItem && (
+        <div className="md:hidden flex flex-col gap-4">
+          {table.getRowModel().rows?.length ? (
+            table
+              .getRowModel()
+              .rows.map((row) => (
+                <div key={row.id}>{renderMobileItem(row.original)}</div>
+              ))
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No results found.
+            </div>
+          )}
+        </div>
+      )}
+
+      <div
+        className={`rounded-md border overflow-hidden ${renderMobileItem ? "hidden md:block" : ""}`}
+      >
         <div className="overflow-x-auto">
           <Table className="min-w-full">
             <TableHeader>
@@ -130,7 +152,7 @@ export function DataTable<TData, TValue>({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -150,7 +172,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id} className="text-center p-2">
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

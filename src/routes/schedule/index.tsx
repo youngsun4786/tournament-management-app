@@ -19,6 +19,7 @@ import { CalendarView } from "~/lib/components/schedules/calendar-view";
 import { columns } from "~/lib/components/schedules/columns";
 import { DataTable } from "~/lib/components/schedules/data-table";
 import { Button } from "~/lib/components/ui/button";
+
 import { Card } from "~/lib/components/ui/card";
 import {
   Select,
@@ -30,6 +31,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "~/lib/components/ui/tabs";
 import { getGames } from "~/src/controllers/game.api";
 import { Game } from "~/src/types/game";
+import { ButtonLink } from "~/lib/components/button-link";
 // Define filter status type
 type StatusFilterType = "all" | "upcoming" | "completed" | "live";
 type GameTypeFilter = "all" | "regular" | "playoff";
@@ -259,13 +261,185 @@ function RouteComponent() {
         </div>
 
         {viewMode === "list" ? (
-          <DataTable columns={columns} data={filteredGames as Game[]} />
+          <DataTable
+            columns={columns}
+            data={filteredGames as Game[]}
+            renderMobileItem={(game) => <GameCard game={game} />}
+          />
         ) : (
           <CalendarView
             games={filteredGames as Game[]}
             currentDate={currentDate}
           />
         )}
+      </div>
+    </div>
+  );
+}
+
+function GameCard({ game }: { game: Game }) {
+  const isCompleted = game.isCompleted;
+  const homeWon = isCompleted && game.homeTeamScore > game.awayTeamScore;
+  const awayWon = isCompleted && game.awayTeamScore > game.homeTeamScore;
+
+  const today = new Date();
+  let statusBadge = (
+    <span className="inline-flex items-center rounded-full border border-transparent bg-green-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-green-700">
+      Upcoming
+    </span>
+  );
+
+  if (isCompleted) {
+    statusBadge = (
+      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 dark:border-green-800 dark:bg-green-900 dark:text-green-100">
+        Completed
+      </span>
+    );
+  } else if (isSameDay(game.gameDate, today)) {
+    const [hours, minutes] = game.startTime.split(":");
+    const gameTime = new Date(game.gameDate);
+    gameTime.setHours(parseInt(hours), parseInt(minutes));
+
+    const twoHoursLater = new Date(gameTime);
+    twoHoursLater.setHours(gameTime.getHours() + 2);
+
+    if (
+      (isSameDay(today, gameTime) &&
+        today.getHours() >= gameTime.getHours() &&
+        today.getMinutes() >= gameTime.getMinutes()) ||
+      (isSameDay(today, gameTime) &&
+        today.getHours() > gameTime.getHours() &&
+        today.getHours() < twoHoursLater.getHours())
+    ) {
+      statusBadge = (
+        <span className="inline-flex animate-pulse items-center rounded-full border border-transparent bg-red-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-red-700">
+          Live
+        </span>
+      );
+    } else {
+      statusBadge = (
+        <span className="inline-flex items-center rounded-full border border-transparent bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-blue-700">
+          Today
+        </span>
+      );
+    }
+  }
+
+  return (
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="flex flex-col p-4">
+        {/* Header: Date, Time, Status */}
+        <div className="mb-4 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="font-medium text-foreground">
+              {format(new Date(game.gameDate), "MM.dd")}
+            </span>
+            <span>{format(new Date(game.gameDate), "EEE")}</span>
+            <span>•</span>
+            <span>
+              {new Date(`2000-01-01T${game.startTime}`).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+          {statusBadge}
+        </div>
+
+        {/* Matchup */}
+        <div className="mb-4 flex flex-col gap-3">
+          {/* Home Team */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {game.homeTeamLogo ? (
+                <img
+                  src={
+                    game.homeTeamName === "TBD"
+                      ? "/team_logos/ccbc_logo.png"
+                      : `/team_logos/${game.homeTeamLogo}`
+                  }
+                  alt={game.homeTeamName || "Home Team"}
+                  className="h-8 w-8 object-contain"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-muted" />
+              )}
+              <span
+                className={`font-medium ${homeWon ? "font-bold text-blue-600" : ""}`}
+              >
+                {game.homeTeamName || "TBD"}
+              </span>
+            </div>
+            {isCompleted && (
+              <span
+                className={`text-lg font-semibold ${homeWon ? "text-blue-600" : ""}`}
+              >
+                {game.homeTeamScore}
+              </span>
+            )}
+          </div>
+
+          {/* Away Team */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {game.awayTeamLogo ? (
+                <img
+                  src={
+                    game.awayTeamName === "TBD"
+                      ? "/team_logos/ccbc_logo.png"
+                      : `/team_logos/${game.awayTeamLogo}`
+                  }
+                  alt={game.awayTeamName || "Away Team"}
+                  className="h-8 w-8 object-contain"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-muted" />
+              )}
+              <span
+                className={`font-medium ${awayWon ? "font-bold text-blue-600" : ""}`}
+              >
+                {game.awayTeamName || "TBD"}
+              </span>
+            </div>
+            {isCompleted && (
+              <span
+                className={`text-lg font-semibold ${awayWon ? "text-blue-600" : ""}`}
+              >
+                {game.awayTeamScore}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Footer: Venue & Actions */}
+        <div className="flex items-center justify-between border-t pt-3">
+          <div className="flex flex-col text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">{game.location}</span>
+            {game.court && <span>{game.court}</span>}
+          </div>
+          <div className="flex gap-2">
+            <ButtonLink
+              to="/games/$gameId"
+              params={{ gameId: game.id }}
+              search={{ section: "" }}
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs"
+            >
+              Details
+            </ButtonLink>
+            <ButtonLink
+              to="/games/$gameId"
+              params={{ gameId: game.id }}
+              search={{ section: "video-section" }}
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs"
+            >
+              Highlights
+            </ButtonLink>
+          </div>
+        </div>
       </div>
     </div>
   );

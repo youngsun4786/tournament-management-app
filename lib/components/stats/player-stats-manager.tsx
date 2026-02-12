@@ -244,11 +244,14 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
             assists: Number(row["Assists"] || 0),
             steals: Number(row["Steals"] || 0),
             blocks: Number(row["Blocks"] || 0),
+            turnovers: Number(0),
             personalFouls: Number(row["Personal Fouls"] || 0),
             plusMinus: Number(row["Plus/Minus"] || 0),
             points:
               twoPointersMade * 2 + threePointersMade * 3 + freeThrowsMade,
           };
+
+          console.log(statsData);
 
           // Validate with zod schema
           const validatedData = PlayerGameStatsSchema.parse(statsData);
@@ -448,7 +451,6 @@ export const PlayerStatsManager = ({ gameId }: PlayerStatsManagerProps) => {
                           <TableHead className="text-center">AST</TableHead>
                           <TableHead className="text-center">STL</TableHead>
                           <TableHead className="text-center">BLK</TableHead>
-                          <TableHead className="text-center">TO</TableHead>
                           <TableHead className="text-center">PF</TableHead>
                           <TableHead className="text-center">+/-</TableHead>
                           <TableHead className="text-center">Actions</TableHead>

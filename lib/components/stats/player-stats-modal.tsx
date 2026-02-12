@@ -108,6 +108,7 @@ export const PlayerStatsModal = ({
       formData.assists = Number(formData.assists);
       formData.steals = Number(formData.steals);
       formData.blocks = Number(formData.blocks);
+      formData.turnovers = Number(formData.turnovers);
       formData.personalFouls = Number(formData.personalFouls);
       formData.plusMinus = Number(formData.plusMinus);
 
@@ -143,10 +144,12 @@ export const PlayerStatsModal = ({
       assists: 0,
       steals: 0,
       blocks: 0,
+      turnovers: 0,
       personalFouls: 0,
       plusMinus: 0,
     } as PlayerStatsFormData,
     onSubmit: async ({ value }) => {
+      value.turnovers = 0;
       if (!selectedPlayer) {
         toast.error("Please select a player");
         return;
