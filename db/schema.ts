@@ -149,7 +149,9 @@ export const playerGameStats = pgTable.withRLS(
       .default(sql`uuid_generate_v4()`)
       .primaryKey(),
     gameId: uuid("game_id").references(() => games.id),
-    playerId: uuid("player_id").references(() => players.id),
+    playerId: uuid("player_id").references(() => players.id, {
+      onDelete: "cascade",
+    }),
     minutesPlayed: integer("minutes_played").default(0),
     points: integer().default(0),
     fieldGoalsMade: integer("field_goals_made").default(0),
