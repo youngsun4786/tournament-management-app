@@ -1,6 +1,8 @@
 import { db as drizzle_db } from "~/db";
 import { getSupabaseServerClient } from "~/lib/utils/supabase-server";
 import { Player, PlayerInsert, PlayerUpdate } from "~/src/types/player";
+import { players } from "~/db/schema";
+import { eq } from "drizzle-orm";
 
 export interface IPlayerService {
   create(data: PlayerInsert): Promise<Player>;
@@ -92,27 +94,19 @@ export class PlayerService implements IPlayerService {
   }
 
   async delete(data: { playerId: Player["id"] }): Promise<Player> {
-    const { data: player, error } = await this.supabase
-      .from("players")
-      .delete()
-      .eq("id", data.playerId)
-      .select()
-      .single();
-    if (!player || error) {
-      throw new Error("Failed to delete player", { cause: error });
-    }
+    const player = await this.drizzle_db.delete(players).where(eq(players.id, data.playerId)).returning();
     return {
-      id: player.id,
-      teamId: player.team_id,
+      id: player[0].id,
+      teamId: player[0].teamId!,
       teamName: "",
-      name: player.name,
-      jerseyNumber: player.jersey_number,
-      height: player.height,
-      weight: player.weight,
-      position: player.position,
-      playerUrl: player.player_url,
-      waiverUrl: player.waiver_url,
-      isCaptain: player.is_captain ?? false,
+      name: player[0].name,
+      jerseyNumber: player[0].jerseyNumber,
+      height: player[0].height,
+      weight: player[0].weight,
+      position: player[0].position,
+      playerUrl: player[0].playerUrl,
+      waiverUrl: player[0].waiverUrl,
+      isCaptain: player[0].isCaptain ?? false,
     };
   }
 

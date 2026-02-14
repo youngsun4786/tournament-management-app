@@ -90,7 +90,7 @@ export const deletePlayerGameStats = createServerFn({
   )
   .handler(async ({ data }) => {
     try {
-      const stats = await playerGameStatsService.delete(data.id);
+    const stats = await playerGameStatsService.delete(data.id);
       return stats;
     } catch (error) {
       console.error("Error deleting player game stats:", error);
