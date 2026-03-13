@@ -3,7 +3,7 @@ import { Input } from '~/lib/components/ui/input'
 import { Label } from '~/lib/components/ui/label'
 import { Textarea } from '~/lib/components/ui/textarea'
 
-import { useAppForm } from '~/lib/hooks/form'
+import { useAppForm } from '~/lib/form'
 import { sendContactEmail } from '~/src/controllers/form.api'
 
 

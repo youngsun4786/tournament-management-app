@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
 import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
 import { playerGameStatsQueries, playerQueries } from "~/src/queries";
+import { PageLayout } from "~/lib/components/page-layout";
 import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
 
 // Register ChartJS components
@@ -143,7 +144,16 @@ function RouteComponent() {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
+    <PageLayout
+      title={player.name}
+      maxWidth="2xl"
+      breadcrumbs={[
+        { label: "Players", href: "/players" },
+        { label: player.name },
+      ]}
+      noPadding
+    >
+    <div className="px-4 py-8 bg-gray-50 min-h-screen">
       {/* Player Header Section */}
       <div className="bg-white rounded-2xl overflow-hidden shadow-md mb-8">
         <div className="bg-gradient-to-br from-rose-400 to-red-600 p-5">
@@ -303,6 +313,7 @@ function RouteComponent() {
         isPlayerProfile={true}
       />
     </div>
+    </PageLayout>
   );
 }
 

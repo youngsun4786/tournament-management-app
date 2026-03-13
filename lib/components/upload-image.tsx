@@ -1,4 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "lib/components/ui/button";
 import {
   Card,
@@ -7,21 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "lib/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "lib/components/ui/form";
 import { Input } from "lib/components/ui/input";
+import { Label } from "lib/components/ui/label";
 import { Textarea } from "lib/components/ui/textarea";
 import { Loader2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAppForm } from "~/lib/form";
 import { convertBlobUrlToFile } from "~/lib/utils/index";
 
 type UploadImageProps = {
@@ -34,7 +26,7 @@ export type UploadImageFormSchema = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
   files: z.array(z.instanceof(File)),
-  description: z.string().optional(),
+  description: z.string(),
   bucket: z.string(),
   folder: z.enum(["avatars", "gallery", "players", "games", "users"]),
 });
@@ -44,18 +36,53 @@ export function UploadImage({
   handleUpload,
   setPreviewUrls,
 }: UploadImageProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      files: [],
-      description: "",
-      bucket: "media-images",
-      folder: folderType,
-    },
-  });
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const form = useAppForm({
+    defaultValues: {
+      files: [] as File[],
+      description: "",
+      bucket: "media-images",
+      folder: folderType as "avatars" | "gallery" | "players" | "games" | "users",
+    },
+    validators: {
+      onSubmit: formSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setUploading(true);
+      try {
+        const files: File[] = [];
+        for (const url of imageUrls) {
+          const imageFile = await convertBlobUrlToFile(url);
+          files.push(imageFile);
+        }
+
+        // Pass data to parent component via handleUpload if provided
+        if (handleUpload) {
+          const formData = {
+            ...value,
+            files: files,
+          };
+          await handleUpload(formData);
+        }
+
+        // Clear form state
+        setImageUrls([]);
+        form.reset();
+        if (fileRef.current) {
+          fileRef.current.value = "";
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast.error("Failed to upload image");
+        return null;
+      } finally {
+        setUploading(false);
+      }
+    },
+  });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -69,41 +96,7 @@ export function UploadImage({
       }
 
       // Update form value for file field
-      form.setValue("files", filesArray);
-    }
-  };
-
-  const handleImageSubmit = async (data: z.infer<typeof formSchema>) => {
-    setUploading(true);
-    try {
-      const files: File[] = [];
-      for (const url of imageUrls) {
-        const imageFile = await convertBlobUrlToFile(url);
-        files.push(imageFile);
-      }
-
-      // Pass data to parent component via handleUpload if provided
-      if (handleUpload) {
-        // Set the uploadedUrls as the file property to be used by the parent component
-        const formData = {
-          ...data,
-          files: files,
-        };
-        await handleUpload(formData);
-      }
-
-      // Clear form state
-      setImageUrls([]);
-      form.reset();
-      if (fileRef.current) {
-        fileRef.current.value = "";
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error("Failed to upload image");
-      return null;
-    } finally {
-      setUploading(false);
+      form.setFieldValue("files", filesArray);
     }
   };
 
@@ -114,66 +107,65 @@ export function UploadImage({
         <CardDescription>Upload images to the gallery</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleImageSubmit)}
-            className="space-y-4"
-          >
-            <FormField
-              control={form.control}
-              name="files"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Select Image</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      multiple={folderType !== "avatars"}
-                      onChange={handleImageChange}
-                      className="cursor-pointer"
-                      disabled={uploading}
-                      ref={fileRef}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {folderType !== "avatars" && (
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description (optional)</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter image description"
-                        className="resize-none"
-                        disabled={uploading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+          className="space-y-4"
+        >
+          <form.Field name="files">
+            {(field) => (
+              <div>
+                <Label htmlFor={field.name}>Select Image</Label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  multiple={folderType !== "avatars"}
+                  onChange={handleImageChange}
+                  className="cursor-pointer"
+                  disabled={uploading}
+                  ref={fileRef}
+                />
+                {field.state.meta.errors.length > 0 && (
+                  <p className="text-destructive text-sm mt-1">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
                 )}
-              />
+              </div>
             )}
-            <Button type="submit" disabled={uploading} className="w-full mt-2">
-              {uploading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="mr-2 h-4 w-4" /> Upload Image
-                </>
+          </form.Field>
+          {folderType !== "avatars" && (
+            <form.Field name="description">
+              {(field) => (
+                <div>
+                  <Label htmlFor={field.name}>Description (optional)</Label>
+                  <Textarea
+                    id={field.name}
+                    placeholder="Enter image description"
+                    className="resize-none"
+                    disabled={uploading}
+                    value={field.state.value ?? ""}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </div>
               )}
-            </Button>
-          </form>
-        </Form>
+            </form.Field>
+          )}
+          <Button type="submit" disabled={uploading} className="w-full mt-2">
+            {uploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Upload className="mr-2 h-4 w-4" /> Upload Image
+              </>
+            )}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   );

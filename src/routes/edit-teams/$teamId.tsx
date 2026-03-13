@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Layout } from "~/lib/components/layout";
+import { PageLayout } from "~/lib/components/page-layout";
 import { EditPlayersSection } from "~/lib/components/players/edit-players-section";
 import { getTeam } from "~/src/controllers/team.api";
 import {
@@ -48,36 +48,41 @@ function EditTeamByIdPage() {
 
   if (isPlayersLoading) {
     return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center p-4">
-          <h1 className="text-3xl font-bold mb-4">Team Management</h1>
-          <p className="text-gray-600 mb-8">Loading...</p>
-        </div>
-      </Layout>
+      <PageLayout
+        title="Team Management"
+        breadcrumbs={[
+          { label: "Admin", href: "/admin" },
+          { label: "Team Management" },
+        ]}
+      >
+        <p className="text-gray-600">Loading...</p>
+      </PageLayout>
     );
   }
 
   return (
-    <Layout>
-      <div className="flex flex-col items-center p-4">
-        <div className="w-full max-w-6xl">
-          <EditPlayersSection
-            teamId={teamId}
-            team={team}
-            players={players}
-            isPlayersLoading={isPlayersLoading}
-            captain={
-              user.role === "captain"
-                ? {
-                    firstName: user.meta.firstName,
-                    lastName: user.meta.lastName,
-                  }
-                : undefined
-            }
-            showCaptainInfo={user.role === "captain"}
-          />
-        </div>
-      </div>
-    </Layout>
+    <PageLayout
+      title="Team Management"
+      breadcrumbs={[
+        { label: "Admin", href: "/admin" },
+        { label: team?.name || "Team Management" },
+      ]}
+    >
+      <EditPlayersSection
+        teamId={teamId}
+        team={team}
+        players={players}
+        isPlayersLoading={isPlayersLoading}
+        captain={
+          user.role === "captain"
+            ? {
+                firstName: user.meta.firstName,
+                lastName: user.meta.lastName,
+              }
+            : undefined
+        }
+        showCaptainInfo={user.role === "captain"}
+      />
+    </PageLayout>
   );
 }

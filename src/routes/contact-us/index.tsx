@@ -5,6 +5,7 @@ import { Label } from "lib/components/ui/label";
 import { Textarea } from "lib/components/ui/textarea";
 import { Send } from "lucide-react";
 import { useState } from "react";
+import { PageLayout } from "~/lib/components/page-layout";
 
 export const Route = createFileRoute("/contact-us/")({
   component: RouteComponent,
@@ -52,17 +53,11 @@ function RouteComponent() {
   };
 
   return (
-    <div className="container mx-auto py-12">
+    <PageLayout
+      title="Get in Touch"
+      subtitle="Have questions about joining CCBC or want to learn more? Fill out the form below and we'll get back to you as soon as possible."
+    >
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">
-            Get in Touch
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Have questions about joining CCBC or want to learn more? Fill out
-            the form below and we'll get back to you as soon as possible.
-          </p>
-        </div>
         <div className="max-w-md w-full mx-auto rounded-lg p-6 md:p-8 shadow-sm border bg-background">
           <div className="relative">
             <h2 className="text-center text-2xl font-bold tracking-tight mb-2">
@@ -141,6 +136,6 @@ function RouteComponent() {
           </form>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }

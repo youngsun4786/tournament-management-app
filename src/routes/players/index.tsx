@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { columns } from "~/lib/components/players/columns";
 import { DataTable } from "~/lib/components/players/data-table";
+import { PageLayout } from "~/lib/components/page-layout";
 import { playerQueries } from "~/src/queries";
 
 export const Route = createFileRoute("/players/")({
@@ -37,18 +38,13 @@ function RouteComponent() {
   );
 
   return (
-    <div>
-    <div className="container m-auto p-4">
-        <h1 className="text-2xl font-bold">Players</h1>
-      </div>
-      <div className="container m-auto p-4">
-        <DataTable
-          columns={columns}
-          data={players}
-          teams={teams}
-          positions={positions}
-        />
-      </div>
-    </div>
+    <PageLayout title="Players">
+      <DataTable
+        columns={columns}
+        data={players}
+        teams={teams}
+        positions={positions}
+      />
+    </PageLayout>
   );
 }

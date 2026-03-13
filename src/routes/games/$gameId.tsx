@@ -18,6 +18,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/lib/components/ui/tabs";
+import { PageLayout } from "~/lib/components/page-layout";
 import {
   gameQueries,
   mediaQueries,
@@ -68,7 +69,7 @@ function RouteComponent() {
   }, [section]);
 
   if (!gameInfo) {
-    return <div className="container mx-auto p-4">Game not found</div>;
+    return <PageLayout title="Game Not Found"><p>Game not found.</p></PageLayout>;
   }
 
   // Calculate top scorers from each team
@@ -107,7 +108,13 @@ function RouteComponent() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <PageLayout
+      title={`${gameInfo.homeTeamName} vs ${gameInfo.awayTeamName}`}
+      breadcrumbs={[
+        { label: "Schedule", href: "/schedule" },
+        { label: `${gameInfo.homeTeamName} vs ${gameInfo.awayTeamName}` },
+      ]}
+    >
       <div className="flex flex-col gap-8">
         {/* Game Score Card */}
         <Card className="w-full max-w-3xl mx-auto">
@@ -409,6 +416,6 @@ function RouteComponent() {
           )}
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }

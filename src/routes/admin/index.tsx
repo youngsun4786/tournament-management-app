@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useGetTeams } from "~/src/queries";
 import { CarouselManager } from "~/lib/components/admin/carousel-manager";
 import { ButtonLink } from "~/lib/components/button-link";
-import { Layout } from "~/lib/components/layout";
+import { PageLayout } from "~/lib/components/page-layout";
 import {
   Card,
   CardContent,
@@ -49,14 +49,11 @@ function AdminPage() {
   };
 
   return (
-    <Layout>
-      <div className="flex flex-col items-center justify-center p-4">
-        <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Welcome to the admin area. This page is only visible to admin users.
-        </p>
-
-        <div className="grid grid-cols-1 gap-8 w-full max-w-6xl">
+    <PageLayout
+      title="Admin Dashboard"
+      subtitle="Welcome to the admin area. This page is only visible to admin users."
+    >
+        <div className="grid grid-cols-1 gap-8 w-full">
           {/* Admin tools section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <Card className="w-full bg-white dark:bg-gray-800 shadow-md">
@@ -132,7 +129,6 @@ function AdminPage() {
             <CarouselManager />
           </div>
         </div>
-      </div>
-    </Layout>
+    </PageLayout>
   );
 }

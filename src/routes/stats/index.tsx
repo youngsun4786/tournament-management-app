@@ -1,18 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlayerGameStatsGrid } from "~/lib/components/stats/player-game-stats-grid";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/stats/")({
-  component: RouteComponent,
+  beforeLoad: () => {
+    throw redirect({ to: "/stats/leaders" });
+  },
 });
-
-function RouteComponent() {
-  return (
-    <div>
-      <div className="container m-auto p-4">
-        <div className="flex justify-center items-center">
-          <PlayerGameStatsGrid />
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -4,6 +4,7 @@ import {
   useRouteContext,
 } from "@tanstack/react-router";
 import { FinalScoreForm } from "~/lib/components/games/final-score-form";
+import { PageLayout } from "~/lib/components/page-layout";
 import { UploadVideoForm } from "~/lib/components/games/upload-video-form";
 import { PlayerStatsManager } from "~/lib/components/stats/player-stats-manager";
 
@@ -29,15 +30,17 @@ function RouteComponent() {
   const gameInfo = games.find((game) => game.id === gameId);
 
   if (!gameInfo) {
-    return <div className="container mx-auto p-4">Game not found</div>;
+    return <PageLayout title="Game Not Found"><p>Game not found.</p></PageLayout>;
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">
-        {gameInfo.homeTeamName} vs {gameInfo.awayTeamName}
-      </h1>
-
+    <PageLayout
+      title={`${gameInfo.homeTeamName} vs ${gameInfo.awayTeamName}`}
+      breadcrumbs={[
+        { label: "Edit Games", href: "/edit-games" },
+        { label: `${gameInfo.homeTeamName} vs ${gameInfo.awayTeamName}` },
+      ]}
+    >
       <div className="grid grid-cols-1 gap-6">
         <div className="flex flex-col gap-4 pb-10">
           <PlayerStatsManager gameId={gameId} />
@@ -47,6 +50,6 @@ function RouteComponent() {
           <UploadVideoForm game={gameInfo} />
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }

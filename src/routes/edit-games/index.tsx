@@ -8,6 +8,7 @@ import { format, isAfter, isBefore, isSameDay } from "date-fns";
 import { ArrowUpDown, Edit } from "lucide-react";
 import { useState } from "react";
 import { ButtonLink } from "~/lib/components/button-link";
+import { PageLayout } from "~/lib/components/page-layout";
 import { DataTable } from "~/lib/components/schedules/data-table";
 import { Badge } from "~/lib/components/ui/badge";
 import { Button } from "~/lib/components/ui/button";
@@ -65,9 +66,13 @@ function RouteComponent() {
   });
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Player Stats</h1>
-
+    <PageLayout
+      title="Edit Player Stats"
+      breadcrumbs={[
+        { label: "Admin", href: "/admin" },
+        { label: "Edit Player Stats" },
+      ]}
+    >
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex gap-4">
           <Select value={selectedTeam} onValueChange={setSelectedTeam}>
@@ -105,7 +110,7 @@ function RouteComponent() {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <DataTable columns={columns} data={filteredGames} />
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

@@ -1,41 +1,22 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { addVideo } from "~/src/controllers/media.api";
 import { mediaQueries } from "~/src/queries";
 import { Game } from "~/src/types/game";
-import { Button } from "~/lib/components/ui/button";
+import { useAppForm } from "~/lib/form";
+import { FormField } from "~/lib/components/form/form-field";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "~/lib/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/lib/components/ui/form";
-import { Input } from "~/lib/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/lib/components/ui/select";
-import { Textarea } from "~/lib/components/ui/textarea";
 
 const formSchema = z.object({
   youtube_url: z.string().url("Please enter a valid YouTube URL"),
   quarter: z.number().int().min(1).max(4),
-  description: z.string().optional(),
+  description: z.string(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -46,15 +27,6 @@ type UploadVideoFormProps = {
 
 export function UploadVideoForm({ game }: UploadVideoFormProps) {
   const queryClient = useQueryClient();
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      youtube_url: "",
-      quarter: 1,
-      description: "",
-    },
-  });
 
   const mutation = useMutation({
     mutationFn: (values: FormValues) => {
@@ -74,14 +46,24 @@ export function UploadVideoForm({ game }: UploadVideoFormProps) {
     },
     onError: (error) => {
       toast.error(
-        `Failed to upload video: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Failed to upload video: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     },
   });
 
-  async function onSubmit(data: FormValues) {
-    await mutation.mutateAsync(data);
-  }
+  const form = useAppForm({
+    defaultValues: {
+      youtube_url: "",
+      quarter: 1 as number,
+      description: "",
+    },
+    validators: {
+      onSubmit: formSchema,
+    },
+    onSubmit: async ({ value }) => {
+      await mutation.mutateAsync(value);
+    },
+  });
 
   return (
     <Card className="w-full max-w-lg">
@@ -89,85 +71,62 @@ export function UploadVideoForm({ game }: UploadVideoFormProps) {
         <CardTitle>Upload Game Video</CardTitle>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="youtube_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>YouTube URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://www.youtube.com/watch?v=..."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Enter the full YouTube video URL
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form
+          className="space-y-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
+          <form.AppField
+            name="youtube_url"
+            children={(field) => (
+              <FormField
+                id="youtube_url"
+                label="YouTube URL"
+                field={field}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className=""
+              />
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="quarter"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quarter</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange(Number(value))}
-                    defaultValue={field.value?.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select quarter" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="1">1st</SelectItem>
-                      <SelectItem value="2">2nd</SelectItem>
-                      <SelectItem value="3">3rd</SelectItem>
-                      <SelectItem value="4">4th</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    Which quarter of the game does this video cover?
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form.AppField
+            name="quarter"
+            children={(field) => (
+              <field.SelectField
+                label="Quarter"
+                type="number"
+                options={[
+                  { value: 1, label: "1st" },
+                  { value: 2, label: "2nd" },
+                  { value: 3, label: "3rd" },
+                  { value: 4, label: "4th" },
+                ]}
+              />
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Add notes about this video..."
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form.AppField
+            name="description"
+            children={(field) => (
+              <FormField
+                id="description"
+                label="Description (Optional)"
+                field={field}
+                text_type="textarea"
+                placeholder="Add notes about this video..."
+                className="resize-none"
+              />
+            )}
+          />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? "Uploading..." : "Upload Video"}
-            </Button>
-          </form>
-        </Form>
+          <div className="w-full">
+            <form.AppForm>
+              <form.SubmitButton label="Upload Video" />
+            </form.AppForm>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

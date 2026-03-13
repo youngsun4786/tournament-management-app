@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageLayout } from "~/lib/components/page-layout";
 
 export const Route = createFileRoute("/title-sponsor-3")({
   component: RouteComponent,
@@ -6,8 +7,8 @@ export const Route = createFileRoute("/title-sponsor-3")({
 
 function RouteComponent() {
   return (
-    <div className="container m-auto p-8 bg-white/50 backdrop-blur-sm rounded-xl shadow-sm mt-4">
-      {/* Top Section: Logo + Name */}
+    <PageLayout title="Rundle Dental & Chinook Village Dental">
+      <div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-sm p-8">
       {/* Top Section: Logos + Names */}
       <div className="flex flex-col xl:flex-row items-center justify-between gap-8 mb-8">
         {/* Rundle Dental */}
@@ -107,6 +108,7 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PageLayout>
   );
 }

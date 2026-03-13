@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageLayout } from "~/lib/components/page-layout";
 
 export const Route = createFileRoute("/organizers/")({
   component: OrganizersPage,
@@ -31,10 +32,7 @@ function OrganizersPage() {
   ];
 
   return (
-    <div className="container mx-auto py-12 px-4">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-medium mb-6">Organizers</h1>
-
+    <PageLayout title="Organizers">
         <div className="w-16 h-1 bg-rose-500 mb-12"></div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
@@ -66,7 +64,6 @@ function OrganizersPage() {
             </div>
           ))}
         </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }

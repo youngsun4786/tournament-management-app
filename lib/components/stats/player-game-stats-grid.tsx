@@ -7,10 +7,8 @@ import type {
   PlayerGameStatsAverage,
   PlayerGameStatsTotal,
 } from "~/src/types/player-game-stats";
-import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { PlayerGameStatsModal } from "./player-game-stats-modal";
 
 // Define a type that matches what the API is actually returning
 type PlayerStatsAverageResponse = Omit<PlayerGameStatsAverage, "player"> & {
@@ -51,28 +49,35 @@ const StatsCard = <T extends PlayerStatsCommon>({
             className="flex justify-between items-center py-1"
           >
             <div className="flex items-center">
-              <span className="text-sm mr-2 font-medium">{index + 1}.</span>
+              <span
+                className={`text-sm mr-2 font-medium ${index === 0 ? "text-league-gold" : ""}`}
+              >
+                {index + 1}.
+              </span>
               {stat.player?.id ? (
                 <Link
-                  className="hover:underline"
+                  className={`hover:underline ${index === 0 ? "text-league-gold font-bold" : "font-medium"}`}
                   to="/players/$playerId"
                   params={{ playerId: stat.player.id }}
                 >
-                  <span className="font-medium">
-                    {stat.player?.name || "Unknown Player"}
-                  </span>
+                  {stat.player?.name || "Unknown Player"}
                 </Link>
               ) : (
-                <span className="font-medium">
+                <span
+                  className={
+                    index === 0 ? "text-league-gold font-bold" : "font-medium"
+                  }
+                >
                   {stat.player?.name || "Unknown Player"}
                 </span>
               )}
-              <span className="text-xs text-gray-500 ml-2">
-                {stat.player?.teamName &&
-                  `(${stat.player.teamName.substring(0, 3).toUpperCase()})`}
-              </span>
+              {stat.player?.teamName && (
+                <span className="text-xs text-muted-foreground ml-2 rounded bg-muted px-1.5 py-0.5">
+                  {stat.player.teamName.substring(0, 3).toUpperCase()}
+                </span>
+              )}
             </div>
-            <div className="font-semibold">
+            <div className="font-semibold font-mono tabular-nums">
               {valueFormatter(stat[valueProp] as number)}
             </div>
           </div>
@@ -208,22 +213,6 @@ export const PlayerGameStatsGrid = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">PLAYERS</h2>
-        <PlayerGameStatsModal
-          playerStatsAverage={playerStatsAverage}
-          playerStatsTotals={playerStatsTotals}
-          trigger={
-            <Button
-              variant="outline"
-              className="text-blue-600 hover:text-blue-800"
-            >
-              See All Player Stats
-            </Button>
-          }
-        />
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full">
           <TabsTrigger value="season" className="flex-1">

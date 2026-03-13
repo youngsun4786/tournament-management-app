@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PageLayout } from "~/lib/components/page-layout";
 
 export const Route = createFileRoute("/about")({
   component: RouteComponent,
@@ -6,9 +7,8 @@ export const Route = createFileRoute("/about")({
 
 function RouteComponent() {
   return (
-    <div>
-      <div className="container m-auto p-4"></div>
+    <PageLayout title="About">
       <div className="flex justify-center items-center">In development...</div>
-    </div>
+    </PageLayout>
   );
 }

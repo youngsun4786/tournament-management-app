@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Layout } from "~/lib/components/layout";
+import { PageLayout } from "~/lib/components/page-layout";
 import { EditPlayersSection } from "~/lib/components/players/edit-players-section";
 import {
   useAuthenticatedUser,
@@ -43,45 +43,35 @@ function EditTeamsPage() {
 
   if (!teamId) {
     return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center p-4">
-          <h1 className="text-3xl font-bold mb-4">Team Management</h1>
-          <p className="text-gray-600 mb-8">
-            You are not assigned to any team. Please contact an administrator.
-          </p>
-        </div>
-      </Layout>
+      <PageLayout title="Team Management">
+        <p className="text-gray-600">
+          You are not assigned to any team. Please contact an administrator.
+        </p>
+      </PageLayout>
     );
   }
 
   if (isTeamLoading || isPlayersLoading) {
     return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center p-4">
-          <h1 className="text-3xl font-bold mb-4">Team Management</h1>
-          <p className="text-gray-600 mb-8">Loading...</p>
-        </div>
-      </Layout>
+      <PageLayout title="Team Management">
+        <p className="text-gray-600">Loading...</p>
+      </PageLayout>
     );
   }
 
   return (
-    <Layout>
-      <div className="flex flex-col items-center p-4">
-        <div className="w-full max-w-6xl">
-          <EditPlayersSection
-            teamId={teamId}
-            team={team}
-            players={players}
-            isPlayersLoading={isPlayersLoading}
-            captain={{
-              firstName: user.meta.firstName,
-              lastName: user.meta.lastName,
-            }}
-            showCaptainInfo={true}
-          />
-        </div>
-      </div>
-    </Layout>
+    <PageLayout title="Team Management">
+      <EditPlayersSection
+        teamId={teamId}
+        team={team}
+        players={players}
+        isPlayersLoading={isPlayersLoading}
+        captain={{
+          firstName: user.meta.firstName,
+          lastName: user.meta.lastName,
+        }}
+        showCaptainInfo={true}
+      />
+    </PageLayout>
   );
 }

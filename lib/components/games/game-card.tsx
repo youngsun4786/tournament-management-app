@@ -1,103 +1,146 @@
-import { format } from "date-fns";
-import { Heart } from "lucide-react";
-import { Card, CardContent } from "~/lib/components/ui/card";
-import { convert24to12 } from "~/lib/utils/date";
+import { format, isSameDay } from "date-fns";
+import { GameStatusBadge } from "~/lib/components/ui/game-status-badge";
+import { ButtonLink } from "~/lib/components/button-link";
 import { Game } from "~/src/types/game";
-import { ButtonLink } from "../button-link";
 
-interface GameCardProps {
-  id: string;
-  game: Game;
+function getGameStatus(
+  game: Game,
+  now: Date,
+): "live" | "upcoming" | "completed" {
+  if (game.isCompleted) return "completed";
+  if (!isSameDay(game.gameDate, now)) return "upcoming";
+
+  const [hours, minutes] = game.startTime.split(":");
+  const gameTime = new Date(game.gameDate);
+  gameTime.setHours(parseInt(hours), parseInt(minutes));
+
+  const twoHoursLater = new Date(gameTime);
+  twoHoursLater.setHours(gameTime.getHours() + 2);
+
+  if (now >= gameTime && now < twoHoursLater) return "live";
+  return "upcoming";
 }
 
-export function GameCard({ game }: GameCardProps) {
-  // Format date: "25.03.10 Mon, 19:00"
-  const dateObj = new Date(game.gameDate);
-  const formattedDate = format(dateObj, " EEEE MM/dd");
-  // Parse the venue if possible
-  const venue = game.court ? `${game.location} ${game.court}` : game.location;
+function TeamRow({
+  name,
+  logo,
+  score,
+  isWinner,
+  isCompleted,
+}: {
+  name?: string | null;
+  logo?: string | null;
+  score: number;
+  isWinner: boolean;
+  isCompleted: boolean;
+}) {
+  const displayName = name || "TBD";
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        {logo ? (
+          <img
+            src={
+              displayName === "TBD"
+                ? "/team_logos/ccbc_logo.png"
+                : `/team_logos/${logo}`
+            }
+            alt={displayName}
+            className="h-8 w-8 object-contain"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-muted" />
+        )}
+        <span
+          className={`font-medium ${isWinner ? "font-bold text-blue-600" : ""}`}
+        >
+          {displayName}
+        </span>
+      </div>
+      {isCompleted && (
+        <span
+          className={`text-lg font-mono font-semibold tabular-nums ${isWinner ? "text-blue-600" : ""}`}
+        >
+          {score}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function GameCard({ game }: { game: Game }) {
+  const now = new Date();
+  const status = getGameStatus(game, now);
+  const isCompleted = game.isCompleted;
+  const homeWon = isCompleted && game.homeTeamScore > game.awayTeamScore;
+  const awayWon = isCompleted && game.awayTeamScore > game.homeTeamScore;
 
   return (
-    <Card className="h-full">
-      <CardContent className="flex flex-col h-full">
-        {/* Date, Venue and Favorite Button */}
-        <div className="flex justify-between mb-2">
-          <div className="text-xs text-gray-600">
-            <div className="flex gap-1 text-black font-bold">
-              <p>{formattedDate}</p>
-              <p>{convert24to12(game.startTime)}</p>
-            </div>
-            <p>{venue}</p>
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="flex flex-col p-4">
+        <div className="mb-4 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <span className="font-medium text-foreground">
+              {format(new Date(game.gameDate), "MM.dd")}
+            </span>
+            <span>{format(new Date(game.gameDate), "EEE")}</span>
+            <span>&middot;</span>
+            <span>
+              {new Date(`2000-01-01T${game.startTime}`).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>
           </div>
-          <button className="text-gray-300 hover:text-red-500 transition-colors">
-            <Heart size={16} />
-          </button>
+          <GameStatusBadge status={status} />
         </div>
 
-        {/* Teams */}
-        <div className="flex-grow flex flex-col justify-center space-y-3">
-          {/* Home Team */}
-          <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
-              {game.homeTeamLogo ? (
-                <img
-                  src={`/team_logos/${game.homeTeamName === "TBD" ? "ccbc_logo.png" : game.homeTeamLogo}`}
-                  alt={game.homeTeamName}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-500">
-                  {game.homeTeamName!.substring(0, 2)}
-                </div>
-              )}
-            </div>
-            <div className="font-semibold text-sm">{game.homeTeamName}</div>
-          </div>
-
-          {/* Away Team */}
-          <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 mr-2">
-              {game.awayTeamLogo ? (
-                <img
-                  src={`/team_logos/${game.awayTeamName === "TBD" ? "ccbc_logo.png" : game.awayTeamLogo}`}
-                  alt={game.awayTeamName}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-gray-500">
-                  {game.awayTeamName!.substring(0, 2)}
-                </div>
-              )}
-            </div>
-            <div className="font-semibold text-sm">{game.awayTeamName}</div>
-          </div>
+        <div className="mb-4 flex flex-col gap-3">
+          <TeamRow
+            name={game.homeTeamName}
+            logo={game.homeTeamLogo}
+            score={game.homeTeamScore}
+            isWinner={homeWon}
+            isCompleted={isCompleted}
+          />
+          <TeamRow
+            name={game.awayTeamName}
+            logo={game.awayTeamLogo}
+            score={game.awayTeamScore}
+            isWinner={awayWon}
+            isCompleted={isCompleted}
+          />
         </div>
 
-        {/* Status and See details */}
-        <div className="mt-3 flex justify-between items-center">
-          <div
-            className={`py-1 px-2 text-xs border rounded ${game.isCompleted ? "border-green-500 text-green-500" : "border-blue-600 text-blue-600"}`}
-          >
-            {game.isCompleted ? "Completed" : "Scheduled"}
+        <div className="flex items-center justify-between border-t pt-3">
+          <div className="flex flex-col text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">{game.location}</span>
+            {game.court && <span>{game.court}</span>}
           </div>
-          <div>
+          <div className="flex gap-2">
             <ButtonLink
-              size="sm"
-              variant="outline"
-              className="text-xs"
               to="/games/$gameId"
-              params={{
-                gameId: game.id,
-              }}
-              search={{
-                section: "game-details",
-              }}
+              params={{ gameId: game.id }}
+              search={{ section: "" }}
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs"
             >
-              game details
+              Details
+            </ButtonLink>
+            <ButtonLink
+              to="/games/$gameId"
+              params={{ gameId: game.id }}
+              search={{ section: "video-section" }}
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs"
+            >
+              Highlights
             </ButtonLink>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

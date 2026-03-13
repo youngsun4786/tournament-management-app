@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import { PageLayout } from "~/lib/components/page-layout";
 import {
   playerGameStatsQueries,
   playerQueries,
@@ -181,8 +182,16 @@ function RouteComponent() {
   const captain = players?.find((p) => p.isCaptain);
 
   return (
-    <div className="">
-      <div className="max-w-7xl px-8 pt-8 mx-auto space-y-8">
+    <PageLayout
+      title={team.name}
+      maxWidth="2xl"
+      noPadding
+      breadcrumbs={[
+        { label: "Teams" },
+        { label: team.name },
+      ]}
+    >
+      <div className="max-w-7xl px-8 pt-4 mx-auto space-y-8">
         {/* Row 1: Team Header (Logo + Name) */}
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-white shadow-xl ring-4 ring-white/50 shrink-0">
@@ -451,6 +460,6 @@ function RouteComponent() {
           </Card>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
