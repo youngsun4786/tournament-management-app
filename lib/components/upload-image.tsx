@@ -1,14 +1,14 @@
-import { Button } from "lib/components/ui/button";
+import { Button } from "~/lib/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "lib/components/ui/card";
-import { Input } from "lib/components/ui/input";
-import { Label } from "lib/components/ui/label";
-import { Textarea } from "lib/components/ui/textarea";
+} from "~/lib/components/ui/card";
+import { Input } from "~/lib/components/ui/input";
+import { Label } from "~/lib/components/ui/label";
+import { Textarea } from "~/lib/components/ui/textarea";
 import { Loader2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";

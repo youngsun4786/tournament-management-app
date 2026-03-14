@@ -17,9 +17,6 @@ export function SponsorSidebar({ side }: SponsorSidebarProps) {
           key={sponsor.name}
           href={sponsor.href}
           className="block w-full hover:opacity-80 transition-opacity"
-          {...(sponsor.external
-            ? { target: "_blank", rel: "noopener noreferrer" }
-            : {})}
         >
           <img
             src={sponsor.imagePath}

@@ -9,16 +9,14 @@ import { useEffect, useMemo, useState } from "react";
 import { Game } from "~/src/types/game";
 
 type StatusFilterType = "all" | "upcoming" | "completed" | "live";
-type GameTypeFilter = "all" | "regular" | "playoff";
 type ViewMode = "list" | "calendar";
 
 export function useScheduleFilters(games: Game[]) {
-  const today = new Date();
-  const [currentDate, setCurrentDate] = useState(today);
+  const [today] = useState(() => new Date());
+  const [currentDate, setCurrentDate] = useState(() => new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>("all");
   const [teamFilter, setTeamFilter] = useState<string>("all");
-  const [gameType, setGameType] = useState<GameTypeFilter>("all");
   const [showTodayOnly, setShowTodayOnly] = useState(false);
 
   const teams = useMemo(() => {
@@ -93,7 +91,7 @@ export function useScheduleFilters(games: Game[]) {
 
   useEffect(() => {
     setShowTodayOnly(false);
-  }, [statusFilter, teamFilter, gameType]);
+  }, [statusFilter, teamFilter]);
 
   return {
     today,
@@ -103,8 +101,6 @@ export function useScheduleFilters(games: Game[]) {
     statusFilter,
     teamFilter,
     setTeamFilter,
-    gameType,
-    setGameType,
     showTodayOnly,
     teams,
     filteredGames,

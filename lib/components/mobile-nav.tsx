@@ -69,29 +69,16 @@ export const MobileNav = ({ teams }: MobileNavProps) => {
                 Sponsors
               </div>
               <div className="grid grid-cols-1 gap-2 px-4">
-                {sponsors.map((sponsor) =>
-                  sponsor.external ? (
-                    <a
-                      key={sponsor.name}
-                      href={sponsor.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={close}
-                    >
-                      <span className="text-sm">{sponsor.name}</span>
-                    </a>
-                  ) : (
-                    <Link
-                      key={sponsor.name}
-                      to={sponsor.href as "/title-sponsor-1"}
-                      className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={close}
-                    >
-                      <span className="text-sm">{sponsor.name}</span>
-                    </Link>
-                  ),
-                )}
+                {sponsors.map((sponsor) => (
+                  <Link
+                    key={sponsor.name}
+                    to={sponsor.href as "/title-sponsor-1"}
+                    className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                    onClick={close}
+                  >
+                    <span className="text-sm">{sponsor.name}</span>
+                  </Link>
+                ))}
               </div>
             </div>
 

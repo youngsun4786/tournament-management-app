@@ -58,6 +58,109 @@ import { Team } from "~/src/types/team";
 import { uploadFileToStorage } from "~/supabase/storage/client";
 import { TeamMediaSection } from "./team-media-section";
 
+interface AvatarUploadProps {
+  displayAvatarUrl: string;
+  playerName: string;
+  newAvatarUrl: string | null;
+  newAvatarFile: File | null;
+  isUploading: boolean;
+  hasUnsavedChanges: boolean;
+  fileInputRef: React.RefObject<HTMLInputElement>;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onUpload: () => void;
+  onClear: () => void;
+}
+
+function AvatarUpload({
+  displayAvatarUrl,
+  playerName,
+  newAvatarUrl,
+  newAvatarFile,
+  isUploading,
+  hasUnsavedChanges,
+  fileInputRef,
+  onFileChange,
+  onUpload,
+  onClear,
+}: AvatarUploadProps) {
+  return (
+    <div className="flex flex-col items-center mb-4">
+      <div className="relative group">
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*"
+          onChange={onFileChange}
+        />
+        <Avatar
+          className={`h-20 w-20 ring-2 ${
+            newAvatarUrl
+              ? "ring-rose-400 dark:ring-rose-600"
+              : "ring-white dark:ring-gray-800"
+          } shadow-md transition-all duration-200 relative`}
+        >
+          {isUploading && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-full z-10">
+              <Loader2 className="w-8 h-8 text-white animate-spin" />
+            </div>
+          )}
+          <AvatarImage
+            src={displayAvatarUrl}
+            alt={playerName}
+            className="object-cover"
+          />
+          <AvatarFallback className="bg-gray-200">
+            <User className="h-10 w-10 text-gray-400" />
+          </AvatarFallback>
+        </Avatar>
+        <Button
+          type="button"
+          className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-slate-900 hover:bg-slate-700 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+          variant="outline"
+          size="icon"
+          disabled={isUploading}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="h-4 w-4 text-white" />
+        </Button>
+      </div>
+      {hasUnsavedChanges && (
+        <span className="text-xs text-rose-600 dark:text-rose-400 mt-4">
+          New avatar selected, click Save Changes to update
+        </span>
+      )}
+      <div className="flex items-center mt-2">
+        {newAvatarFile && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-sm text-slate-600 flex items-center gap-1"
+            disabled={isUploading}
+            onClick={onUpload}
+          >
+            <UploadCloud className="h-3 w-3" />
+            Upload Photo
+          </Button>
+        )}
+        {(newAvatarUrl || newAvatarFile) && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-sm text-red-600 flex items-center gap-1"
+            onClick={onClear}
+          >
+            <X className="h-3 w-3" />
+            Clear
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface EditPlayersSectionProps {
   teamId: string;
   team?: Team;
@@ -413,86 +516,24 @@ export const EditPlayersSection = ({
 
   const openEditDialog = (player: Player) => {
     setSelectedPlayer(player);
-    setNewAvatarUrl(player.playerUrl || null);
+    setNewAvatarUrl(null);
+    setPreviewUrl(null);
+    setNewAvatarFile(null);
     setIsEditDialogOpen(true);
   };
 
-  const AvatarUpload = () => (
-    <div className="flex flex-col items-center mb-4">
-      <div className="relative group">
-        <input
-          type="file"
-          ref={fileInputRef}
-          className="hidden"
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-        <Avatar
-          className={`h-20 w-20 ring-2 ${
-            newAvatarUrl
-              ? "ring-rose-400 dark:ring-rose-600"
-              : "ring-white dark:ring-gray-800"
-          } shadow-md transition-all duration-200 relative`}
-        >
-          {isUploading && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-full z-10">
-              <Loader2 className="w-8 h-8 text-white animate-spin" />
-            </div>
-          )}
-          <AvatarImage
-            src={displayAvatarUrl}
-            alt={selectedPlayer?.name || "Player avatar"}
-            className="object-cover"
-          />
-          <AvatarFallback className="bg-gray-200">
-            <User className="h-10 w-10 text-gray-400" />
-          </AvatarFallback>
-        </Avatar>
-        <Button
-          type="button"
-          className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-slate-900 hover:bg-slate-700 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-          variant="outline"
-          size="icon"
-          disabled={isUploading}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="h-4 w-4 text-white" />
-        </Button>
-      </div>
-      {hasUnsavedChanges && (
-        <span className="text-xs text-rose-600 dark:text-rose-400 mt-4">
-          New avatar selected, click Save Changes to update
-        </span>
-      )}
-      <div className="flex items-center mt-2">
-        {newAvatarFile && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-sm text-slate-600 flex items-center gap-1"
-            disabled={isUploading}
-            onClick={handleAvatarUpload}
-          >
-            <UploadCloud className="h-3 w-3" />
-            Upload Photo
-          </Button>
-        )}
-        {(newAvatarUrl || newAvatarFile) && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-sm text-red-600 flex items-center gap-1"
-            onClick={clearAvatar}
-          >
-            <X className="h-3 w-3" />
-            Clear
-          </Button>
-        )}
-      </div>
-    </div>
-  );
+  const avatarUploadProps = {
+    displayAvatarUrl,
+    playerName: selectedPlayer?.name || "Player avatar",
+    newAvatarUrl,
+    newAvatarFile,
+    isUploading,
+    hasUnsavedChanges,
+    fileInputRef,
+    onFileChange: handleFileChange,
+    onUpload: handleAvatarUpload,
+    onClear: clearAvatar,
+  };
 
   if (isPlayersLoading) {
     return <div className="text-gray-600 mb-8">Loading players...</div>;
@@ -563,7 +604,7 @@ export const EditPlayersSection = ({
                     Enter the details for the new player.
                   </DialogDescription>
                 </DialogHeader>
-                <AvatarUpload />
+                <AvatarUpload {...avatarUploadProps} />
                 <form onSubmit={handleCreatePlayer} className="space-y-4">
                   <PlayerFormFields />
                   <DialogFooter>
@@ -638,7 +679,7 @@ export const EditPlayersSection = ({
             <DialogTitle>Edit Player</DialogTitle>
             <DialogDescription>Update player information.</DialogDescription>
           </DialogHeader>
-          <AvatarUpload />
+          <AvatarUpload {...avatarUploadProps} />
           <form onSubmit={handleEditPlayer} className="space-y-4">
             <PlayerFormFields player={selectedPlayer} />
             <DialogFooter>

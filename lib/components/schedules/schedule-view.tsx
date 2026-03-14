@@ -35,8 +35,6 @@ export function ScheduleView({ games }: ScheduleViewProps) {
     setViewMode,
     teamFilter,
     setTeamFilter,
-    gameType,
-    setGameType,
     showTodayOnly,
     teams,
     filteredGames,
@@ -81,22 +79,6 @@ export function ScheduleView({ games }: ScheduleViewProps) {
           </div>
 
           <div className="flex space-x-2">
-            <Select
-              defaultValue="all"
-              value={gameType}
-              onValueChange={(value: "all" | "regular" | "playoff") =>
-                setGameType(value)
-              }
-            >
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="All game" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All game</SelectItem>
-                <SelectItem value="regular">Regular Season</SelectItem>
-                <SelectItem value="playoff">Playoff</SelectItem>
-              </SelectContent>
-            </Select>
             <div className="border rounded-md flex">
               <Button
                 variant={viewMode === "list" ? "default" : "ghost"}
