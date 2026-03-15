@@ -9,7 +9,7 @@ export interface IGameService {
   updateScore(data: GameUpdate): Promise<Game>;
   delete(data: { id: Game["id"]; userId: string }): Promise<Game>;
   getWithTeams(): Promise<Game[]>;
-  getGamesForTeams(teamIds: string[]): Promise<Game[]>;
+  getGamesForTeams(teamIds: string[], seasonId: string): Promise<Game[]>;
 }
 
 export class GameService implements IGameService {
@@ -94,9 +94,10 @@ export class GameService implements IGameService {
     return gamesWithTeams;
   }
 
-  async getGamesForTeams(teamIds: string[]): Promise<Game[]> {
+  async getGamesForTeams(teamIds: string[], seasonId: string): Promise<Game[]> {
     const gamesList = await this.drizzle_db.query.games.findMany({
       where: {
+        seasonId,
         homeTeamId: {
           in: teamIds,
         },

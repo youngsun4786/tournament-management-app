@@ -65,15 +65,14 @@ export const ScoreBoard = () => {
     enabled: !!selectedSeasonId,
   });
 
-  // Query to fetch games for the selected teams
+  // Query to fetch games for the selected teams in the selected season
   const gamesQuery = useQuery({
-    queryKey: ["gamesForTeams", teamsQuery.data?.map((team) => team.id)],
+    queryKey: ["gamesForTeams", selectedSeasonId, teamsQuery.data?.map((team) => team.id)],
     queryFn: async () => {
-      if (!teamsQuery.data?.length) return [];
+      if (!teamsQuery.data?.length || !selectedSeasonId) return [];
       try {
-        // Directly call the API with the same structure expected
         const games = await getGamesForTeams({
-          data: { teamIds: teamsQuery.data.map((team) => team.id) },
+          data: { teamIds: teamsQuery.data.map((team) => team.id), seasonId: selectedSeasonId },
         });
         return games as Game[];
       } catch (error) {

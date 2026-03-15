@@ -1,7 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Upload, UploadCloud, User } from "lucide-react";
-import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { Button } from "~/lib/components/ui/button";
 import {
   Card,
@@ -9,10 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "~/lib/components/ui/card";
-import { updateTeam } from "~/src/controllers/team.api";
-import { teamQueries } from "~/src/queries";
+import { useImageUpload } from "~/lib/hooks/use-image-upload";
 import { Team } from "~/src/types/team";
-import { uploadFileToStorage } from "~/supabase/storage/client";
 
 interface TeamMediaSectionProps {
   teamId: string;
@@ -20,157 +15,22 @@ interface TeamMediaSectionProps {
 }
 
 export const TeamMediaSection = ({ teamId, team }: TeamMediaSectionProps) => {
-  const teamLogoInputRef = useRef<HTMLInputElement>(null);
-  const [teamLogoPreview, setTeamLogoPreview] = useState<string | null>(null);
-  const [newTeamLogoFile, setNewTeamLogoFile] = useState<File | null>(null);
-  const [isTeamLogoUploading, setIsTeamLogoUploading] = useState(false);
-
-  const teamPhotoInputRef = useRef<HTMLInputElement>(null);
-  const [teamPhotoPreview, setTeamPhotoPreview] = useState<string | null>(null);
-  const [newTeamPhotoFile, setNewTeamPhotoFile] = useState<File | null>(null);
-  const [isTeamPhotoUploading, setIsTeamPhotoUploading] = useState(false);
-
-  const queryClient = useQueryClient();
-
-  const updateTeamMutation = useMutation({
-    mutationFn: (data: Parameters<typeof updateTeam>[0]) => updateTeam(data),
-    onSuccess: () => {
-      toast.success("Team logo updated successfully");
-      queryClient.invalidateQueries(teamQueries.getTeamById(teamId));
-      setTeamLogoPreview(null);
-      setNewTeamLogoFile(null);
-    },
-    onError: (error) => {
-      toast.error(`Failed to update team logo: ${error.message}`);
-    },
+  const logo = useImageUpload({
+    teamId,
+    field: "logoUrl",
+    label: "Team logo",
+    folder: "teams",
   });
 
-  const updateTeamPhotoMutation = useMutation({
-    mutationFn: (data: Parameters<typeof updateTeam>[0]) => updateTeam(data),
-    onSuccess: () => {
-      toast.success("Team photo updated successfully");
-      queryClient.invalidateQueries(teamQueries.getTeamById(teamId));
-      setTeamPhotoPreview(null);
-      setNewTeamPhotoFile(null);
-    },
-    onError: (error) => {
-      toast.error(`Failed to update team photo: ${error.message}`);
-    },
+  const photo = useImageUpload({
+    teamId,
+    field: "imageUrl",
+    label: "Team photo",
+    folder: "teams",
   });
-
-  const handleTeamLogoChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-
-    const file = e.target.files[0];
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
-    try {
-      const objectUrl = URL.createObjectURL(file);
-      setTeamLogoPreview(objectUrl);
-      setNewTeamLogoFile(file);
-    } catch (error) {
-      console.error("Error preparing team logo:", error);
-      toast.error("Failed to prepare image");
-    }
-  };
-
-  const handleTeamLogoUpload = async () => {
-    if (!newTeamLogoFile) return;
-
-    try {
-      setIsTeamLogoUploading(true);
-      const uploadResult = await uploadFileToStorage({
-        file: newTeamLogoFile,
-        bucket: "media-images",
-        folder: "teams",
-      });
-
-      if (uploadResult.error || !uploadResult.image_url) {
-        toast.error(`Failed to upload team logo: ${uploadResult.error}`);
-        return;
-      }
-
-      const logoUrl = uploadResult.image_url;
-
-      updateTeamMutation.mutate({
-        data: {
-          teamId,
-          data: {
-            logoUrl: logoUrl,
-          },
-        },
-      });
-    } catch (error) {
-      console.error("Error uploading team logo:", error);
-      toast.error("Failed to upload team logo");
-    } finally {
-      setIsTeamLogoUploading(false);
-    }
-  };
-
-  const handleTeamPhotoChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-
-    const file = e.target.files[0];
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
-    try {
-      const objectUrl = URL.createObjectURL(file);
-      setTeamPhotoPreview(objectUrl);
-      setNewTeamPhotoFile(file);
-    } catch (error) {
-      console.error("Error preparing team photo:", error);
-      toast.error("Failed to prepare image");
-    }
-  };
-
-  const handleTeamPhotoUpload = async () => {
-    if (!newTeamPhotoFile) return;
-
-    try {
-      setIsTeamPhotoUploading(true);
-      const uploadResult = await uploadFileToStorage({
-        file: newTeamPhotoFile,
-        bucket: "media-images",
-        folder: "teams",
-      });
-
-      if (uploadResult.error || !uploadResult.image_url) {
-        toast.error(`Failed to upload team photo: ${uploadResult.error}`);
-        return;
-      }
-
-      const imageUrl = uploadResult.image_url;
-
-      updateTeamPhotoMutation.mutate({
-        data: {
-          teamId,
-          data: {
-            imageUrl: imageUrl,
-          },
-        },
-      });
-    } catch (error) {
-      console.error("Error uploading team photo:", error);
-      toast.error("Failed to upload team photo");
-    } finally {
-      setIsTeamPhotoUploading(false);
-    }
-  };
 
   return (
     <div className="space-y-6">
-      {/* Team Logo Card */}
       <Card>
         <CardHeader>
           <CardTitle>Team Logo</CardTitle>
@@ -178,9 +38,9 @@ export const TeamMediaSection = ({ teamId, team }: TeamMediaSectionProps) => {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-md relative group shrink-0">
-              {teamLogoPreview ? (
+              {logo.preview ? (
                 <img
-                  src={teamLogoPreview}
+                  src={logo.preview}
                   alt="Team logo preview"
                   className="w-full h-full object-contain p-2"
                 />
@@ -205,41 +65,33 @@ export const TeamMediaSection = ({ teamId, team }: TeamMediaSectionProps) => {
                   variant="ghost"
                   size="icon"
                   className="text-white hover:text-white hover:bg-white/20"
-                  onClick={() => teamLogoInputRef.current?.click()}
+                  onClick={() => logo.inputRef.current?.click()}
                 >
                   <Upload className="h-6 w-6" />
                 </Button>
               </div>
               <input
                 type="file"
-                ref={teamLogoInputRef}
+                ref={logo.inputRef}
                 className="hidden"
                 accept="image/*"
-                onChange={handleTeamLogoChange}
+                onChange={logo.handleChange}
               />
             </div>
-            {newTeamLogoFile && (
+            {logo.file && (
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={handleTeamLogoUpload}
-                  disabled={isTeamLogoUploading}
+                  onClick={logo.handleUpload}
                 >
-                  {isTeamLogoUploading ? (
+                  {logo.isUploading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <UploadCloud className="mr-2 h-4 w-4" />
                   )}
                   Save Logo
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setTeamLogoPreview(null);
-                    setNewTeamLogoFile(null);
-                  }}
-                >
+                <Button variant="ghost" size="sm" onClick={logo.cancel}>
                   Cancel
                 </Button>
               </div>
@@ -248,16 +100,15 @@ export const TeamMediaSection = ({ teamId, team }: TeamMediaSectionProps) => {
         </CardContent>
       </Card>
 
-      {/* Team Photo Card */}
       <Card>
         <CardHeader>
           <CardTitle>Team Photo</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden group">
-            {teamPhotoPreview ? (
+            {photo.preview ? (
               <img
-                src={teamPhotoPreview}
+                src={photo.preview}
                 alt="Team Photo Preview"
                 className="w-full h-full object-cover"
               />
@@ -277,39 +128,30 @@ export const TeamMediaSection = ({ teamId, team }: TeamMediaSectionProps) => {
             <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <Button
                 variant="secondary"
-                onClick={() => teamPhotoInputRef.current?.click()}
+                onClick={() => photo.inputRef.current?.click()}
               >
                 <Upload className="mr-2 h-4 w-4" /> Change Photo
               </Button>
             </div>
             <input
               type="file"
-              ref={teamPhotoInputRef}
+              ref={photo.inputRef}
               className="hidden"
               accept="image/*"
-              onChange={handleTeamPhotoChange}
+              onChange={photo.handleChange}
             />
           </div>
-          {newTeamPhotoFile && (
+          {photo.file && (
             <div className="mt-4 flex gap-2">
-              <Button
-                onClick={handleTeamPhotoUpload}
-                disabled={isTeamPhotoUploading}
-              >
-                {isTeamPhotoUploading ? (
+              <Button onClick={photo.handleUpload}>
+                {photo.isUploading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <UploadCloud className="mr-2 h-4 w-4" />
                 )}
                 Save Photo
               </Button>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setTeamPhotoPreview(null);
-                  setNewTeamPhotoFile(null);
-                }}
-              >
+              <Button variant="ghost" onClick={photo.cancel}>
                 Cancel
               </Button>
             </div>

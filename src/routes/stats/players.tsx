@@ -25,6 +25,16 @@ import type {
 } from "~/src/types/player-game-stats";
 
 export const Route = createFileRoute("/stats/players")({
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(
+        playerGameStatsQueries.playerGameStatsAverages(),
+      ),
+      context.queryClient.ensureQueryData(
+        playerGameStatsQueries.playerGameStatsTotals(),
+      ),
+    ]);
+  },
   component: StatsPlayersPage,
 });
 
@@ -79,71 +89,42 @@ function StatsPlayersPage() {
       stat.player.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Sort function for per game stats
-  const sortPerGameStats = [...filteredPerGameStats].sort((a, b) => {
-    if (!sortConfig.key) return 0;
+  const sortStats = <T extends { player?: Record<string, unknown> | null }>(
+    data: T[],
+  ): T[] =>
+    [...data].sort((a, b) => {
+      if (!sortConfig.key) return 0;
 
-    if (sortConfig.key.startsWith("player.")) {
-      const key = sortConfig.key.split(".")[1] as keyof typeof a.player;
-      const aValue = a.player?.[key];
-      const bValue = b.player?.[key];
+      if (sortConfig.key.startsWith("player.")) {
+        const key = sortConfig.key.split(".")[1];
+        const aValue = a.player?.[key];
+        const bValue = b.player?.[key];
 
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
 
-      return sortConfig.direction === "ascending"
-        ? aValue < bValue
-          ? -1
-          : 1
-        : aValue < bValue
-          ? 1
-          : -1;
-    } else {
-      const key = sortConfig.key as keyof typeof a;
-      const aValue = a[key] as number;
-      const bValue = b[key] as number;
+        return sortConfig.direction === "ascending"
+          ? aValue < bValue
+            ? -1
+            : 1
+          : aValue < bValue
+            ? 1
+            : -1;
+      } else {
+        const aValue = (a as Record<string, unknown>)[sortConfig.key] as number;
+        const bValue = (b as Record<string, unknown>)[sortConfig.key] as number;
 
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
 
-      return sortConfig.direction === "ascending"
-        ? aValue - bValue
-        : bValue - aValue;
-    }
-  });
+        return sortConfig.direction === "ascending"
+          ? aValue - bValue
+          : bValue - aValue;
+      }
+    });
 
-  // Sort function for total stats
-  const sortTotalStats = [...filteredTotalStats].sort((a, b) => {
-    if (!sortConfig.key) return 0;
-
-    if (sortConfig.key.startsWith("player.")) {
-      const key = sortConfig.key.split(".")[1] as keyof typeof a.player;
-      const aValue = a.player?.[key];
-      const bValue = b.player?.[key];
-
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
-
-      return sortConfig.direction === "ascending"
-        ? aValue < bValue
-          ? -1
-          : 1
-        : aValue < bValue
-          ? 1
-          : -1;
-    } else {
-      const key = sortConfig.key as keyof typeof a;
-      const aValue = a[key] as number;
-      const bValue = b[key] as number;
-
-      if (aValue === null || aValue === undefined) return 1;
-      if (bValue === null || bValue === undefined) return -1;
-
-      return sortConfig.direction === "ascending"
-        ? aValue - bValue
-        : bValue - aValue;
-    }
-  });
+  const sortPerGameStats = sortStats(filteredPerGameStats);
+  const sortTotalStats = sortStats(filteredTotalStats);
 
   const requestSort = (key: string) => {
     let direction: "ascending" | "descending" = "ascending";

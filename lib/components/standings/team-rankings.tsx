@@ -39,14 +39,14 @@ export const TeamRankings = () => {
     enabled: !!activeSeason?.id,
   });
 
-  // Query to fetch games for the selected teams
+  // Query to fetch games for the selected teams in the active season
   const gamesQuery = useQuery({
-    queryKey: ["gamesForTeams", teamsQuery.data?.map((team) => team.id)],
+    queryKey: ["gamesForTeams", activeSeason?.id, teamsQuery.data?.map((team) => team.id)],
     queryFn: async () => {
-      if (!teamsQuery.data?.length) return [];
+      if (!teamsQuery.data?.length || !activeSeason?.id) return [];
       try {
         const games = await getGamesForTeams({
-          data: { teamIds: teamsQuery.data.map((team) => team.id) },
+          data: { teamIds: teamsQuery.data.map((team) => team.id), seasonId: activeSeason.id },
         });
         return games as Game[];
       } catch (error) {

@@ -68,6 +68,11 @@ export function UploadImage({
           await handleUpload(formData);
         }
 
+        // Revoke all blob URLs before clearing
+        for (const url of imageUrls) {
+          URL.revokeObjectURL(url);
+        }
+
         // Clear form state
         setImageUrls([]);
         form.reset();
@@ -90,7 +95,13 @@ export function UploadImage({
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
       const newImageUrls = filesArray.map((file) => URL.createObjectURL(file));
-      setImageUrls((prev) => [...prev, ...newImageUrls]);
+      setImageUrls((prev) => {
+        // Revoke old blob URLs before replacing
+        for (const url of prev) {
+          URL.revokeObjectURL(url);
+        }
+        return [...prev, ...newImageUrls];
+      });
       if (setPreviewUrls) {
         setPreviewUrls(newImageUrls);
       }
@@ -153,7 +164,7 @@ export function UploadImage({
               )}
             </form.Field>
           )}
-          <Button type="submit" disabled={uploading} className="w-full mt-2">
+          <Button type="submit" className="w-full mt-2">
             {uploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -11,7 +11,7 @@ export function GameStatusBadge({ status, className }: GameStatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider",
+        "inline-flex items-center gap-1.5 rounded-full px-0.5 py-0.5 text-xs font-bold uppercase tracking-wider",
         status === "live" &&
           "bg-league-red/15 text-league-red animate-pulse",
         status === "upcoming" &&

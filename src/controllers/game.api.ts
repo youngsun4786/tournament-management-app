@@ -52,10 +52,10 @@ export const updateGameScore = createServerFn({
 
 // get games for a specific team
 export const getGamesForTeams = createServerFn({ method: "GET" })
-.inputValidator(z.object({ teamIds: z.array(z.string()) }))
+.inputValidator(z.object({ teamIds: z.array(z.string()), seasonId: z.string() }))
 .handler(async ({ data }) => {
   try {
-    const games = await gameService.getGamesForTeams(data.teamIds);
+    const games = await gameService.getGamesForTeams(data.teamIds, data.seasonId);
     return games;
   } catch (error) {
     console.error("Error fetching games for teams:", error);

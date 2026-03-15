@@ -76,10 +76,10 @@ export function GameCard({ game }: { game: Game }) {
   const awayWon = isCompleted && game.awayTeamScore > game.homeTeamScore;
 
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="flex flex-col p-4">
-        <div className="mb-4 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
+    <div className="flex h-full flex-col rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="flex flex-1 flex-col p-4">
+        <div className="mb-4 flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-1 text-muted-foreground whitespace-nowrap">
             <span className="font-medium text-foreground">
               {format(new Date(game.gameDate), "MM.dd")}
             </span>
@@ -95,7 +95,7 @@ export function GameCard({ game }: { game: Game }) {
           <GameStatusBadge status={status} />
         </div>
 
-        <div className="mb-4 flex flex-col gap-3">
+        <div className="mb-4 flex flex-1 flex-col gap-3">
           <TeamRow
             name={game.homeTeamName}
             logo={game.homeTeamLogo}
@@ -112,7 +112,7 @@ export function GameCard({ game }: { game: Game }) {
           />
         </div>
 
-        <div className="flex items-center justify-between border-t pt-3">
+        <div className="flex flex-col gap-3 border-t pt-3">
           <div className="flex flex-col text-xs text-muted-foreground">
             <span className="font-medium text-foreground">{game.location}</span>
             {game.court && <span>{game.court}</span>}

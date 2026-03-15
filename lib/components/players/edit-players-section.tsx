@@ -351,6 +351,7 @@ export const EditPlayersSection = ({
   const [newAvatarUrl, setNewAvatarUrl] = useState<string | null>(null);
   const [newAvatarFile, setNewAvatarFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [deletingPlayerId, setDeletingPlayerId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
@@ -400,9 +401,11 @@ export const EditPlayersSection = ({
       }
       setIsEditDialogOpen(false);
       setSelectedPlayer(null);
+      setDeletingPlayerId(null);
     },
     onError: (error) => {
       toast.error(`Failed to remove player: ${error.message}`);
+      setDeletingPlayerId(null);
     },
   });
 
@@ -572,10 +575,11 @@ export const EditPlayersSection = ({
                   <PlayerRow
                     player={captainPlayer}
                     onEdit={openEditDialog}
-                    onDelete={(id) =>
-                      deletePlayerMutation.mutate({ data: { playerId: id } })
-                    }
-                    isDeleting={deletePlayerMutation.isPending}
+                    onDelete={(id) => {
+                      setDeletingPlayerId(id);
+                      deletePlayerMutation.mutate({ data: { playerId: id } });
+                    }}
+                    isDeleting={deletingPlayerId === captainPlayer.id && deletePlayerMutation.isPending}
                   />
                 </TableBody>
               </Table>
@@ -608,13 +612,15 @@ export const EditPlayersSection = ({
                 <form onSubmit={handleCreatePlayer} className="space-y-4">
                   <PlayerFormFields />
                   <DialogFooter>
-                    <Button
-                      type="submit"
-                      disabled={createPlayerMutation.isPending}
-                    >
-                      {createPlayerMutation.isPending
-                        ? "Adding..."
-                        : "Add Player"}
+                    <Button type="submit">
+                      {createPlayerMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        "Add Player"
+                      )}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -640,10 +646,11 @@ export const EditPlayersSection = ({
                       key={player.id}
                       player={player}
                       onEdit={openEditDialog}
-                      onDelete={(id) =>
-                        deletePlayerMutation.mutate({ data: { playerId: id } })
-                      }
-                      isDeleting={deletePlayerMutation.isPending}
+                      onDelete={(id) => {
+                        setDeletingPlayerId(id);
+                        deletePlayerMutation.mutate({ data: { playerId: id } });
+                      }}
+                      isDeleting={deletingPlayerId === player.id && deletePlayerMutation.isPending}
                     />
                   ))
                 ) : (
@@ -683,8 +690,15 @@ export const EditPlayersSection = ({
           <form onSubmit={handleEditPlayer} className="space-y-4">
             <PlayerFormFields player={selectedPlayer} />
             <DialogFooter>
-              <Button type="submit" disabled={updatePlayerMutation.isPending}>
-                {updatePlayerMutation.isPending ? "Saving..." : "Save Changes"}
+              <Button type="submit">
+                {updatePlayerMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
             </DialogFooter>
           </form>
