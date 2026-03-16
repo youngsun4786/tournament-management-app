@@ -35,6 +35,7 @@ export const seasonQueries = {
     queryOptions({
       queryKey: [...seasonQueries.all, "list"],
       queryFn: () => getSeasons(),
+      staleTime: 60 * 60 * 1000, // 1 hour
     }),
   active: () =>
     queryOptions({

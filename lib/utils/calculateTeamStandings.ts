@@ -1,5 +1,5 @@
 import { Game } from "~/src/types/game";
-import { TeamWithSeason } from "~/src/types/team";
+import { Team } from "~/src/types/team";
 
 export type TeamStanding = {
     id: string;
@@ -22,7 +22,7 @@ export type TeamStanding = {
 };
 
 
-export const calculateTeamStandings = (teams: TeamWithSeason[], games: Game[]) => {
+export const calculateTeamStandings = (teams: Team[], games: Game[]) => {
   // Filter to only completed games
   const completedGames = games.filter((game) => game.isCompleted === true);
 

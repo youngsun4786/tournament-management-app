@@ -30,7 +30,7 @@ export function PageLayout({
 }: PageLayoutProps) {
   return (
     <div
-      className={`${maxWidthClasses[maxWidth]} mx-auto ${noPadding ? "" : "p-4"}`}
+      className={`${maxWidthClasses[maxWidth]} my-6 mx-auto ${noPadding ? "" : "p-4"}`}
     >
       {breadcrumbs && breadcrumbs.length > 0 && (
         <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-4">

@@ -1,9 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getGamesForTeams } from "~/src/controllers/game.api";
-import { getTeamsBySeason } from "~/src/controllers/team.api";
-import { useGetSeasons } from "~/src/queries";
-import type { Game } from "~/src/types/game";
-import type { TeamWithSeason } from "~/src/types/team";
+import { useRouteContext } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,80 +8,67 @@ import {
   TableHeader,
   TableRow,
 } from "~/lib/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/lib/components/ui/select";
 import { calculateTeamStandings } from "~/lib/utils/calculateTeamStandings";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { seasonQueries } from "~/src/queries";
 
 export const TeamRankings = () => {
-  // Query to fetch active season
-  const seasonsQuery = useGetSeasons();
-  const activeSeason = seasonsQuery.data?.filter(
-    (season) => season.isActive
-  )[0];
+  const { teams, games } = useRouteContext({ from: "__root__" });
+  const { data: seasons } = useSuspenseQuery(seasonQueries.list());
 
-  // Query to fetch teams for the active season
-  const teamsQuery = useQuery({
-    queryKey: ["teamsBySeason", activeSeason?.id],
-    queryFn: async () => {
-      if (!activeSeason?.id) return [];
-      try {
-        const teams = await getTeamsBySeason({
-          data: { seasonId: activeSeason.id },
-        });
-        return teams as TeamWithSeason[];
-      } catch (error) {
-        console.error("Error fetching teams:", error);
-        return [] as TeamWithSeason[];
-      }
-    },
-    enabled: !!activeSeason?.id,
-  });
+  // Default to the active season, or first season
+  const defaultSeasonId =
+    seasons.find((s) => s.isActive)?.id ?? seasons[0]?.id ?? null;
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string | null>(
+    defaultSeasonId,
+  );
 
-  // Query to fetch games for the selected teams in the active season
-  const gamesQuery = useQuery({
-    queryKey: ["gamesForTeams", activeSeason?.id, teamsQuery.data?.map((team) => team.id)],
-    queryFn: async () => {
-      if (!teamsQuery.data?.length || !activeSeason?.id) return [];
-      try {
-        const games = await getGamesForTeams({
-          data: { teamIds: teamsQuery.data.map((team) => team.id), seasonId: activeSeason.id },
-        });
-        return games as Game[];
-      } catch (error) {
-        console.error("Error fetching games:", error);
-        return [] as Game[];
-      }
-    },
-    enabled: !!teamsQuery.data && teamsQuery.data.length > 0,
-  });
+  // Filter teams and games by selected season (client-side)
+  const filteredTeams = useMemo(
+    () => teams.filter((t) => t.isActive),
+    [teams],
+  );
 
-  const teams = teamsQuery.data?.filter((team) => team.name !== "TBD");
-  const games = gamesQuery.data;
+  const filteredGames = useMemo(
+    () => games.filter((g) => g.seasonId === selectedSeasonId),
+    [games, selectedSeasonId],
+  );
 
-  // Compute standings based on teams and games
-  const standings = teams && games ? calculateTeamStandings(teams, games) : [];
-
-  // show top 10 teams
-  const top10Standings = standings.slice(0, 10);
-
-  const isLoading =
-    seasonsQuery.isLoading || teamsQuery.isLoading || gamesQuery.isLoading;
-
-  if (isLoading) {
-    return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
-        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-          <h2 className="text-lg font-bold">Team rankings</h2>
-        </div>
-        <div className="p-4 text-center">
-          <p>Loading rankings...</p>
-        </div>
-      </div>
-    );
-  }
+  const standings = useMemo(
+    () => calculateTeamStandings(filteredTeams, filteredGames),
+    [filteredTeams, filteredGames],
+  );
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
-      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
         <h2 className="text-lg font-bold">Team rankings</h2>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Season:</span>
+          <Select
+            value={selectedSeasonId || ""}
+            onValueChange={setSelectedSeasonId}
+            disabled={!seasons.length}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select season" />
+            </SelectTrigger>
+            <SelectContent>
+              {seasons.map((season) => (
+                <SelectItem key={season.id} value={season.id}>
+                  {season.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="p-0">
@@ -100,13 +83,13 @@ export const TeamRankings = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200 dark:divide-gray-600">
-            {top10Standings.length > 0 ? (
-              top10Standings.map((team, index) => (
+            {standings.length > 0 ? (
+              standings.map((team, index) => (
                 <TableRow
                   key={team.id}
                   className="text-xs hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  <TableCell className="px-2text-center font-medium">
+                  <TableCell className="px-2 text-center font-medium">
                     {index + 1}
                   </TableCell>
                   <TableCell className="px-2">
