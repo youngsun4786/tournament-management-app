@@ -182,160 +182,8 @@ function RouteComponent() {
           </CardFooter>
         </Card>
 
-        {/* Team Comparison */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Home Team */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full overflow-hidden bg-white">
-                  <img
-                    src={
-                      gameInfo.homeTeamLogo
-                        ? `/team_logos/${gameInfo.homeTeamLogo}`
-                        : "/team_logos/ccbc_logo.png"
-                    }
-                    alt={`${gameInfo.homeTeamName} logo`}
-                    className="w-full h-full object-contain p-0.5"
-                  />
-                </div>
-                {gameInfo.homeTeamName}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Top Scorer</h3>
-                {topScorers.home ? (
-                  <div className="flex items-center gap-2">
-                    <div className="bg-primary/10 rounded-full px-2 py-1 text-xs font-medium">
-                      #{topScorers.home.player?.jerseyNumber}
-                    </div>
-                    <span className="font-semibold">
-                      {topScorers.home.player?.name}
-                    </span>
-                    <span className="text-muted-foreground ml-auto">
-                      {topScorers.home.points} pts
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-muted-foreground text-sm">
-                    No data available
-                  </div>
-                )}
-              </div>
-
-              {/* !TODO: ADD RECENT FORM TO DISPLAY LATEST WIN/LOSS STREAK */}
-              {/* <div>
-                <h3 className="font-medium mb-2">Recent Form</h3>
-                <div className="flex gap-1">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
-                    L
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
-                    L
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
-                </div>
-              </div> */}
-            </CardContent>
-          </Card>
-
-          {/* Away Team */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full overflow-hidden bg-white">
-                  <img
-                    src={
-                      gameInfo.awayTeamLogo
-                        ? `/team_logos/${gameInfo.awayTeamLogo}`
-                        : "/team_logos/ccbc_logo.png"
-                    }
-                    alt={`${gameInfo.awayTeamName} logo`}
-                    className="w-full h-full object-contain p-0.5"
-                  />
-                </div>
-                {gameInfo.awayTeamName}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Top Scorer</h3>
-                {topScorers.away ? (
-                  <div className="flex items-center gap-2">
-                    <div className="bg-primary/10 rounded-full px-2 py-1 text-xs font-medium">
-                      #{topScorers.away.player?.jerseyNumber}
-                    </div>
-                    <span className="font-semibold">
-                      {topScorers.away.player?.name}
-                    </span>
-                    <span className="text-muted-foreground ml-auto">
-                      {topScorers.away.points} pts
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-muted-foreground text-sm">
-                    No data available
-                  </div>
-                )}
-              </div>
-
-              {/* !TODO: ADD RECENT FORM TO DISPLAY LATEST WIN/LOSS STREAK */}
-              {/* <div>
-                <h3 className="font-medium mb-2">Recent Form</h3>
-                <div className="flex gap-1">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
-                    L
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs">
-                    L
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs">
-                    W
-                  </div>
-                </div>
-              </div> */}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Player Stats Table */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Game Statistics</h2>
-          <Tabs defaultValue="player-stats" className="w-full">
-            <TabsList className="mb-4">
-              <TabsTrigger value="player-stats">Player Stats</TabsTrigger>
-              <TabsTrigger value="team-stats">Team Stats</TabsTrigger>
-            </TabsList>
-            <TabsContent value="player-stats">
-              <PlayerGameStatsTable
-                playerStats={playerStats || []}
-                isLoading={isLoading}
-                isPlayerProfile={false}
-              />
-            </TabsContent>
-            <TabsContent value="team-stats">
-              <TeamGameStatsTable gameId={gameId} />
-            </TabsContent>
-          </Tabs>
-        </div>
-
         {/* Game Video Section */}
-        <div id="video-section" className="mt-8">
+        <div id="video-section">
           <h2 className="text-2xl font-bold mb-4">Game Recaps</h2>
           {videos && videos.length > 0 ? (
             <Card>
@@ -414,6 +262,114 @@ function RouteComponent() {
               </CardContent>
             </Card>
           )}
+        </div>
+
+        {/* Team Comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Home Team */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full overflow-hidden bg-white">
+                  <img
+                    src={
+                      gameInfo.homeTeamLogo
+                        ? `/team_logos/${gameInfo.homeTeamLogo}`
+                        : "/team_logos/ccbc_logo.png"
+                    }
+                    alt={`${gameInfo.homeTeamName} logo`}
+                    className="w-full h-full object-contain p-0.5"
+                  />
+                </div>
+                {gameInfo.homeTeamName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="font-medium mb-2">Top Scorer</h3>
+                {topScorers.home ? (
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 rounded-full px-2 py-1 text-xs font-medium">
+                      #{topScorers.home.player?.jerseyNumber}
+                    </div>
+                    <span className="font-semibold">
+                      {topScorers.home.player?.name}
+                    </span>
+                    <span className="text-muted-foreground ml-auto">
+                      {topScorers.home.points} pts
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground text-sm">
+                    No data available
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Away Team */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full overflow-hidden bg-white">
+                  <img
+                    src={
+                      gameInfo.awayTeamLogo
+                        ? `/team_logos/${gameInfo.awayTeamLogo}`
+                        : "/team_logos/ccbc_logo.png"
+                    }
+                    alt={`${gameInfo.awayTeamName} logo`}
+                    className="w-full h-full object-contain p-0.5"
+                  />
+                </div>
+                {gameInfo.awayTeamName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="font-medium mb-2">Top Scorer</h3>
+                {topScorers.away ? (
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary/10 rounded-full px-2 py-1 text-xs font-medium">
+                      #{topScorers.away.player?.jerseyNumber}
+                    </div>
+                    <span className="font-semibold">
+                      {topScorers.away.player?.name}
+                    </span>
+                    <span className="text-muted-foreground ml-auto">
+                      {topScorers.away.points} pts
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-muted-foreground text-sm">
+                    No data available
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Player Stats Table */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Game Statistics</h2>
+          <Tabs defaultValue="player-stats" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="player-stats">Player Stats</TabsTrigger>
+              <TabsTrigger value="team-stats">Team Stats</TabsTrigger>
+            </TabsList>
+            <TabsContent value="player-stats">
+              <PlayerGameStatsTable
+                playerStats={playerStats || []}
+                isLoading={isLoading}
+                isPlayerProfile={false}
+              />
+            </TabsContent>
+            <TabsContent value="team-stats">
+              <TeamGameStatsTable gameId={gameId} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </PageLayout>

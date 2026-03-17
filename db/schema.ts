@@ -493,3 +493,53 @@ export const videos = pgTable.withRLS(
     check("videos_quarter_check", sql`((quarter >= 1) AND (quarter <= 4))`),
   ],
 );
+
+export const playerMetricPreferences = pgTable.withRLS(
+  "player_metric_preferences",
+  {
+    id: uuid().defaultRandom().primaryKey(),
+    playerId: uuid("player_id")
+      .notNull()
+      .references(() => players.id, { onDelete: "cascade" })
+      .unique(),
+    points: integer().notNull().default(50),
+    rebounds: integer().notNull().default(50),
+    assists: integer().notNull().default(50),
+    steals: integer().notNull().default(50),
+    blocks: integer().notNull().default(50),
+    updatedBy: uuid("updated_by")
+      .notNull()
+      .references(() => SupabaseAuthUsers.id),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`now()`)
+      .notNull(),
+  },
+  (table) => [
+    pgPolicy("Allow read access for all users on player_metric_preferences", {
+      for: "select",
+      using: sql`true`,
+    }),
+    pgPolicy("Allow captain and admin to insert player_metric_preferences", {
+      for: "insert",
+      to: ["authenticated"],
+      withCheck: sql`(EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = auth.uid()) AND (user_roles.role = ANY (ARRAY['captain'::app_role, 'admin'::app_role])))))`,
+    }),
+    pgPolicy("Allow captain and admin to update player_metric_preferences", {
+      for: "update",
+      to: ["authenticated"],
+      using: sql`(EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = auth.uid()) AND (user_roles.role = ANY (ARRAY['captain'::app_role, 'admin'::app_role])))))`,
+      withCheck: sql`(EXISTS ( SELECT 1
+   FROM user_roles
+  WHERE ((user_roles.user_id = auth.uid()) AND (user_roles.role = ANY (ARRAY['captain'::app_role, 'admin'::app_role])))))`,
+    }),
+    check("points_range", sql`${table.points} >= 0 AND ${table.points} <= 100`),
+    check("rebounds_range", sql`${table.rebounds} >= 0 AND ${table.rebounds} <= 100`),
+    check("assists_range", sql`${table.assists} >= 0 AND ${table.assists} <= 100`),
+    check("steals_range", sql`${table.steals} >= 0 AND ${table.steals} <= 100`),
+    check("blocks_range", sql`${table.blocks} >= 0 AND ${table.blocks} <= 100`),
+  ],
+);

@@ -1,6 +1,5 @@
 import { cn } from "~/lib/utils/cn";
-
-type GameStatus = "live" | "upcoming" | "completed";
+import type { GameStatus } from "~/lib/utils/game-status";
 
 interface GameStatusBadgeProps {
   status: GameStatus;
@@ -18,6 +17,8 @@ export function GameStatusBadge({ status, className }: GameStatusBadgeProps) {
           "bg-stat-positive/15 text-stat-positive",
         status === "completed" &&
           "border border-border text-muted-foreground",
+        status === "cancelled" &&
+          "bg-orange-100/50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
         className,
       )}
     >

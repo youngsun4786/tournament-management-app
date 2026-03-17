@@ -1,7 +1,8 @@
-import { useSuspenseQueries } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQueries } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Chart as ChartJS,
+  Filler,
   Legend,
   LineElement,
   PointElement,
@@ -9,19 +10,43 @@ import {
   RadialLinearScale,
   Tooltip,
 } from "chart.js";
+import { Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Radar } from "react-chartjs-2";
+import { toast } from "sonner";
 import { PlayerGameStatsTable } from "~/lib/components/stats/player-game-stats-table";
-import { playerGameStatsQueries, playerQueries } from "~/src/queries";
+import { Button } from "~/lib/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/lib/components/ui/dialog";
+import { Slider } from "~/lib/components/ui/slider";
+import { upsertPlayerMetricPreferences } from "~/src/controllers/player-metric-preferences.api";
+import {
+  playerGameStatsQueries,
+  playerMetricPreferencesQueries,
+  playerQueries,
+} from "~/src/queries";
 import { PageLayout } from "~/lib/components/page-layout";
 import type { PlayerGameStatsWithPlayer } from "~/src/types/player-game-stats";
+import {
+  DEFAULT_RATINGS,
+  SKILL_RATING_KEYS,
+  SKILL_RATING_LABELS,
+  type SkillRatings,
+} from "~/src/types/player-metric-preferences";
 
-// Register ChartJS components
+// Register ChartJS components (all SSR-safe)
 ChartJS.register(
   RadarController,
   RadialLinearScale,
   PointElement,
   LineElement,
+  Filler,
   Tooltip,
   Legend,
 );
@@ -37,6 +62,9 @@ export const Route = createFileRoute("/players/$playerId")({
     await context.queryClient.ensureQueryData(
       playerQueries.detail(params.playerId!),
     );
+    await context.queryClient.ensureQueryData(
+      playerMetricPreferencesQueries.byPlayerId(params.playerId!),
+    );
   },
   component: RouteComponent,
 });
@@ -46,6 +74,12 @@ function RouteComponent() {
   const [recentGames, setRecentGames] = useState<PlayerGameStatsWithPlayer[]>(
     [],
   );
+
+  const rootContext = Route.useRouteContext();
+  const authState = rootContext.authState;
+  const canCustomize =
+    authState?.isAuthenticated &&
+    (authState.user?.role === "captain" || authState.user?.role === "admin");
 
   const [
     {
@@ -59,19 +93,27 @@ function RouteComponent() {
       isError: isErrorPlayerGameStats,
     },
     { data: player, isLoading: isLoadingPlayer, isError: isErrorPlayer },
+    { data: savedRatings },
   ] = useSuspenseQueries({
     queries: [
       playerGameStatsQueries.playerGameStatsAverage(playerId),
       playerGameStatsQueries.playerGameStatsByPlayerId(playerId),
       playerQueries.detail(playerId),
+      playerMetricPreferencesQueries.byPlayerId(playerId),
     ],
   });
 
-  // Move the sorting and state update to useEffect to avoid infinite renders
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editRatings, setEditRatings] = useState<SkillRatings>(DEFAULT_RATINGS);
+
+  const openEditor = () => {
+    setEditRatings(savedRatings ?? DEFAULT_RATINGS);
+    setDialogOpen(true);
+  };
+
   useEffect(() => {
     if (playerGameStats && playerGameStats.length > 0) {
       const sortedGames = [...playerGameStats].sort((a, b) => {
-        // Sort by updatedAt if available, otherwise just take the first 5
         if (a.updatedAt && b.updatedAt) {
           return (
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -83,31 +125,45 @@ function RouteComponent() {
     }
   }, [playerGameStats]);
 
-  // Format stats for the radar chart
-  const radarData = {
-    labels: ["Points", "Rebounds", "Assists", "Steals", "Blocks"],
-    datasets: [
-      {
-        label: "Player Stats",
-        data: playerGameStatsAverage
-          ? [
-              playerGameStatsAverage.pointsPerGame,
-              playerGameStatsAverage.reboundsPerGame,
-              playerGameStatsAverage.assistsPerGame,
-              playerGameStatsAverage.stealsPerGame,
-              playerGameStatsAverage.blocksPerGame,
-            ]
-          : [0, 0, 0, 0, 0],
-        fill: true,
-        backgroundColor: "rgba(99, 102, 241, 0.2)",
-        borderColor: "rgb(99, 102, 241)",
-        pointBackgroundColor: "rgb(99, 102, 241)",
-        pointBorderColor: "#fff",
-        pointHoverBackgroundColor: "#fff",
-        pointHoverBorderColor: "rgb(99, 102, 241)",
-      },
-    ],
-  };
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (ratings: SkillRatings) =>
+      upsertPlayerMetricPreferences({
+        data: { playerId, ...ratings },
+      }),
+    onSuccess: () => {
+      toast.success("Skill ratings saved");
+      queryClient.invalidateQueries({
+        queryKey: playerMetricPreferencesQueries.all,
+      });
+      setDialogOpen(false);
+    },
+    onError: () => {
+      toast.error("Failed to save skill ratings");
+    },
+  });
+
+  const radarData = savedRatings
+    ? {
+        labels: SKILL_RATING_KEYS.map((key) => SKILL_RATING_LABELS[key]),
+        datasets: [
+          {
+            label: "Skill Rating",
+            data: SKILL_RATING_KEYS.map((key) => savedRatings[key]),
+            fill: true,
+            backgroundColor: "rgba(99, 102, 241, 0.2)",
+            borderColor: "rgb(99, 102, 241)",
+            pointBackgroundColor: "rgb(99, 102, 241)",
+            pointBorderColor: "#fff",
+            pointHoverBackgroundColor: "#fff",
+            pointHoverBorderColor: "rgb(99, 102, 241)",
+            pointRadius: 4,
+            pointHoverRadius: 5,
+          },
+        ],
+      }
+    : null;
 
   if (
     isLoadingPlayerGameStatsAverage ||
@@ -161,7 +217,6 @@ function RouteComponent() {
             {/* Column 1: Player Info */}
             <div className="flex flex-col md:flex-row xl:flex-col items-center xl:items-start text-center xl:text-left gap-6 xl:gap-4 p-4 space-y-4">
               <div className="relative mx-auto xl:mx-0">
-                {/* Player image */}
                 {player.playerUrl ? (
                   <div className="h-64 w-44 xl:h-72 xl:w-48 rounded-xl overflow-hidden ring-4 ring-white/30 shadow-lg mx-auto">
                     <img
@@ -178,7 +233,6 @@ function RouteComponent() {
               </div>
 
               <div className="text-white w-full">
-                {/* Player info */}
                 <h1 className="text-3xl xl:text-4xl font-bold mb-2 xl:mb-4">
                   {player.name}
                 </h1>
@@ -194,39 +248,71 @@ function RouteComponent() {
               </div>
             </div>
 
-            {/* Column 2: Performance Overview */}
-            <div className="bg-white pt-10 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center h-full min-h-[300px]">
-              <h3 className="text-sm font-bold mb-2 text-gray-800">
-                Performance Overview
-              </h3>
+            {/* Column 2: Skill Ratings Radar */}
+            <div className="bg-white pt-4 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center h-full min-h-[300px]">
+              <div className="flex items-center justify-between w-full px-2">
+                <h3 className="text-sm font-bold text-gray-800">
+                  Skill Ratings
+                </h3>
+                {canCustomize && savedRatings && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 text-xs"
+                    onClick={openEditor}
+                  >
+                    <Pencil className="h-3 w-3" />
+                    Edit
+                  </Button>
+                )}
+              </div>
               <div className="flex-grow relative w-full flex items-center justify-center">
-                <Radar
-                  data={radarData}
-                  options={{
-                    scales: {
-                      r: {
-                        min: 0,
-                        ticks: {
-                          stepSize: 5,
-                          backdropColor: "transparent",
-                        },
-                        angleLines: {
-                          color: "rgba(0, 0, 0, 0.1)",
-                        },
-                        grid: {
-                          color: "rgba(0, 0, 0, 0.1)",
+                {radarData ? (
+                  <Radar
+                    data={radarData}
+                    options={{
+                      scales: {
+                        r: {
+                          min: 0,
+                          max: 100,
+                          ticks: {
+                            stepSize: 20,
+                            backdropColor: "transparent",
+                          },
+                          angleLines: {
+                            color: "rgba(0, 0, 0, 0.1)",
+                          },
+                          grid: {
+                            color: "rgba(0, 0, 0, 0.1)",
+                          },
                         },
                       },
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: false,
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
                       },
-                    },
-                  }}
-                />
+                    }}
+                  />
+                ) : canCustomize ? (
+                  <button
+                    onClick={openEditor}
+                    className="flex flex-col items-center gap-2 text-gray-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                  >
+                    <div className="h-16 w-16 rounded-full border-2 border-dashed border-current flex items-center justify-center">
+                      <Pencil className="h-6 w-6" />
+                    </div>
+                    <span className="text-sm font-medium">
+                      Set skill ratings
+                    </span>
+                  </button>
+                ) : (
+                  <p className="text-sm text-gray-400">
+                    No skill ratings set yet.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -312,6 +398,54 @@ function RouteComponent() {
         isLoading={isLoadingPlayerGameStats}
         isPlayerProfile={true}
       />
+
+      {/* Skill Ratings Editor Modal */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Skill Ratings</DialogTitle>
+            <DialogDescription>
+              Adjust {player.name}'s skill ratings from 0 to 100.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-5 py-4">
+            {SKILL_RATING_KEYS.map((key) => (
+              <div key={key} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-700">
+                    {SKILL_RATING_LABELS[key]}
+                  </label>
+                  <span className="text-sm font-mono font-semibold tabular-nums text-indigo-600 w-8 text-right">
+                    {editRatings[key]}
+                  </span>
+                </div>
+                <Slider
+                  min={0}
+                  max={100}
+                  step={1}
+                  value={[editRatings[key]]}
+                  onValueChange={([val]) =>
+                    setEditRatings((prev) => ({ ...prev, [key]: val }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => mutation.mutate(editRatings)}
+            >
+              {mutation.isPending ? "Saving..." : "Save Ratings"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
     </PageLayout>
   );
@@ -339,7 +473,6 @@ const ShootingStatCard = ({
   attempts: string;
   percentage: string;
 }) => {
-  // Calculate a color based on the percentage
   const getColorClass = (pct: number) => {
     if (pct >= 50) return "bg-green-100 text-green-800";
     if (pct >= 40) return "bg-blue-100 text-blue-800";

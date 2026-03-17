@@ -38,6 +38,10 @@ export const relations = defineRelations(schema, (r) => ({
       from: r.players.teamId,
       to: r.teams.id,
     }),
+    metricPreference: r.one.playerMetricPreferences({
+      from: r.players.id,
+      to: r.playerMetricPreferences.playerId,
+    }),
   },
   teams: {
     players: r.many.players(),
@@ -93,6 +97,12 @@ export const relations = defineRelations(schema, (r) => ({
     game: r.one.games({
       from: r.videos.gameId,
       to: r.games.id,
+    }),
+  },
+  playerMetricPreferences: {
+    player: r.one.players({
+      from: r.playerMetricPreferences.playerId,
+      to: r.players.id,
     }),
   },
 }));

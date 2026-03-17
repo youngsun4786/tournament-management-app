@@ -1,25 +1,8 @@
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import { GameStatusBadge } from "~/lib/components/ui/game-status-badge";
 import { ButtonLink } from "~/lib/components/button-link";
+import { getGameStatus } from "~/lib/utils/game-status";
 import { Game } from "~/src/types/game";
-
-function getGameStatus(
-  game: Game,
-  now: Date,
-): "live" | "upcoming" | "completed" {
-  if (game.isCompleted) return "completed";
-  if (!isSameDay(game.gameDate, now)) return "upcoming";
-
-  const [hours, minutes] = game.startTime.split(":");
-  const gameTime = new Date(game.gameDate);
-  gameTime.setHours(parseInt(hours), parseInt(minutes));
-
-  const twoHoursLater = new Date(gameTime);
-  twoHoursLater.setHours(gameTime.getHours() + 2);
-
-  if (now >= gameTime && now < twoHoursLater) return "live";
-  return "upcoming";
-}
 
 function TeamRow({
   name,
