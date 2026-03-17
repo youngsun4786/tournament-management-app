@@ -6,6 +6,7 @@ import {
   startOfMonth,
 } from "date-fns";
 import { cn } from "~/lib/utils/cn";
+import { getGameStatus } from "~/lib/utils/game-status";
 import { Game } from "~/src/types/game";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
@@ -92,15 +93,13 @@ export function CalendarView({ games, currentDate }: CalendarViewProps) {
                               <span className="font-semibold">
                                 {game.startTime.slice(0, 5)}
                               </span>
-                              {game.isCompleted ? (
-                                <Badge variant="outline" className="text-xs">
-                                  Final
-                                </Badge>
-                              ) : (
-                                <Badge className="bg-green-600 text-xs">
-                                  Upcoming
-                                </Badge>
-                              )}
+                              {(() => {
+                                const status = getGameStatus(game, new Date());
+                                if (status === "completed") return <Badge variant="outline" className="text-xs">Final</Badge>;
+                                if (status === "cancelled") return <Badge className="bg-orange-500 text-xs">Cancelled</Badge>;
+                                if (status === "live") return <Badge className="bg-red-600 text-xs animate-pulse">Live</Badge>;
+                                return <Badge className="bg-green-600 text-xs">Upcoming</Badge>;
+                              })()}
                             </div>
 
                             <div className="flex items-center gap-1">

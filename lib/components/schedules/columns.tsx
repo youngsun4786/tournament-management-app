@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { ColumnDef } from "@tanstack/react-table";
-import { format, isAfter, isBefore, isSameDay } from "date-fns";
+import { format } from "date-fns";
 import { ArrowUpDown, ExternalLink, PlayCircle } from "lucide-react";
 import { Badge } from "~/lib/components/ui/badge";
+import { GameStatusBadge } from "~/lib/components/ui/game-status-badge";
 import { Button } from "~/lib/components/ui/button";
 import { convert24to12 } from "~/lib/utils/date";
+import { getGameStatus } from "~/lib/utils/game-status";
 import { Game } from "~/src/types/game";
 import { ButtonLink } from "../button-link";
 
@@ -174,53 +176,8 @@ export const columns: ColumnDef<Game>[] = [
     },
     cell: ({ row }) => {
       const game = row.original;
-
-      if (game.isCompleted) {
-        return (
-          <Badge
-            variant="outline"
-            className="text-green-800 bg-green-100 dark:text-green-100 dark:bg-green-800"
-          >
-            Completed
-          </Badge>
-        );
-      }
-
-      const today = new Date();
-
-      if (isSameDay(game.gameDate, today)) {
-        const [hours, minutes] = game.startTime.split(":");
-        const gameTime = new Date(game.gameDate);
-        gameTime.setHours(parseInt(hours), parseInt(minutes));
-
-        const twoHoursLater = new Date(gameTime);
-        twoHoursLater.setHours(gameTime.getHours() + 2);
-
-        if (isAfter(today, gameTime) && !isAfter(today, twoHoursLater)) {
-          return (
-            <Badge className="bg-red-600 hover:bg-red-700 animate-pulse">
-              Live
-            </Badge>
-          );
-        }
-
-        return <Badge className="bg-blue-600 hover:bg-blue-700">Today</Badge>;
-      }
-
-      if (isBefore(game.gameDate, today)) {
-        return (
-          <Badge
-            variant="outline"
-            className="text-yellow-800 bg-yellow-100 dark:text-yellow-100 dark:bg-yellow-800"
-          >
-            Completed
-          </Badge>
-        );
-      }
-
-      return (
-        <Badge className="bg-green-600 hover:bg-green-700">Upcoming</Badge>
-      );
+      const status = getGameStatus(game, new Date());
+      return <GameStatusBadge status={status} />;
     },
   },
   {

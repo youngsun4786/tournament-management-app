@@ -1,14 +1,16 @@
 import {
   getMonth,
+  isBefore,
   isSameDay,
   isSameMonth,
   isSameYear,
   setMonth,
+  startOfDay,
 } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { Game } from "~/src/types/game";
 
-type StatusFilterType = "all" | "upcoming" | "completed" | "live";
+type StatusFilterType = "all" | "upcoming" | "completed" | "live" | "cancelled";
 type ViewMode = "list" | "calendar";
 
 export function useScheduleFilters(games: Game[]) {
@@ -57,7 +59,8 @@ export function useScheduleFilters(games: Game[]) {
       value === "all" ||
       value === "upcoming" ||
       value === "completed" ||
-      value === "live"
+      value === "live" ||
+      value === "cancelled"
     ) {
       setStatusFilter(value);
     }
@@ -76,8 +79,10 @@ export function useScheduleFilters(games: Game[]) {
         isSameYear(gameDate, currentDate);
       if (!monthYearMatch) return false;
 
-      if (statusFilter === "upcoming" && game.isCompleted) return false;
+      const isPastIncomplete = !game.isCompleted && isBefore(startOfDay(new Date(game.gameDate)), startOfDay(today));
+      if (statusFilter === "upcoming" && (game.isCompleted || isPastIncomplete)) return false;
       if (statusFilter === "completed" && !game.isCompleted) return false;
+      if (statusFilter === "cancelled" && !isPastIncomplete) return false;
 
       if (teamFilter !== "all") {
         return (

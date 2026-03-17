@@ -27,6 +27,7 @@ import {
 } from "~/src/controllers/team-game-stats.api";
 import { getTeam, getTeamByName, getTeams } from "~/src/controllers/team.api";
 import { getSpecificImages, getVideosByGameId } from "./controllers/media.api";
+import { getPlayerMetricPreferences } from "./controllers/player-metric-preferences.api";
 import { getActiveSeason, getSeasons } from "./controllers/season.api";
 
 export const seasonQueries = {
@@ -258,6 +259,15 @@ export const mediaQueries = {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
+    }),
+};
+
+export const playerMetricPreferencesQueries = {
+  all: ["playerMetricPreferences"],
+  byPlayerId: (playerId: string) =>
+    queryOptions({
+      queryKey: [...playerMetricPreferencesQueries.all, "byPlayerId", playerId],
+      queryFn: () => getPlayerMetricPreferences({ data: { playerId } }),
     }),
 };
 

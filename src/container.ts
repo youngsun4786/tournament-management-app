@@ -5,6 +5,7 @@ import { SeasonService } from './services/season.service';
 import { TeamGameStatsService } from './services/team-game-stats.service';
 import { TeamService } from './services/team.service';
 import { MediaService } from './services/media.service';
+import { PlayerMetricPreferencesService } from './services/player-metric-preferences.service';
 // let gameService: IGameService
 // let playerService: IPlayerService;
 // let teamService: ITeamService;
@@ -25,7 +26,8 @@ const playerGameStatsService = new PlayerGameStatsService();
 const teamGameStatsService = new TeamGameStatsService();
 const seasonService = new SeasonService();
 const mediaService = new MediaService();
+const playerMetricPreferencesService = new PlayerMetricPreferencesService();
 export {
-   gameService, playerGameStatsService, playerService, seasonService, teamGameStatsService, teamService, mediaService   
+   gameService, playerGameStatsService, playerService, seasonService, teamGameStatsService, teamService, mediaService, playerMetricPreferencesService
 };
 
